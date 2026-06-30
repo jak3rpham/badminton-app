@@ -4,6 +4,7 @@ import {
   QrCode, X, ChevronDown, ChevronRight, UserPlus, Wallet, Pencil
 } from "lucide-react";
 import { supabase, hasConfig } from "./supabase.js";
+import { config } from "./config.js";
 
 /* ───────────── helpers ───────────── */
 
@@ -273,9 +274,10 @@ function SessionCard({ s, att, rosterNames, open, toggle, onUpdate, onDelete, to
 function SessionForm({ roster, initial, initialAtt, onSave, onCancel }) {
   const [saving, setSaving] = useState(false);
   const [date, setDate] = useState(initial?.date || todayISO());
+  const toK = (v) => (v ? String(Math.round(v / 1000)) : "");
   const [costs, setCosts] = useState({
-    san: initial?.cost_san ?? "", cau: initial?.cost_cau ?? "",
-    nuoc: initial?.cost_nuoc ?? "", khac: initial?.cost_khac ?? "",
+    san: toK(initial?.cost_san), cau: toK(initial?.cost_cau),
+    nuoc: toK(initial?.cost_nuoc), khac: toK(initial?.cost_khac),
   });
   const initNames = initialAtt ? initialAtt.map((a) => a.name) : [];
   const [picked, setPicked] = useState(initNames);
@@ -291,14 +293,14 @@ function SessionForm({ roster, initial, initialAtt, onSave, onCancel }) {
   };
 
   const num = (v) => (v === "" ? 0 : Number(v));
-  const total = num(costs.san) + num(costs.cau) + num(costs.nuoc) + num(costs.khac);
+  const total = (num(costs.san) + num(costs.cau) + num(costs.nuoc) + num(costs.khac)) * 1000;
   const n = picked.length;
   const per = n ? Math.ceil(total / n / 1000) * 1000 : 0;
 
   const save = async () => {
     if (n === 0) { alert("Chọn ít nhất 1 người chơi."); return; }
     setSaving(true);
-    await onSave({ date, costs: { san: num(costs.san), cau: num(costs.cau), nuoc: num(costs.nuoc), khac: num(costs.khac) }, names: picked });
+    await onSave({ date, costs: { san: num(costs.san) * 1000, cau: num(costs.cau) * 1000, nuoc: num(costs.nuoc) * 1000, khac: num(costs.khac) * 1000 }, names: picked });
     setSaving(false);
   };
 
@@ -311,15 +313,16 @@ function SessionForm({ roster, initial, initialAtt, onSave, onCancel }) {
       <div className="field"><label className="label">Ngày</label>
         <input className="input" type="date" value={date} onChange={(e) => setDate(e.target.value)} /></div>
 
-      <div className="eyebrow" style={{ marginTop: 16 }}>Chi phí buổi này</div>
+      <div className="eyebrow" style={{ marginTop: 16 }}>Chi phí buổi này · đơn vị nghìn đồng</div>
       <div className="row" style={{ marginTop: 8 }}>
-        <div><label className="label">Tiền sân</label><input className="input num" inputMode="numeric" placeholder="0" value={costs.san} onChange={ci("san")} /></div>
-        <div><label className="label">Tiền cầu</label><input className="input num" inputMode="numeric" placeholder="0" value={costs.cau} onChange={ci("cau")} /></div>
+        <div><label className="label">Tiền sân (nghìn)</label><input className="input num" inputMode="numeric" placeholder="vd 230" value={costs.san} onChange={ci("san")} /></div>
+        <div><label className="label">Tiền cầu (nghìn)</label><input className="input num" inputMode="numeric" placeholder="vd 55" value={costs.cau} onChange={ci("cau")} /></div>
       </div>
       <div className="row" style={{ marginTop: 8 }}>
-        <div><label className="label">Nước</label><input className="input num" inputMode="numeric" placeholder="0" value={costs.nuoc} onChange={ci("nuoc")} /></div>
-        <div><label className="label">Khác</label><input className="input num" inputMode="numeric" placeholder="0" value={costs.khac} onChange={ci("khac")} /></div>
+        <div><label className="label">Nước (nghìn)</label><input className="input num" inputMode="numeric" placeholder="vd 23" value={costs.nuoc} onChange={ci("nuoc")} /></div>
+        <div><label className="label">Khác (nghìn)</label><input className="input num" inputMode="numeric" placeholder="0" value={costs.khac} onChange={ci("khac")} /></div>
       </div>
+      <div className="hint">Gõ theo nghìn: 230 = 230.000đ.</div>
 
       <div className="eyebrow" style={{ marginTop: 16 }}>Ai có chơi? ({n})</div>
       {allNames.length === 0 && <div className="hint">Chưa có thành viên — thêm ở tab “Thành viên”, hoặc thêm khách bên dưới.</div>}
@@ -421,9 +424,6 @@ function QrSheet({ info, bank, onClose }) {
   const [imgOk, setImgOk] = useState(true);
   const [done, setDone] = useState(false);
   const hasBank = bank?.bank_code && bank?.account;
-  const qrUrl = hasBank
-    ? `https://img.vietqr.io/image/${bank.bank_code}-${bank.account}-compact2.png?amount=${info.amount}&addInfo=${encodeURIComponent(info.content)}&accountName=${encodeURIComponent(bank.holder || "")}`
-    : null;
   const copy = (t, tag) => { navigator.clipboard?.writeText(t); setCopied(tag); setTimeout(() => setCopied(""), 1200); };
 
   return (
@@ -432,15 +432,26 @@ function QrSheet({ info, bank, onClose }) {
         <div className="sheet-h"><strong>{info.name} · {fmt(info.amount)}</strong>
           <button className="icon-btn" onClick={onClose}><X size={20} /></button></div>
 
-        {hasBank && imgOk
-          ? <img className="qrimg" src={qrUrl} alt="QR chuyển khoản" onError={() => setImgOk(false)} />
-          : <div className="hint" style={{ textAlign: "center", padding: "10px 0" }}>
-              {hasBank ? "Không tải được ảnh QR — dùng thông tin bên dưới." : "Chưa cài tài khoản nhận tiền (tab Cài đặt)."}
-            </div>}
+        {(() => {
+          const dynUrl = hasBank
+            ? `https://img.vietqr.io/image/${bank.bank_code}-${bank.account}-compact2.png?amount=${info.amount}&addInfo=${encodeURIComponent(info.content)}&accountName=${encodeURIComponent(bank.holder || "")}`
+            : null;
+          const src = config.qrImage || dynUrl;
+          return src && imgOk ? (
+            <img className="qrimg" src={src} alt="QR chuyển khoản" onError={() => setImgOk(false)} />
+          ) : (
+            <div className="qrimg" style={{ display: "flex", alignItems: "center", justifyContent: "center", textAlign: "center", padding: 16, color: "var(--muted)", fontSize: 12.5 }}>
+              {config.qrImage
+                ? <span>Chưa có ảnh QR.<br />Đặt file vào <b>public{config.qrImage}</b></span>
+                : <span>Chưa có QR — thêm ảnh vào <b>public/</b> (sửa <b>src/config.js</b>) hoặc nhập STK ở tab Cài đặt.</span>}
+            </div>
+          );
+        })()}
+        <div className="hint" style={{ textAlign: "center" }}>{config.qrNote}</div>
 
-        {bank?.momo_link && (
-          <a className="btn btn-primary btn-block" style={{ marginTop: 4, textDecoration: "none" }}
-            href={bank.momo_link} target="_blank" rel="noreferrer">
+        {(config.momoLink || bank?.momo_link) && (
+          <a className="btn btn-primary btn-block" style={{ marginTop: 8, textDecoration: "none" }}
+            href={config.momoLink || bank.momo_link} target="_blank" rel="noreferrer">
             Mở MoMo để trả {fmt(info.amount)}
           </a>
         )}
