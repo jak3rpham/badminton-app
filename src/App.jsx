@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
   Plus, Trash2, Users, Settings, CalendarDays, Check, Copy,
-  QrCode, X, ChevronDown, ChevronRight, UserPlus, Wallet, Pencil
+  QrCode, X, ChevronRight, UserPlus, Wallet, Pencil, Search
 } from "lucide-react";
 import { supabase, hasConfig } from "./supabase.js";
 import { config } from "./config.js";
@@ -145,7 +145,7 @@ export default function App() {
       <div className="bl-wrap">
         {err && <div className="card" style={{ borderColor: "var(--unpaid)", color: "var(--unpaid)" }}>Lỗi: {err}</div>}
         {tab === "sessions" &&
-          <Sessions {...{ sessions, attendees, members, addSession, updateSession, delSession, togglePaid, bank }} openQr={setQr} />}
+          <Sessions {...{ sessions, attendees, members, addSession, updateSession, delSession, togglePaid, addMember }} openQr={setQr} />}
         {tab === "roster" && <Roster {...{ members, addMember, delMember }} />}
         {tab === "settings" && <SettingsTab {...{ bank, saveBank }} />}
       </div>
@@ -172,124 +172,83 @@ function Tab({ id, cur, set, icon, label }) {
 
 /* ───────────── sessions ───────────── */
 
-function Sessions({ sessions, attendees, members, addSession, updateSession, delSession, togglePaid, openQr }) {
-  const [creating, setCreating] = useState(false);
-  const [open, setOpen] = useState(null);
+function Sessions({ sessions, attendees, members, addSession, updateSession, delSession, togglePaid, addMember, openQr }) {
+  const [modal, setModal] = useState(null); // null | {mode:'create'} | {mode:'view', id}
   const attOf = (sid) => attendees.filter((a) => a.session_id === sid);
+  const rosterNames = members.map((m) => m.name);
+  const lastNames = sessions.length ? attOf(sessions[0].id).map((a) => a.name) : [];
+  const openSession = modal?.mode === "view" ? sessions.find((s) => s.id === modal.id) : null;
 
   return (
     <>
-      <button className="btn btn-primary btn-block" style={{ marginTop: 16 }} onClick={() => setCreating(true)}>
+      <button className="btn btn-primary btn-block" style={{ marginTop: 16 }} onClick={() => setModal({ mode: "create" })}>
         <Plus size={18} /> Tạo buổi chơi mới
       </button>
 
-      {sessions.length === 0 && !creating &&
+      {sessions.length === 0 &&
         <div className="empty">Chưa có buổi nào.<br />Bấm “Tạo buổi chơi mới” để bắt đầu.</div>}
 
-      {creating &&
-        <SessionForm roster={members.map((m) => m.name)}
-          onSave={async (d) => { const id = await addSession(d); setCreating(false); setOpen(id); }}
-          onCancel={() => setCreating(false)} />}
+      {sessions.map((s) => {
+        const att = attOf(s.id);
+        const { total, n, per } = computeSplit(s, att);
+        const paidCount = att.filter((a) => a.paid).length;
+        const allPaid = n > 0 && paidCount === n;
+        return (
+          <div className="sess" key={s.id}>
+            <div className="sess-h" onClick={() => setModal({ mode: "view", id: s.id })}>
+              <div style={{ flex: 1 }}>
+                <div className="sess-date">{dmY(s.date)} · {n} người</div>
+                <div className="sess-meta">{fmt(total)} · {fmt(per)}/người</div>
+              </div>
+              <span className={`tag ${allPaid ? "done" : "pend"}`}>{allPaid ? "Đã thu đủ" : `${paidCount}/${n} đã trả`}</span>
+              <ChevronRight size={18} color="#6b7a72" />
+            </div>
+          </div>
+        );
+      })}
 
-      {sessions.map((s) => (
-        <SessionCard key={s.id} s={s} att={attOf(s.id)} rosterNames={members.map((m) => m.name)}
-          open={open === s.id} toggle={() => setOpen(open === s.id ? null : s.id)}
-          onUpdate={updateSession} onDelete={delSession} togglePaid={togglePaid} openQr={openQr} />
-      ))}
+      {modal && (
+        <SessionModal
+          key={openSession?.id || "create"}
+          mode={modal.mode}
+          session={openSession}
+          att={openSession ? attOf(openSession.id) : []}
+          rosterNames={rosterNames}
+          prefillNames={lastNames}
+          addSession={addSession} updateSession={updateSession}
+          delSession={delSession} togglePaid={togglePaid} addMember={addMember}
+          openQr={openQr}
+          onClose={() => setModal(null)}
+        />
+      )}
     </>
   );
 }
 
-function SessionCard({ s, att, rosterNames, open, toggle, onUpdate, onDelete, togglePaid, openQr }) {
-  const [editing, setEditing] = useState(false);
-  const { total, n, per, surplus } = computeSplit(s, att);
-  const paidCount = att.filter((a) => a.paid).length;
-  const allPaid = n > 0 && paidCount === n;
-  const collected = paidCount * per;
-  const owed = (n - paidCount) * per;
-
-  if (editing)
-    return (
-      <SessionForm roster={rosterNames} initial={s} initialAtt={att}
-        onSave={async (d) => { await onUpdate(s, d, att); setEditing(false); }}
-        onCancel={() => setEditing(false)} />
-    );
-
-  return (
-    <div className="sess">
-      <div className="sess-h" onClick={toggle}>
-        {open ? <ChevronDown size={18} color="#6b7a72" /> : <ChevronRight size={18} color="#6b7a72" />}
-        <div style={{ flex: 1 }}>
-          <div className="sess-date">{dmY(s.date)} · {n} người</div>
-          <div className="sess-meta">{fmt(total)} · {fmt(per)}/người</div>
-        </div>
-        <span className={`tag ${allPaid ? "done" : "pend"}`}>{allPaid ? "Đã thu đủ" : `${paidCount}/${n} đã trả`}</span>
-      </div>
-
-      {open && (
-        <div className="card" style={{ marginTop: 8 }}>
-          <div className="sumbar">
-            <div className="sumbox"><div className="k">Mỗi người</div><div className="v num">{fmt(per)}</div></div>
-            <div className="sumbox"><div className="k">Đã thu</div><div className="v num">{fmt(collected)}</div></div>
-            <div className="sumbox"><div className="k">Còn thiếu</div><div className="v num" style={{ color: owed ? "var(--unpaid)" : "var(--paid)" }}>{fmt(owed)}</div></div>
-          </div>
-          <div className="prog"><i style={{ width: `${n ? (paidCount / n) * 100 : 0}%` }} /></div>
-          {surplus > 0 && <div className="hint">Làm tròn lên 1.000đ → dư quỹ {fmt(surplus)}.</div>}
-
-          <div style={{ marginTop: 12 }}>
-            {att.map((a) => (
-              <div className="payrow" key={a.id}>
-                <div style={{ flex: 1 }}>
-                  <div className="pay-nm">{a.name}</div>
-                  <div className="pay-amt num">{fmt(per)}</div>
-                </div>
-                <button className="icon-btn" title="QR / nội dung CK"
-                  onClick={() => openQr({
-                    name: a.name, amount: per,
-                    content: `CL ${noTone(a.name)} ${s.date.slice(8)}${s.date.slice(5, 7)}`,
-                    paid: a.paid,
-                    markPaid: () => { if (!a.paid) togglePaid(a); },
-                  })}>
-                  <QrCode size={18} />
-                </button>
-                <button className={`pill ${a.paid ? "paid" : "unpaid"}`} onClick={() => togglePaid(a)}>
-                  {a.paid ? <><Check size={14} /> Đã trả</> : "Chưa trả"}
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <div className="row" style={{ marginTop: 14 }}>
-            <button className="btn btn-ghost" onClick={() => setEditing(true)}><Pencil size={16} /> Sửa</button>
-            <button className="btn btn-ghost danger" onClick={() => { if (confirm("Xoá buổi này?")) onDelete(s.id); }}>
-              <Trash2 size={16} /> Xoá
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function SessionForm({ roster, initial, initialAtt, onSave, onCancel }) {
+function SessionModal({ mode, session, att, rosterNames, prefillNames, addSession, updateSession, delSession, togglePaid, addMember, openQr, onClose }) {
+  const isCreate = mode === "create";
+  const [editing, setEditing] = useState(isCreate);
   const [saving, setSaving] = useState(false);
-  const [date, setDate] = useState(initial?.date || todayISO());
-  const toK = (v) => (v ? String(Math.round(v / 1000)) : "");
-  const [costs, setCosts] = useState({
-    san: toK(initial?.cost_san), cau: toK(initial?.cost_cau),
-    nuoc: toK(initial?.cost_nuoc), khac: toK(initial?.cost_khac),
-  });
-  const initNames = initialAtt ? initialAtt.map((a) => a.name) : [];
-  const [picked, setPicked] = useState(initNames);
-  const [extra, setExtra] = useState(initNames.filter((nm) => !roster.includes(nm)));
-  const [guest, setGuest] = useState("");
 
-  const allNames = Array.from(new Set([...roster, ...extra]));
+  const toK = (v) => (v ? String(Math.round(v / 1000)) : "");
+  const [date, setDate] = useState(session?.date || todayISO());
+  const [costs, setCosts] = useState({
+    san: toK(session?.cost_san), cau: toK(session?.cost_cau),
+    nuoc: toK(session?.cost_nuoc), khac: toK(session?.cost_khac),
+  });
+  const initPicked = session ? att.map((a) => a.name) : prefillNames;
+  const [picked, setPicked] = useState(initPicked);
+  const [extra, setExtra] = useState(initPicked.filter((nm) => !rosterNames.includes(nm)));
+  const [adding, setAdding] = useState("");
+  const [search, setSearch] = useState("");
+
+  const allNames = Array.from(new Set([...rosterNames, ...extra, ...picked]));
   const toggle = (nm) => setPicked((p) => (p.includes(nm) ? p.filter((x) => x !== nm) : [...p, nm]));
-  const addGuest = () => {
-    const g = guest.trim(); if (!g) return;
-    if (!allNames.includes(g)) { setExtra((e) => [...e, g]); setPicked((p) => [...p, g]); }
-    setGuest("");
+  const addNew = () => {
+    const g = adding.trim(); if (!g) return;
+    if (!allNames.includes(g)) setExtra((e) => [...e, g]);
+    setPicked((p) => (p.includes(g) ? p : [...p, g]));
+    setAdding("");
   };
 
   const num = (v) => (v === "" ? 0 : Number(v));
@@ -297,57 +256,139 @@ function SessionForm({ roster, initial, initialAtt, onSave, onCancel }) {
   const n = picked.length;
   const per = n ? Math.ceil(total / n / 1000) * 1000 : 0;
 
+  const view = session ? computeSplit(session, att) : null;
+  const paidCount = att.filter((a) => a.paid).length;
+  const collected = view ? paidCount * view.per : 0;
+  const owed = view ? (view.n - paidCount) * view.per : 0;
+
   const save = async () => {
     if (n === 0) { alert("Chọn ít nhất 1 người chơi."); return; }
     setSaving(true);
-    await onSave({ date, costs: { san: num(costs.san) * 1000, cau: num(costs.cau) * 1000, nuoc: num(costs.nuoc) * 1000, khac: num(costs.khac) * 1000 }, names: picked });
+    const payload = {
+      date,
+      costs: { san: num(costs.san) * 1000, cau: num(costs.cau) * 1000, nuoc: num(costs.nuoc) * 1000, khac: num(costs.khac) * 1000 },
+      names: picked,
+    };
+    for (const nm of picked) if (!rosterNames.includes(nm)) await addMember(nm); // lưu người mới vào thành viên
+    if (isCreate) await addSession(payload);
+    else await updateSession(session, payload, att);
     setSaving(false);
+    onClose();
   };
 
+  const q = noTone(search);
+  const sortedNames = [...allNames].sort((a, b) => (picked.includes(b) ? 1 : 0) - (picked.includes(a) ? 1 : 0));
+  const shown = sortedNames.filter((nm) => !q || noTone(nm).includes(q));
+  const attShown = [...att]
+    .sort((a, b) => (a.paid === b.paid ? 0 : a.paid ? 1 : -1))
+    .filter((a) => !q || noTone(a.name).includes(q));
   const ci = (k) => (e) => setCosts({ ...costs, [k]: e.target.value.replace(/\D/g, "") });
+  const code = (nm) => `CL ${noTone(nm)} ${(session?.date || date).slice(8)}${(session?.date || date).slice(5, 7)}`;
 
   return (
-    <div className="card" style={{ borderColor: "var(--court)" }}>
-      <div className="card-h"><CalendarDays size={18} color="#1f7a52" /> {initial ? "Sửa buổi chơi" : "Buổi chơi mới"}</div>
-
-      <div className="field"><label className="label">Ngày</label>
-        <input className="input" type="date" value={date} onChange={(e) => setDate(e.target.value)} /></div>
-
-      <div className="eyebrow" style={{ marginTop: 16 }}>Chi phí buổi này · đơn vị nghìn đồng</div>
-      <div className="row" style={{ marginTop: 8 }}>
-        <div><label className="label">Tiền sân (nghìn)</label><input className="input num" inputMode="numeric" placeholder="vd 230" value={costs.san} onChange={ci("san")} /></div>
-        <div><label className="label">Tiền cầu (nghìn)</label><input className="input num" inputMode="numeric" placeholder="vd 55" value={costs.cau} onChange={ci("cau")} /></div>
-      </div>
-      <div className="row" style={{ marginTop: 8 }}>
-        <div><label className="label">Nước (nghìn)</label><input className="input num" inputMode="numeric" placeholder="vd 23" value={costs.nuoc} onChange={ci("nuoc")} /></div>
-        <div><label className="label">Khác (nghìn)</label><input className="input num" inputMode="numeric" placeholder="0" value={costs.khac} onChange={ci("khac")} /></div>
-      </div>
-      <div className="hint">Gõ theo nghìn: 230 = 230.000đ.</div>
-
-      <div className="eyebrow" style={{ marginTop: 16 }}>Ai có chơi? ({n})</div>
-      {allNames.length === 0 && <div className="hint">Chưa có thành viên — thêm ở tab “Thành viên”, hoặc thêm khách bên dưới.</div>}
-      {allNames.map((nm) => (
-        <div className={`chip ${picked.includes(nm) ? "on" : ""}`} key={nm} onClick={() => toggle(nm)}>
-          <span className="box">{picked.includes(nm) && <Check size={14} />}</span><span className="nm">{nm}</span>
+    <div className="modal-scrim" onClick={onClose}>
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-head">
+          <CalendarDays size={20} />
+          <strong style={{ flex: 1 }}>{isCreate ? "Buổi chơi mới" : editing ? "Sửa buổi chơi" : `Buổi ${dmY(session.date)}`}</strong>
+          <button className="icon-btn" style={{ color: "#fff" }} onClick={onClose}><X size={20} /></button>
         </div>
-      ))}
 
-      <div className="row" style={{ marginTop: 10 }}>
-        <input className="input" placeholder="Thêm khách lẻ…" value={guest} style={{ flex: 3 }}
-          onChange={(e) => setGuest(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addGuest()} />
-        <button className="btn btn-ghost" style={{ flex: 1 }} onClick={addGuest}><UserPlus size={16} /></button>
-      </div>
+        <div className="modal-body">
+          <div className="pane2">
+            {/* TRÁI: thông tin buổi */}
+            <div className="pane">
+              {editing ? (
+                <>
+                  <div className="field"><label className="label">Ngày</label>
+                    <input className="input" type="date" value={date} onChange={(e) => setDate(e.target.value)} /></div>
 
-      {n > 0 && (
-        <div className="sumbar">
-          <div className="sumbox"><div className="k">Tổng</div><div className="v num">{fmt(total)}</div></div>
-          <div className="sumbox"><div className="k">Mỗi người</div><div className="v num" style={{ color: "var(--court)" }}>{fmt(per)}</div></div>
+                  <div className="eyebrow" style={{ marginTop: 16 }}>Chi phí · đơn vị nghìn đồng</div>
+                  <div className="row" style={{ marginTop: 8 }}>
+                    <div><label className="label">Tiền sân (nghìn)</label><input className="input num" inputMode="numeric" placeholder="vd 230" value={costs.san} onChange={ci("san")} /></div>
+                    <div><label className="label">Tiền cầu (nghìn)</label><input className="input num" inputMode="numeric" placeholder="vd 55" value={costs.cau} onChange={ci("cau")} /></div>
+                  </div>
+                  <div className="row" style={{ marginTop: 8 }}>
+                    <div><label className="label">Nước (nghìn)</label><input className="input num" inputMode="numeric" placeholder="vd 23" value={costs.nuoc} onChange={ci("nuoc")} /></div>
+                    <div><label className="label">Khác (nghìn)</label><input className="input num" inputMode="numeric" placeholder="0" value={costs.khac} onChange={ci("khac")} /></div>
+                  </div>
+                  <div className="hint">Gõ theo nghìn: 230 = 230.000đ.</div>
+
+                  <div className="sumbar">
+                    <div className="sumbox"><div className="k">Tổng</div><div className="v num">{fmt(total)}</div></div>
+                    <div className="sumbox"><div className="k">Mỗi người ({n})</div><div className="v num" style={{ color: "var(--court)" }}>{fmt(per)}</div></div>
+                  </div>
+
+                  <div className="row" style={{ marginTop: 14 }}>
+                    <button className="btn btn-ghost" onClick={onClose} disabled={saving}>Huỷ</button>
+                    <button className="btn btn-primary" onClick={save} disabled={saving}><Check size={16} /> {saving ? "Đang lưu…" : "Lưu"}</button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="sumbar">
+                    <div className="sumbox"><div className="k">Mỗi người</div><div className="v num">{fmt(view.per)}</div></div>
+                    <div className="sumbox"><div className="k">Đã thu</div><div className="v num">{fmt(collected)}</div></div>
+                    <div className="sumbox"><div className="k">Còn thiếu</div><div className="v num" style={{ color: owed ? "var(--unpaid)" : "var(--paid)" }}>{fmt(owed)}</div></div>
+                  </div>
+                  <div className="prog"><i style={{ width: `${view.n ? (paidCount / view.n) * 100 : 0}%` }} /></div>
+                  <div className="hint">Tổng {fmt(view.total)} · {view.n} người{view.surplus > 0 ? ` · dư quỹ ${fmt(view.surplus)}` : ""}</div>
+
+                  <div className="row" style={{ marginTop: 14 }}>
+                    <button className="btn btn-ghost" onClick={() => setEditing(true)}><Pencil size={16} /> Sửa</button>
+                    <button className="btn btn-ghost danger" onClick={() => { if (confirm("Xoá buổi này?")) { delSession(session.id); onClose(); } }}><Trash2 size={16} /> Xoá</button>
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* PHẢI: người chơi */}
+            <div className="pane">
+              <div className="eyebrow">{editing ? `Ai có chơi? (${n})` : `Người chơi (${view.n})`}</div>
+
+              <div className="search" style={{ marginTop: 8 }}>
+                <Search size={16} />
+                <input className="input" placeholder="Tìm tên…" value={search} onChange={(e) => setSearch(e.target.value)} />
+              </div>
+
+              {editing && (
+                <div className="row" style={{ marginTop: 8 }}>
+                  <input className="input" placeholder="Thêm người mới…" value={adding} style={{ flex: 3 }}
+                    onChange={(e) => setAdding(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addNew()} />
+                  <button className="btn btn-ghost" style={{ flex: 1 }} onClick={addNew}><UserPlus size={16} /></button>
+                </div>
+              )}
+
+              <div className="players">
+                {editing ? (
+                  shown.length === 0
+                    ? <div className="hint" style={{ padding: "10px 0" }}>Không khớp “{search}”.</div>
+                    : shown.map((nm) => (
+                      <div className={`chip ${picked.includes(nm) ? "on" : ""}`} key={nm} onClick={() => toggle(nm)}>
+                        <span className="box">{picked.includes(nm) && <Check size={14} />}</span><span className="nm">{nm}</span>
+                      </div>
+                    ))
+                ) : (
+                  attShown.map((a) => (
+                    <div className="payrow" key={a.id}>
+                      <div style={{ flex: 1 }}>
+                        <div className="pay-nm">{a.name}</div>
+                        <div className="pay-amt num">{fmt(view.per)}</div>
+                      </div>
+                      <button className="icon-btn" title="QR / nội dung CK"
+                        onClick={() => openQr({ name: a.name, amount: view.per, content: code(a.name), paid: a.paid, markPaid: () => { if (!a.paid) togglePaid(a); } })}>
+                        <QrCode size={18} />
+                      </button>
+                      <button className={`pill ${a.paid ? "paid" : "unpaid"}`} onClick={() => togglePaid(a)}>
+                        {a.paid ? <><Check size={14} /> Đã trả</> : "Chưa trả"}
+                      </button>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
         </div>
-      )}
-
-      <div className="row" style={{ marginTop: 14 }}>
-        <button className="btn btn-ghost" onClick={onCancel} disabled={saving}>Huỷ</button>
-        <button className="btn btn-primary" onClick={save} disabled={saving}><Check size={16} /> {saving ? "Đang lưu…" : "Lưu"}</button>
       </div>
     </div>
   );
