@@ -404,7 +404,7 @@ function SessionModal({ mode, session, att, rosterNames, prefillNames, admin, ad
                         <div className="pay-amt num">{fmt(view.per)}</div>
                       </div>
                       <button className="icon-btn" title="QR / nội dung CK"
-                        onClick={() => openQr({ name: a.name, amount: view.per, content: code(a.name), paid: a.paid, markPaid: () => { if (!a.paid) setPaidMethod(a, "momo"); } })}>
+                        onClick={() => openQr({ name: a.name, amount: view.per, content: code(a.name), paid: a.paid, markPaid: (method) => { if (!a.paid) setPaidMethod(a, method); } })}>
                         <QrCode size={18} />
                       </button>
                       {a.paid ? (
@@ -556,10 +556,14 @@ function QrSheet({ info, bank, onClose }) {
           {info.paid || done ? (
             <div className="btn btn-ghost btn-block" style={{ color: "var(--paid)" }}><Check size={16} /> Đã đánh dấu đã trả</div>
           ) : (
-            <button className="btn btn-primary btn-block"
-              onClick={() => { info.markPaid?.(); setDone(true); }}>
-              <Check size={16} /> Mình đã chuyển xong — đánh dấu đã trả
-            </button>
+            <>
+              <div className="label" style={{ marginBottom: 6 }}>Mình đã chuyển xong bằng:</div>
+              <div className="row">
+                <button className="btn btn-primary" onClick={() => { info.markPaid?.("momo"); setDone(true); }}>MoMo</button>
+                <button className="btn btn-primary" onClick={() => { info.markPaid?.("bank"); setDone(true); }}>Ngân hàng</button>
+                <button className="btn btn-primary" onClick={() => { info.markPaid?.("cash"); setDone(true); }}>Tiền mặt</button>
+              </div>
+            </>
           )}
           <div className="hint">App không tự biết bạn đã chuyển hay chưa — bạn tự xác nhận, hoặc host chỉnh lại trong danh sách.</div>
         </div>
