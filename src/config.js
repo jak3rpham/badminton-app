@@ -18,5 +18,5 @@ export const config = {
 
   // 4) Mã admin (PIN). Host nhập mã này để mở khoá tạo/sửa/xoá buổi + Cài đặt.
   //    Để trống ("") nếu muốn AI CŨNG sửa được (không phân quyền).
-  adminPin: "",   // vd: "2468"
+  adminPin: "2000",   // vd: "2468"
 };
