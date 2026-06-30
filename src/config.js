@@ -15,4 +15,8 @@ export const config = {
 
   // 3) Dòng ghi chú hiển thị dưới ảnh QR.
   qrNote: "Quét mã QR, hoặc bấm “Mở MoMo” bên dưới.",
+
+  // 4) Mã admin (PIN). Host nhập mã này để mở khoá tạo/sửa/xoá buổi + Cài đặt.
+  //    Để trống ("") nếu muốn AI CŨNG sửa được (không phân quyền).
+  adminPin: "",   // vd: "2468"
 };

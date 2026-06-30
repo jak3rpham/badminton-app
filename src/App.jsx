@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import {
   Plus, Trash2, Users, Settings, CalendarDays, Check, Copy,
-  QrCode, X, ChevronRight, UserPlus, Wallet, Pencil, Search
+  QrCode, X, ChevronRight, UserPlus, Wallet, Pencil, Search, Lock, LockOpen
 } from "lucide-react";
 import { supabase, hasConfig } from "./supabase.js";
 import { config } from "./config.js";
@@ -54,6 +54,16 @@ export default function App() {
   const [attendees, setAttendees] = useState([]);
   const [bank, setBank] = useState({});
   const [qr, setQr] = useState(null);
+  const [admin, setAdmin] = useState(() => {
+    if (!config.adminPin) return true; // không đặt PIN => ai cũng sửa được
+    try { return localStorage.getItem("bl_admin") === "1"; } catch { return false; }
+  });
+  const toggleAdmin = () => {
+    if (admin) { setAdmin(false); try { localStorage.removeItem("bl_admin"); } catch {} return; }
+    const p = window.prompt("Nhập mã admin");
+    if (p === config.adminPin) { setAdmin(true); try { localStorage.setItem("bl_admin", "1"); } catch {} }
+    else if (p !== null) window.alert("Sai mã.");
+  };
 
   const fetchAll = useCallback(async () => {
     if (!supabase) return;
@@ -114,6 +124,8 @@ export default function App() {
 
   const delSession = async (id) => { await supabase.from("sessions").delete().eq("id", id); fetchAll(); };
   const togglePaid = async (a) => { await supabase.from("attendees").update({ paid: !a.paid }).eq("id", a.id); fetchAll(); };
+  const setPaidMethod = async (a, method) => { await supabase.from("attendees").update({ paid: true, method }).eq("id", a.id); fetchAll(); };
+  const unpay = async (a) => { await supabase.from("attendees").update({ paid: false, method: null }).eq("id", a.id); fetchAll(); };
   const saveBank = async (patch) => {
     const next = { ...bank, ...patch, id: 1 };
     setBank(next);
@@ -138,22 +150,30 @@ export default function App() {
   return (
     <div className="bl-root">
       <div className="bl-head">
-        <div className="bl-title"><Shuttle s={24} /> Chia tiền cầu lông</div>
-        <div className="bl-sub">Tick người chơi · chia đều · theo dõi ai đã chuyển</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div className="bl-title" style={{ flex: 1 }}><Shuttle s={24} /> Chia tiền cầu lông</div>
+          {config.adminPin && (
+            <button className="icon-btn" style={{ color: "#fff" }} onClick={toggleAdmin}
+              title={admin ? "Đang ở chế độ admin — bấm để khoá" : "Mở khoá admin"}>
+              {admin ? <LockOpen size={20} /> : <Lock size={20} />}
+            </button>
+          )}
+        </div>
+        <div className="bl-sub">{admin ? "Tick người chơi · chia đều · theo dõi ai đã chuyển" : "Bấm vào buổi chơi để thanh toán"}</div>
       </div>
 
       <div className="bl-wrap">
         {err && <div className="card" style={{ borderColor: "var(--unpaid)", color: "var(--unpaid)" }}>Lỗi: {err}</div>}
         {tab === "sessions" &&
-          <Sessions {...{ sessions, attendees, members, addSession, updateSession, delSession, togglePaid, addMember }} openQr={setQr} />}
-        {tab === "roster" && <Roster {...{ members, addMember, delMember }} />}
-        {tab === "settings" && <SettingsTab {...{ bank, saveBank }} />}
+          <Sessions {...{ sessions, attendees, members, addSession, updateSession, delSession, togglePaid, setPaidMethod, unpay, addMember, admin }} openQr={setQr} />}
+        {tab === "roster" && admin && <Roster {...{ members, addMember, delMember }} />}
+        {tab === "settings" && admin && <SettingsTab {...{ bank, saveBank }} />}
       </div>
 
       <div className="bl-tabs">
         <Tab id="sessions" cur={tab} set={setTab} icon={<CalendarDays size={20} />} label="Buổi chơi" />
-        <Tab id="roster" cur={tab} set={setTab} icon={<Users size={20} />} label="Thành viên" />
-        <Tab id="settings" cur={tab} set={setTab} icon={<Settings size={20} />} label="Cài đặt" />
+        {admin && <Tab id="roster" cur={tab} set={setTab} icon={<Users size={20} />} label="Thành viên" />}
+        {admin && <Tab id="settings" cur={tab} set={setTab} icon={<Settings size={20} />} label="Cài đặt" />}
       </div>
 
       {qr && <QrSheet info={qr} bank={bank} onClose={() => setQr(null)} />}
@@ -172,7 +192,7 @@ function Tab({ id, cur, set, icon, label }) {
 
 /* ───────────── sessions ───────────── */
 
-function Sessions({ sessions, attendees, members, addSession, updateSession, delSession, togglePaid, addMember, openQr }) {
+function Sessions({ sessions, attendees, members, addSession, updateSession, delSession, togglePaid, setPaidMethod, unpay, addMember, admin, openQr }) {
   const [modal, setModal] = useState(null); // null | {mode:'create'} | {mode:'view', id}
   const attOf = (sid) => attendees.filter((a) => a.session_id === sid);
   const rosterNames = members.map((m) => m.name);
@@ -181,9 +201,11 @@ function Sessions({ sessions, attendees, members, addSession, updateSession, del
 
   return (
     <>
-      <button className="btn btn-primary btn-block" style={{ marginTop: 16 }} onClick={() => setModal({ mode: "create" })}>
-        <Plus size={18} /> Tạo buổi chơi mới
-      </button>
+      {admin && (
+        <button className="btn btn-primary btn-block" style={{ marginTop: 16 }} onClick={() => setModal({ mode: "create" })}>
+          <Plus size={18} /> Tạo buổi chơi mới
+        </button>
+      )}
 
       {sessions.length === 0 &&
         <div className="empty">Chưa có buổi nào.<br />Bấm “Tạo buổi chơi mới” để bắt đầu.</div>}
@@ -215,8 +237,10 @@ function Sessions({ sessions, attendees, members, addSession, updateSession, del
           att={openSession ? attOf(openSession.id) : []}
           rosterNames={rosterNames}
           prefillNames={lastNames}
+          admin={admin}
           addSession={addSession} updateSession={updateSession}
-          delSession={delSession} togglePaid={togglePaid} addMember={addMember}
+          delSession={delSession} togglePaid={togglePaid}
+          setPaidMethod={setPaidMethod} unpay={unpay} addMember={addMember}
           openQr={openQr}
           onClose={() => setModal(null)}
         />
@@ -225,10 +249,12 @@ function Sessions({ sessions, attendees, members, addSession, updateSession, del
   );
 }
 
-function SessionModal({ mode, session, att, rosterNames, prefillNames, addSession, updateSession, delSession, togglePaid, addMember, openQr, onClose }) {
+function SessionModal({ mode, session, att, rosterNames, prefillNames, admin, addSession, updateSession, delSession, togglePaid, setPaidMethod, unpay, addMember, openQr, onClose }) {
   const isCreate = mode === "create";
-  const [editing, setEditing] = useState(isCreate);
+  const [editing, setEditing] = useState(isCreate && admin);
   const [saving, setSaving] = useState(false);
+  const [pickId, setPickId] = useState(null);
+  const METHOD = { momo: "MoMo", bank: "Bank", cash: "Tiền mặt" };
 
   const toK = (v) => (v ? String(Math.round(v / 1000)) : "");
   const [date, setDate] = useState(session?.date || todayISO());
@@ -334,10 +360,12 @@ function SessionModal({ mode, session, att, rosterNames, prefillNames, addSessio
                   <div className="prog"><i style={{ width: `${view.n ? (paidCount / view.n) * 100 : 0}%` }} /></div>
                   <div className="hint">Tổng {fmt(view.total)} · {view.n} người{view.surplus > 0 ? ` · dư quỹ ${fmt(view.surplus)}` : ""}</div>
 
-                  <div className="row" style={{ marginTop: 14 }}>
-                    <button className="btn btn-ghost" onClick={() => setEditing(true)}><Pencil size={16} /> Sửa</button>
-                    <button className="btn btn-ghost danger" onClick={() => { if (confirm("Xoá buổi này?")) { delSession(session.id); onClose(); } }}><Trash2 size={16} /> Xoá</button>
-                  </div>
+                  {admin && (
+                    <div className="row" style={{ marginTop: 14 }}>
+                      <button className="btn btn-ghost" onClick={() => setEditing(true)}><Pencil size={16} /> Sửa</button>
+                      <button className="btn btn-ghost danger" onClick={() => { if (confirm("Xoá buổi này?")) { delSession(session.id); onClose(); } }}><Trash2 size={16} /> Xoá</button>
+                    </div>
+                  )}
                 </>
               )}
             </div>
@@ -376,12 +404,22 @@ function SessionModal({ mode, session, att, rosterNames, prefillNames, addSessio
                         <div className="pay-amt num">{fmt(view.per)}</div>
                       </div>
                       <button className="icon-btn" title="QR / nội dung CK"
-                        onClick={() => openQr({ name: a.name, amount: view.per, content: code(a.name), paid: a.paid, markPaid: () => { if (!a.paid) togglePaid(a); } })}>
+                        onClick={() => openQr({ name: a.name, amount: view.per, content: code(a.name), paid: a.paid, markPaid: () => { if (!a.paid) setPaidMethod(a, "momo"); } })}>
                         <QrCode size={18} />
                       </button>
-                      <button className={`pill ${a.paid ? "paid" : "unpaid"}`} onClick={() => togglePaid(a)}>
-                        {a.paid ? <><Check size={14} /> Đã trả</> : "Chưa trả"}
-                      </button>
+                      {a.paid ? (
+                        <button className="pill paid" onClick={() => unpay(a)}>
+                          <Check size={14} /> Đã trả{a.method ? ` · ${METHOD[a.method] || a.method}` : ""}
+                        </button>
+                      ) : pickId === a.id ? (
+                        <div style={{ display: "flex", gap: 4 }}>
+                          <button className="pill unpaid" style={{ padding: "7px 9px" }} onClick={() => { setPaidMethod(a, "momo"); setPickId(null); }}>MoMo</button>
+                          <button className="pill unpaid" style={{ padding: "7px 9px" }} onClick={() => { setPaidMethod(a, "bank"); setPickId(null); }}>Bank</button>
+                          <button className="pill unpaid" style={{ padding: "7px 9px" }} onClick={() => { setPaidMethod(a, "cash"); setPickId(null); }}>Tiền</button>
+                        </div>
+                      ) : (
+                        <button className="pill unpaid" onClick={() => setPickId(a.id)}>Chưa trả</button>
+                      )}
                     </div>
                   ))
                 )}
