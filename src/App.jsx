@@ -243,7 +243,12 @@ function SessionCard({ s, att, rosterNames, open, toggle, onUpdate, onDelete, to
                   <div className="pay-amt num">{fmt(per)}</div>
                 </div>
                 <button className="icon-btn" title="QR / nội dung CK"
-                  onClick={() => openQr({ name: a.name, amount: per, content: `CL ${noTone(a.name)} ${s.date.slice(8)}${s.date.slice(5, 7)}` })}>
+                  onClick={() => openQr({
+                    name: a.name, amount: per,
+                    content: `CL ${noTone(a.name)} ${s.date.slice(8)}${s.date.slice(5, 7)}`,
+                    paid: a.paid,
+                    markPaid: () => { if (!a.paid) togglePaid(a); },
+                  })}>
                   <QrCode size={18} />
                 </button>
                 <button className={`pill ${a.paid ? "paid" : "unpaid"}`} onClick={() => togglePaid(a)}>
@@ -396,6 +401,10 @@ function SettingsTab({ bank, saveBank }) {
         <div className="field"><label className="label">Số MoMo (tuỳ chọn)</label>
           <input className="input num" inputMode="numeric" placeholder="Cho ai muốn trả qua MoMo"
             value={bank.momo || ""} onChange={(e) => saveBank({ momo: e.target.value.replace(/\D/g, "") })} /></div>
+        <div className="field"><label className="label">Link nhận tiền MoMo (tuỳ chọn)</label>
+          <input className="input" placeholder="https://nhantien.momo.vn/..."
+            value={bank.momo_link || ""} onChange={(e) => saveBank({ momo_link: e.target.value.trim() })} />
+          <div className="hint">Trong app MoMo: Yêu cầu chuyển tiền → “Link nhận tiền của tôi” → copy dán vào đây. Sẽ có nút “Mở MoMo” cho từng người.</div></div>
       </div>
       <div className="card">
         <div className="card-h">Dữ liệu nhóm</div>
@@ -410,6 +419,7 @@ function SettingsTab({ bank, saveBank }) {
 function QrSheet({ info, bank, onClose }) {
   const [copied, setCopied] = useState("");
   const [imgOk, setImgOk] = useState(true);
+  const [done, setDone] = useState(false);
   const hasBank = bank?.bank_code && bank?.account;
   const qrUrl = hasBank
     ? `https://img.vietqr.io/image/${bank.bank_code}-${bank.account}-compact2.png?amount=${info.amount}&addInfo=${encodeURIComponent(info.content)}&accountName=${encodeURIComponent(bank.holder || "")}`
@@ -428,6 +438,13 @@ function QrSheet({ info, bank, onClose }) {
               {hasBank ? "Không tải được ảnh QR — dùng thông tin bên dưới." : "Chưa cài tài khoản nhận tiền (tab Cài đặt)."}
             </div>}
 
+        {bank?.momo_link && (
+          <a className="btn btn-primary btn-block" style={{ marginTop: 4, textDecoration: "none" }}
+            href={bank.momo_link} target="_blank" rel="noreferrer">
+            Mở MoMo để trả {fmt(info.amount)}
+          </a>
+        )}
+
         {hasBank && (
           <div className="copybox">
             <span className="t">{BANKS.find((x) => x.code === bank.bank_code)?.name} · {bank.account}</span>
@@ -444,6 +461,18 @@ function QrSheet({ info, bank, onClose }) {
           <button className="icon-btn" onClick={() => copy(info.content, "nd")}>
             {copied === "nd" ? <Check size={16} color="#1f7a52" /> : <Copy size={16} />}</button></div>
         <div className="hint">Nội dung chuyển khoản — copy gửi vô nhóm để host dễ đối chiếu.</div>
+
+        <div style={{ marginTop: 14 }}>
+          {info.paid || done ? (
+            <div className="btn btn-ghost btn-block" style={{ color: "var(--paid)" }}><Check size={16} /> Đã đánh dấu đã trả</div>
+          ) : (
+            <button className="btn btn-primary btn-block"
+              onClick={() => { info.markPaid?.(); setDone(true); }}>
+              <Check size={16} /> Mình đã chuyển xong — đánh dấu đã trả
+            </button>
+          )}
+          <div className="hint">App không tự biết bạn đã chuyển hay chưa — bạn tự xác nhận, hoặc host chỉnh lại trong danh sách.</div>
+        </div>
       </div>
     </div>
   );
