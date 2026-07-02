@@ -6,7 +6,7 @@ export const config = {
   // 1) Link nút "Mở MoMo". Lấy trong app MoMo:
   //    Yêu cầu chuyển tiền → "Link nhận tiền của tôi" → Sao chép.
   //    Để trống ("") nếu chưa có thì nút sẽ tự ẩn.
-  momoLink: "https://me.momo.vn/vKfWfZskF3fMtlf2",   // vd: "https://nhantien.momo.vn/xxxxxxxx"
+  momoLink: "https://me.momo.vn/64IxTEsGspuOFpidFGCBsB",   // vd: "https://nhantien.momo.vn/xxxxxxxx"
 
   // 2) Ảnh QR tĩnh để mọi người quét (vd ảnh QR MoMo của host).
   //    Bỏ file ảnh vào thư mục public/ rồi ghi ĐÚNG tên file ở đây.
