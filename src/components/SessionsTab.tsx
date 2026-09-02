@@ -3,17 +3,12 @@ import {
   CalendarDays, 
   Search, 
   Plus, 
-  MapPin, 
   Clock, 
-  Users, 
   CheckCircle2, 
   AlertCircle, 
-  ChevronRight,
-  Filter,
-  ArrowUpDown
 } from 'lucide-react';
 import { Session, BankConfig } from '../types';
-import { formatVND, formatDateVietnamese, formatShortDate, getInitials } from '../utils/format';
+import { formatVND, formatDateVietnamese, getInitials } from '../utils/format';
 
 interface SessionsTabProps {
   sessions: Session[];
@@ -49,22 +44,22 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
-    <div className="space-y-6 pb-20 animate-fadeIn">
+    <div className="space-y-5 pb-24 animate-fadeIn">
       
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
             Danh Sách Buổi Chơi
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            Tổng cộng {sessions.length} buổi chơi đã được ghi nhận trong hệ thống
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            Tổng cộng {sessions.length} buổi chơi đã được lưu trữ trên Supabase
           </p>
         </div>
 
         <button
           onClick={onOpenCreateSession}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 hover:to-teal-300 text-slate-950 text-xs sm:text-sm font-extrabold shadow-lg shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow-md shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer"
         >
           <Plus className="w-4 h-4 stroke-[3]" />
           <span>Tạo Buổi Chơi Mới</span>
@@ -79,15 +74,15 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
-            placeholder="Tìm theo tên buổi chơi, sân cầu hoặc tên người tham gia..."
+            placeholder="Tìm theo ngày chơi hoặc tên người tham gia..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl glass-input text-xs sm:text-sm font-medium placeholder:text-slate-500"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white border border-slate-300 text-slate-900 text-xs sm:text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-xs"
           />
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-white"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-700"
             >
               Xóa
             </button>
@@ -95,11 +90,11 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
         </div>
 
         {/* Filter by status */}
-        <div className="flex bg-slate-900 p-1 rounded-2xl border border-slate-800 shrink-0">
+        <div className="flex bg-slate-100 p-1 rounded-2xl border border-slate-200 shrink-0">
           <button
             onClick={() => setFilterStatus('all')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              filterStatus === 'all' ? 'bg-emerald-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
+              filterStatus === 'all' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Tất cả ({sessions.length})
@@ -107,7 +102,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
           <button
             onClick={() => setFilterStatus('unpaid')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              filterStatus === 'unpaid' ? 'bg-amber-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
+              filterStatus === 'unpaid' ? 'bg-amber-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Còn nợ
@@ -115,7 +110,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
           <button
             onClick={() => setFilterStatus('paid')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              filterStatus === 'paid' ? 'bg-emerald-500 text-slate-950 shadow-sm' : 'text-slate-400 hover:text-white'
+              filterStatus === 'paid' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Đã thu đủ
@@ -131,80 +126,73 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
             const unpaidParticipants = session.participants.filter(p => p.status !== 'paid');
             const isFullyPaid = unpaidParticipants.length === 0;
             const paidCount = session.participants.length - unpaidParticipants.length;
-            const paidProgress = Math.round((paidCount / session.participants.length) * 100);
+            const paidProgress = Math.round((paidCount / (session.participants.length || 1)) * 100);
 
-            const totalUnpaidAmount = unpaidParticipants.reduce((sum, p) => sum + (p.calculatedAmount - (p.paidAmount || 0)), 0);
+            const totalUnpaidAmount = unpaidParticipants.length * (session.perPersonCost || 0);
 
             return (
               <div
                 key={session.id}
                 onClick={() => onSelectSession(session)}
-                className="rounded-3xl glass-card border border-slate-800/90 p-5 sm:p-6 hover:border-emerald-500/40 hover:bg-slate-900/90 transition-all cursor-pointer shadow-lg flex flex-col justify-between group"
+                className="rounded-3xl bg-white border border-slate-200 p-5 sm:p-6 hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer shadow-xs flex flex-col justify-between group"
               >
                 <div>
-                  {/* Top Header inside card */}
                   <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="text-xs font-bold text-emerald-400 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                    <span className="text-xs font-bold text-emerald-800 px-3 py-1 rounded-full bg-emerald-100 border border-emerald-200">
                       {formatDateVietnamese(session.date)}
                     </span>
-                    <span className="text-xs text-slate-400 font-medium flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5" />
-                      {session.startTime} - {session.endTime}
+                    <span className="text-xs font-black text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-lg">
+                      {formatVND(session.perPersonCost || 0)} / người
                     </span>
                   </div>
 
-                  <h3 className="text-base sm:text-lg font-bold text-white group-hover:text-emerald-300 transition-colors">
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
                     {session.title}
                   </h3>
-
-                  <p className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                    <span className="truncate">{session.courtName}</span>
-                  </p>
 
                   {/* Attendees Avatars */}
                   <div className="mt-4 flex items-center justify-between">
                     <div className="flex items-center -space-x-2 overflow-hidden py-1">
-                      {session.participants.slice(0, 5).map((p, idx) => (
+                      {session.participants.slice(0, 6).map((p) => (
                         <div
                           key={p.id}
-                          className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-white text-[10px] border-2 border-slate-900 shadow-sm"
+                          className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-white text-[10px] border-2 border-white shadow-xs"
                           style={{ backgroundColor: p.avatarColor }}
                           title={`${p.name} (${p.status === 'paid' ? 'Đã trả' : 'Còn nợ'})`}
                         >
                           {getInitials(p.name)}
                         </div>
                       ))}
-                      {session.participants.length > 5 && (
-                        <div className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-slate-300 text-[10px] bg-slate-800 border-2 border-slate-900">
-                          +{session.participants.length - 5}
+                      {session.participants.length > 6 && (
+                        <div className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-slate-600 text-[10px] bg-slate-100 border-2 border-white">
+                          +{session.participants.length - 6}
                         </div>
                       )}
                     </div>
 
-                    <span className="text-xs text-slate-400 font-medium">
+                    <span className="text-xs text-slate-500 font-medium">
                       {session.participants.length} người chơi
                     </span>
                   </div>
                 </div>
 
                 {/* Bottom Footer inside card */}
-                <div className="mt-5 pt-4 border-t border-slate-800/80">
+                <div className="mt-5 pt-4 border-t border-slate-100">
                   <div className="flex items-center justify-between mb-2">
                     <div>
-                      <span className="text-[10px] text-slate-500 uppercase font-bold block">Tổng chi phí</span>
-                      <span className="text-base font-black text-white">{formatVND(session.totalExpense)}</span>
+                      <span className="text-[10px] text-slate-400 uppercase font-bold block">Tổng chi phí</span>
+                      <span className="text-sm sm:text-base font-black text-slate-900">{formatVND(session.totalExpense)}</span>
                     </div>
 
                     <div className="text-right">
-                      <span className="text-[10px] text-slate-500 uppercase font-bold block">Tình trạng</span>
+                      <span className="text-[10px] text-slate-400 uppercase font-bold block">Tình trạng</span>
                       {isFullyPaid ? (
-                        <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
+                        <span className="text-xs font-bold text-emerald-700 flex items-center gap-1">
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           <span>Thu đủ 100%</span>
                         </span>
                       ) : (
-                        <span className="text-xs font-bold text-amber-400 flex items-center gap-1">
+                        <span className="text-xs font-bold text-rose-600 flex items-center gap-1">
                           <AlertCircle className="w-3.5 h-3.5" />
                           <span>Còn nợ {formatVND(totalUnpaidAmount)}</span>
                         </span>
@@ -213,10 +201,10 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
                   </div>
 
                   {/* Mini Progress Bar */}
-                  <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                  <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
                     <div 
                       style={{ width: `${paidProgress}%` }}
-                      className={`h-full transition-all ${isFullyPaid ? 'bg-emerald-500' : 'bg-amber-400'}`}
+                      className={`h-full transition-all ${isFullyPaid ? 'bg-emerald-500' : 'bg-rose-500'}`}
                     />
                   </div>
                 </div>
@@ -225,10 +213,10 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
           })}
         </div>
       ) : (
-        <div className="rounded-3xl glass-card border border-slate-800 p-10 text-center flex flex-col items-center justify-center">
-          <CalendarDays className="w-12 h-12 text-slate-600 mb-3" />
-          <h3 className="text-base font-bold text-white">Không tìm thấy buổi chơi nào</h3>
-          <p className="text-xs text-slate-400 mt-1">Hãy tạo buổi chơi mới hoặc thay đổi từ khóa tìm kiếm</p>
+        <div className="rounded-3xl bg-white border border-slate-200 p-10 text-center flex flex-col items-center justify-center shadow-xs">
+          <CalendarDays className="w-12 h-12 text-slate-400 mb-3" />
+          <h3 className="text-base font-bold text-slate-800">Không tìm thấy buổi chơi nào</h3>
+          <p className="text-xs text-slate-500 mt-1">Hãy tạo buổi chơi mới hoặc thay đổi từ khóa tìm kiếm</p>
         </div>
       )}
 

@@ -15,7 +15,6 @@ import {
   deleteSessionInSupabase, 
   addMemberInSupabase, 
   deleteMemberInSupabase,
-  updateAttendeePaidInSupabase
 } from './utils/supabaseData';
 import { supabase } from './utils/supabase';
 import { Navbar } from './components/Navbar';
@@ -138,13 +137,12 @@ export const App: React.FC = () => {
     try {
       await createSessionInSupabase({
         date: newSession.date,
-        cost_san: newSession.cost_san || (newSession.totalCourtHours || 2) * (newSession.courtRatePerHour || 0),
-        cost_cau: newSession.cost_cau || (newSession.shuttleCount || 0) * (newSession.shuttlePricePerUnit || 0),
-        cost_nuoc: newSession.cost_nuoc || (newSession.otherExpenses || 0),
+        cost_san: newSession.cost_san || 0,
+        cost_cau: newSession.cost_cau || 0,
+        cost_nuoc: newSession.cost_nuoc || 0,
         cost_khac: newSession.cost_khac || 0,
         attendeeNames: newSession.participants.map(p => p.name),
       });
-      // Reload to get generated Supabase UUIDs
       loadData();
     } catch (err) {
       console.warn('Sync to Supabase warning:', err);
@@ -195,7 +193,6 @@ export const App: React.FC = () => {
     }
   };
 
-  // Handle Restore all data
   const handleRestoreData = (newSessions: Session[], newMembers: Member[], newBankConfig: BankConfig) => {
     handleUpdateSessions(newSessions);
     handleUpdateMembers(newMembers);
@@ -212,7 +209,7 @@ export const App: React.FC = () => {
   const totalUnpaidAmount = debtSummaries.reduce((sum, item) => sum + item.totalDebt, 0);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-emerald-500/30 selection:text-emerald-300">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col selection:bg-emerald-500/20 selection:text-emerald-900 font-sans">
       
       {/* Navigation Header */}
       <Navbar
@@ -225,18 +222,18 @@ export const App: React.FC = () => {
 
       {/* Supabase Status Indicator Banner */}
       <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-3 flex items-center justify-between text-[11px]">
-        <div className="flex items-center gap-2">
-          <span className={`w-2 h-2 rounded-full ${isSupabaseConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
-          <span className="text-slate-400">
+        <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-full border border-slate-200 shadow-2xs">
+          <span className={`w-2 h-2 rounded-full ${isSupabaseConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+          <span className="text-slate-600 font-medium">
             {isSupabaseConnected ? (
-              <span>Đang kết nối <strong className="text-emerald-400">Supabase Cloud (Realtime)</strong></span>
+              <span>Đã kết nối <strong className="text-emerald-700">Supabase Cloud (Realtime)</strong></span>
             ) : (
               <span>Chế độ lưu trữ Offline / Local</span>
             )}
           </span>
         </div>
-        <span className="text-slate-500 hidden sm:inline">
-          Dữ liệu đồng bộ với <span className="text-slate-400 font-mono">badminton-app-weld.vercel.app</span>
+        <span className="text-slate-400 hidden sm:inline">
+          Dữ liệu an toàn & đồng bộ thời gian thực
         </span>
       </div>
 

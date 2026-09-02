@@ -4,97 +4,66 @@
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-100 font-sans min-h-screen antialiased selection:bg-emerald-500/30 selection:text-emerald-300;
+    @apply bg-slate-50 text-slate-900 font-sans min-h-screen antialiased selection:bg-emerald-500/20 selection:text-emerald-900;
   }
 }
 
-/* Custom Scrollbar */
+/* Custom Clean Scrollbar for Light Theme */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: #f1f5f9;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.6);
+  background: #cbd5e1;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(16, 185, 129, 0.5);
+  background: #10b981;
 }
 
-/* Glassmorphism Classes */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.75);
+/* Light Glass & Card Tokens */
+.glass-panel-light {
+  background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.9);
 }
 
-.glass-card {
-  background: rgba(30, 41, 59, 0.65);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+.glass-card-light {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease-in-out;
 }
 
-.glass-card-hover {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+.glass-card-light:hover {
+  border-color: #a7f3d0;
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
 }
 
-.glass-card-hover:hover {
-  transform: translateY(-2px);
-  border-color: rgba(16, 185, 129, 0.3);
-  box-shadow: 0 12px 30px -10px rgba(16, 185, 129, 0.15);
+.glass-input-light {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #0f172a;
 }
 
-.glass-input {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(51, 65, 85, 0.8);
-  color: #f8fafc;
-}
-
-.glass-input:focus {
+.glass-input-light:focus {
   outline: none;
   border-color: #10B981;
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
 }
 
-/* Badminton court badge gradient */
-.badge-court {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.15));
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  color: #34d399;
+/* Safe areas for iOS mobile notch */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
 }
 
-.badge-debt {
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(245, 158, 11, 0.15));
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #f87171;
-}
-
-.badge-paid {
-  background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(16, 185, 129, 0.15));
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  color: #4ade80;
-}
-
-/* Pulsing dot animation */
-@keyframes subtle-pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: scale(0.95);
-  }
-}
-
-.animate-subtle-pulse {
-  animation: subtle-pulse 2.5s infinite ease-in-out;
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
 }

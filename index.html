@@ -1,18 +1,33 @@
 <!doctype html>
-<html lang="vi" class="dark">
+<html lang="vi">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2310B981'><circle cx='12' cy='5' r='3'/><path d='M12 8L6 20h12L12 8z' opacity='0.7'/><path d='M8 16h8'/></svg>" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Badminton Pay & Debt Ledger | Quản Lý Chi Phí & Sổ Nợ Cầu Lông</title>
-    <meta name="description" content="Ứng dụng quản lý chi phí chơi cầu lông, tính toán chia tiền thông minh và theo dõi sổ nợ tổng hợp qua mọi game." />
-    <!-- Fonts -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231f7a52'><circle cx='12' cy='5' r='3'/><path d='M12 8L6 20h12L12 8z' opacity='0.85'/><path d='M8 16h8' stroke='white' stroke-width='1.5'/></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#1f7a52" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Cầu Lông Pay" />
+    <title>Chia Tiền Cầu Lông & Sổ Nợ Tập Trung</title>
+    <meta name="description" content="Ứng dụng chia tiền cầu lông, tính toán chi phí chính xác và quản lý sổ nợ tổng hợp qua mọi game." />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   </head>
-  <body class="bg-slate-950 text-slate-100 min-h-screen antialiased selection:bg-emerald-500 selection:text-white">
+  <body class="bg-slate-50 text-slate-900 min-h-screen antialiased selection:bg-emerald-500/20 selection:text-emerald-800">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>

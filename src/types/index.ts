@@ -11,7 +11,7 @@ export interface Participant {
   avatarColor: string;
   hoursPlayed?: number;
   customAmount?: number;
-  calculatedAmount: number;
+  calculatedAmount: number; // Tiền mỗi người (per)
   paidAmount: number;
   status: PaymentStatus;
   method?: PaymentMethod | null;
@@ -46,7 +46,9 @@ export interface Session {
   shuttlePricePerUnit?: number;
   otherExpenses?: number;
   expenses: ExpenseItem[];
-  totalExpense: number;
+  totalExpense: number; // Tổng chi phí thực tế (sân + cầu + nước + khác)
+  perPersonCost?: number; // Tiền mỗi người sau làm tròn (Math.ceil(total / n / 1000) * 1000)
+  surplus?: number; // Tiền dôi dư do làm tròn (per * n - total)
   participants: Participant[];
   notes?: string;
   createdAt?: string;
@@ -88,7 +90,7 @@ export interface PlayerDebtSummary {
   participantName: string;
   memberId?: string;
   avatarColor: string;
-  totalDebt: number;
+  totalDebt: number; // Tổng nợ qua tất cả các buổi
   totalSessionsInvolved: number;
   unpaidSessionsCount: number;
   debtDetails: DebtDetailItem[];

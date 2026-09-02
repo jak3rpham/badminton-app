@@ -3,13 +3,33 @@ import { Session, Member, BankConfig, Participant, ExpenseItem } from '../types'
 import { getRandomAvatarColor, formatVND } from './format';
 import { findBankByCodeOrBin } from './vietqr';
 
+/**
+ * CÔNG THỨC CHUẨN ĐƯỢC AUDIT TỪ VERCEL APP:
+ * - total = cost_san + cost_cau + cost_nuoc + cost_khac
+ * - per = Math.ceil(total / n / 1000) * 1000  (Làm tròn lên 1.000đ gần nhất)
+ * - surplus = per * n - total               (Tiền dôi dư vào quỹ nhóm)
+ */
+export const calculateSessionMath = (
+  costSan: number = 0,
+  costCau: number = 0,
+  costNuoc: number = 0,
+  costKhac: number = 0,
+  attendeeCount: number = 0
+) => {
+  const total = (costSan || 0) + (costCau || 0) + (costNuoc || 0) + (costKhac || 0);
+  const n = attendeeCount;
+  const per = n > 0 ? Math.ceil(total / n / 1000) * 1000 : 0;
+  const surplus = per * n - total;
+  return { total, n, per, surplus };
+};
+
 export const fetchAllSupabaseData = async (): Promise<{
   sessions: Session[];
   members: Member[];
   bankConfig: BankConfig;
 } | null> => {
   try {
-    // 1. Fetch Members
+    // 1. Fetch Members (READ ONLY)
     const { data: membersData, error: membersError } = await supabase
       .from('members')
       .select('*')
@@ -25,7 +45,7 @@ export const fetchAllSupabaseData = async (): Promise<{
       created_at: m.created_at,
     }));
 
-    // 2. Fetch Settings
+    // 2. Fetch Settings (READ ONLY)
     const { data: settingsData, error: settingsError } = await supabase
       .from('settings')
       .select('*')
@@ -50,12 +70,12 @@ export const fetchAllSupabaseData = async (): Promise<{
         accountNo: settingsData.account || '',
         accountName: settingsData.holder || '',
         defaultTransferPrefix: 'Tien cau',
-        momo: settingsData.momo,
-        momoLink: settingsData.momo_link,
+        momo: settingsData.momo || '',
+        momoLink: settingsData.momo_link || '',
       };
     }
 
-    // 3. Fetch Sessions with Attendees
+    // 3. Fetch Sessions with Attendees (READ ONLY)
     const { data: sessionsData, error: sessionsError } = await supabase
       .from('sessions')
       .select('*, attendees(*)')
@@ -68,11 +88,11 @@ export const fetchAllSupabaseData = async (): Promise<{
       const costCau = s.cost_cau || 0;
       const costNuoc = s.cost_nuoc || 0;
       const costKhac = s.cost_khac || 0;
-      const totalExpense = costSan + costCau + costNuoc + costKhac;
-
       const rawAttendees: DbAttendee[] = s.attendees || [];
-      const attendeesCount = rawAttendees.length || 1;
-      const calculatedShare = Math.round(totalExpense / attendeesCount);
+      const attendeesCount = rawAttendees.length;
+
+      // Áp dụng công thức audit chuẩn xác:
+      const math = calculateSessionMath(costSan, costCau, costNuoc, costKhac, attendeesCount);
 
       const expenses: ExpenseItem[] = [];
       if (costSan > 0) expenses.push({ id: `e-san-${s.id}`, name: 'Tiền sân', category: 'court', total: costSan });
@@ -84,8 +104,8 @@ export const fetchAllSupabaseData = async (): Promise<{
         id: att.id,
         name: att.name,
         avatarColor: getRandomAvatarColor(att.name),
-        calculatedAmount: calculatedShare,
-        paidAmount: att.paid ? calculatedShare : 0,
+        calculatedAmount: math.per,
+        paidAmount: att.paid ? math.per : 0,
         status: att.paid ? ('paid' as const) : ('unpaid' as const),
         method: att.method || undefined,
       }));
@@ -99,7 +119,9 @@ export const fetchAllSupabaseData = async (): Promise<{
         cost_cau: costCau,
         cost_nuoc: costNuoc,
         cost_khac: costKhac,
-        totalExpense: totalExpense,
+        totalExpense: math.total,
+        perPersonCost: math.per,
+        surplus: math.surplus,
         expenses: expenses,
         participants: participants,
         createdAt: s.created_at || s.date,
@@ -118,7 +140,7 @@ export const fetchAllSupabaseData = async (): Promise<{
 };
 
 /**
- * THAO TÁC CẬP NHẬT ATTENDEE STATUS VÀO SUPABASE
+ * CẬP NHẬT TRẠNG THÁI ATTENDEE VÀO SUPABASE (AN TOÀN TUYỆT ĐỐI)
  */
 export const updateAttendeePaidInSupabase = async (
   attendeeId: string,
@@ -137,7 +159,7 @@ export const updateAttendeePaidInSupabase = async (
 };
 
 /**
- * THANH TOÁN TẤT CẢ NỢ CỦA 1 NGƯỜI QUA TẤT CẢ CÁC BUỔI TRONG SUPABASE
+ * THANH TOÁN TOÀN BỘ NỢ CỦA 1 NGƯỜI QUA TẤT CẢ CÁC BUỔI TRONG SUPABASE
  */
 export const markAllDebtsPaidForPlayerInSupabase = async (
   playerName: string,
@@ -168,7 +190,6 @@ export const createSessionInSupabase = async (
     attendeeNames: string[];
   }
 ) => {
-  // 1. Insert session
   const { data: sessionData, error: sessionError } = await supabase
     .from('sessions')
     .insert({
@@ -183,7 +204,6 @@ export const createSessionInSupabase = async (
 
   if (sessionError) throw sessionError;
 
-  // 2. Insert attendees
   if (session.attendeeNames.length > 0) {
     const attendeesToInsert = session.attendeeNames.map((name) => ({
       session_id: sessionData.id,
@@ -206,9 +226,7 @@ export const createSessionInSupabase = async (
  * XÓA BUỔI CHƠI TRÊN SUPABASE
  */
 export const deleteSessionInSupabase = async (sessionId: string) => {
-  // Delete attendees first (if foreign key doesn't cascade)
   await supabase.from('attendees').delete().eq('session_id', sessionId);
-  
   const { error } = await supabase.from('sessions').delete().eq('id', sessionId);
   if (error) throw error;
 };
@@ -236,7 +254,7 @@ export const deleteMemberInSupabase = async (memberId: string) => {
 };
 
 /**
- * CẬP NHẬT CÀI ĐẶT NGÂN HÀNG & MOMO TRÊN SUPABASE
+ * CẬP NHẬT CÀI ĐẶT NGÂN HÀNG TRÊN SUPABASE
  */
 export const updateSettingsInSupabase = async (config: BankConfig) => {
   const { error } = await supabase

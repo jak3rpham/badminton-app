@@ -1,0 +1,21 @@
+{
+  "name": "Chia tiền cầu lông & Sổ Nợ",
+  "short_name": "Cầu Lông Pay",
+  "description": "Ứng dụng chia tiền cầu lông và theo dõi sổ nợ tổng hợp qua mọi game",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#1f7a52",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='128' fill='%231f7a52'/><circle cx='256' cy='180' r='60' fill='white'/><path d='M256 240 L160 400 L352 400 Z' fill='white' opacity='0.85'/><path d='M200 340 L312 340' stroke='%231f7a52' stroke-width='16'/></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='128' fill='%231f7a52'/><circle cx='256' cy='180' r='60' fill='white'/><path d='M256 240 L160 400 L352 400 Z' fill='white' opacity='0.85'/><path d='M200 340 L312 340' stroke='%231f7a52' stroke-width='16'/></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
