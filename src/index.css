@@ -76,9 +76,9 @@
   box-shadow: 0 0 0 3px rgba(31, 122, 82, 0.12);
 }
 
-/* Safe areas for iOS mobile notch */
+/* Safe areas for iOS mobile notch & Home Indicator */
 .pb-safe {
-  padding-bottom: env(safe-area-inset-bottom, 16px);
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 10px);
 }
 
 .pt-safe {
