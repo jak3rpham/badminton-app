@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Trash2, Check, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Trash2, Check, Sparkles, UserCheck, RotateCcw } from 'lucide-react';
 import { Session, Member, Participant, ExpenseItem } from '../types';
 import { getRandomAvatarColor, formatVND } from '../utils/format';
 import { calculateSessionMath } from '../utils/supabaseData';
@@ -8,25 +8,41 @@ interface CreateSessionModalProps {
   isOpen: boolean;
   onClose: () => void;
   members: Member[];
+  lastSession?: Session | null;
   onSaveSession: (session: Session) => void;
 }
+
+// Hàm kiểm tra và loại bỏ các tên vãng lai, +1, +2 khỏi danh sách chọn nhanh để tránh làm loãng
+const isTemporaryOrGuestName = (name: string) => {
+  const lower = name.toLowerCase().trim();
+  // Khớp các mẫu như "+1", "+2", "+ 1", "vãng lai", "khách", "bạn..."
+  return (
+    /\+\s*\d+/.test(lower) ||
+    lower.includes('vãng lai') ||
+    lower.includes('vang lai') ||
+    lower.includes('khách') ||
+    lower.includes('guest') ||
+    lower.startsWith('bạn ')
+  );
+};
 
 export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
   isOpen,
   onClose,
   members,
+  lastSession,
   onSaveSession,
 }) => {
   const todayStr = new Date().toISOString().split('T')[0];
 
   // Form states
   const [date, setDate] = useState(todayStr);
-  const [costSan, setCostSan] = useState<number>(108000);
-  const [costCau, setCostCau] = useState<number>(121000);
-  const [costNuoc, setCostNuoc] = useState<number>(30000);
-  const [costKhac, setCostKhac] = useState<number>(0);
+  const [costSan, setCostSan] = useState<number>(() => lastSession?.cost_san || 108000);
+  const [costCau, setCostCau] = useState<number>(() => lastSession?.cost_cau || 121000);
+  const [costNuoc, setCostNuoc] = useState<number>(() => lastSession?.cost_nuoc || 0);
+  const [costKhac, setCostKhac] = useState<number>(() => lastSession?.cost_khac || 0);
 
-  // Selected participants
+  // Selected participants state: Tự động lấy danh sách người chơi từ buổi trước (lastSession)
   const [selectedParticipants, setSelectedParticipants] = useState<
     Array<{
       id: string;
@@ -34,14 +50,40 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
       name: string;
       avatarColor: string;
     }>
-  >(() => {
-    return members.slice(0, 8).map((m) => ({
-      id: 'p-' + Math.random().toString(36).substr(2, 9),
-      memberId: m.id,
-      name: m.name,
-      avatarColor: m.avatarColor,
-    }));
-  });
+  >([]);
+
+  // Tự động load danh sách từ buổi chơi trước khi mở modal
+  useEffect(() => {
+    if (isOpen) {
+      setDate(new Date().toISOString().split('T')[0]);
+      if (lastSession && lastSession.participants && lastSession.participants.length > 0) {
+        // Tự động sao chép danh sách người chơi từ buổi gần nhất
+        setSelectedParticipants(
+          lastSession.participants.map((p) => ({
+            id: 'p-' + Math.random().toString(36).substr(2, 9),
+            memberId: p.memberId,
+            name: p.name,
+            avatarColor: p.avatarColor || getRandomAvatarColor(p.name),
+          }))
+        );
+        setCostSan(lastSession.cost_san || 108000);
+        setCostCau(lastSession.cost_cau || 121000);
+        setCostNuoc(lastSession.cost_nuoc || 0);
+        setCostKhac(lastSession.cost_khac || 0);
+      } else if (members.length > 0) {
+        // Nếu chưa có buổi nào trước đó, lấy các thành viên chính thức đầu tiên
+        const regularMembers = members.filter((m) => !isTemporaryOrGuestName(m.name));
+        setSelectedParticipants(
+          regularMembers.slice(0, 6).map((m) => ({
+            id: 'p-' + Math.random().toString(36).substr(2, 9),
+            memberId: m.id,
+            name: m.name,
+            avatarColor: m.avatarColor,
+          }))
+        );
+      }
+    }
+  }, [isOpen, lastSession]);
 
   // Custom guest player input
   const [guestName, setGuestName] = useState('');
@@ -57,9 +99,11 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
   const handleToggleMember = (member: Member) => {
     const exists = selectedParticipants.some((p) => p.name.toLowerCase() === member.name.toLowerCase());
     if (exists) {
-      setSelectedParticipants(prev => prev.filter((p) => p.name.toLowerCase() !== member.name.toLowerCase()));
+      setSelectedParticipants((prev) =>
+        prev.filter((p) => p.name.toLowerCase() !== member.name.toLowerCase())
+      );
     } else {
-      setSelectedParticipants(prev => [
+      setSelectedParticipants((prev) => [
         ...prev,
         {
           id: 'p-' + Math.random().toString(36).substr(2, 9),
@@ -71,10 +115,10 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
     }
   };
 
-  // Add guest player
+  // Add guest player / +1 / +2 dynamically
   const handleAddGuest = () => {
     if (!guestName.trim()) return;
-    setSelectedParticipants(prev => [
+    setSelectedParticipants((prev) => [
       ...prev,
       {
         id: 'p-' + Math.random().toString(36).substr(2, 9),
@@ -87,7 +131,21 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
 
   // Remove participant
   const handleRemoveParticipant = (id: string) => {
-    setSelectedParticipants(prev => prev.filter(p => p.id !== id));
+    setSelectedParticipants((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  // Reset to last session's attendees
+  const handleResetToLastSession = () => {
+    if (lastSession && lastSession.participants) {
+      setSelectedParticipants(
+        lastSession.participants.map((p) => ({
+          id: 'p-' + Math.random().toString(36).substr(2, 9),
+          memberId: p.memberId,
+          name: p.name,
+          avatarColor: p.avatarColor || getRandomAvatarColor(p.name),
+        }))
+      );
+    }
   };
 
   // Handle Save
@@ -107,7 +165,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
     if (costNuoc > 0) expenses.push({ id: 'exp-3', name: 'Tiền nước', category: 'drinks', total: costNuoc });
     if (costKhac > 0) expenses.push({ id: 'exp-4', name: 'Khác', category: 'other', total: costKhac });
 
-    const participants: Participant[] = selectedParticipants.map(p => ({
+    const participants: Participant[] = selectedParticipants.map((p) => ({
       id: p.id,
       memberId: p.memberId,
       name: p.name,
@@ -138,13 +196,14 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
     onClose();
   };
 
-  const filteredMembersList = members.filter(m => 
-    m.name.toLowerCase().includes(memberFilter.toLowerCase().trim())
-  );
+  // Lọc bỏ +1, +2, vãng lai khỏi danh sách chọn nhanh để tránh làm loãng
+  const filteredMembersList = members
+    .filter((m) => !isTemporaryOrGuestName(m.name))
+    .filter((m) => m.name.toLowerCase().includes(memberFilter.toLowerCase().trim()));
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#1D2620]/60 backdrop-blur-xs overflow-y-auto animate-fadeIn">
-      <div 
+      <div
         className="relative w-full max-w-2xl bg-[#FAF8F5] border border-[#E4DFD3] rounded-t-3xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
@@ -154,8 +213,12 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-[#1D2620]">Tạo Buổi Chơi Cầu Lông Mới</h2>
-              <p className="text-xs text-[#5C695E]">Tự động chia tiền & làm tròn số tiền mỗi người</p>
+              <h2 className="text-lg font-black text-[#1D2620]">Tạo Buổi Chơi Mới</h2>
+              <p className="text-xs text-[#5C695E]">
+                {lastSession
+                  ? 'Đã tự động lấy danh sách người chơi từ buổi gần nhất'
+                  : 'Tự động tính tiền & chia đều theo đầu người'}
+              </p>
             </div>
           </div>
           <button
@@ -167,7 +230,6 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
         </div>
 
         <form onSubmit={handleSave} className="space-y-4 my-3 overflow-y-auto pr-1 flex-1">
-          
           {/* Date Picker */}
           <div>
             <label className="block text-xs font-bold text-[#4F5D51] uppercase tracking-wider mb-1">
@@ -246,35 +308,56 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
               </div>
 
               <div className="text-right">
-                <span className="text-[#7A8A7C] block text-[10px]">Mỗi người ({attendeeCount} người):</span>
-                <span className="font-black text-[#1F7A52] text-sm sm:text-base">{formatVND(math.per)}</span>
+                <span className="text-[#7A8A7C] block text-[10px]">
+                  Mỗi người ({attendeeCount} người):
+                </span>
+                <span className="font-black text-[#1F7A52] text-sm sm:text-base">
+                  {formatVND(math.per)}
+                </span>
                 {math.surplus > 0 && (
-                  <span className="text-[10px] text-[#7A8A7C] block">+ {formatVND(math.surplus)} vào quỹ nhóm</span>
+                  <span className="text-[10px] text-[#7A8A7C] block">
+                    + {formatVND(math.surplus)} vào quỹ nhóm
+                  </span>
                 )}
               </div>
             </div>
-
           </div>
 
           {/* Participants Selection */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-black text-[#1D2620] uppercase tracking-wider">
-                Chọn Thành Viên Tham Gia ({selectedParticipants.length} người)
-              </h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-black text-[#1D2620] uppercase tracking-wider">
+                  Người Tham Gia ({selectedParticipants.length} người)
+                </h3>
+                {lastSession && (
+                  <button
+                    type="button"
+                    onClick={handleResetToLastSession}
+                    className="text-[11px] font-semibold text-[#1F7A52] hover:underline flex items-center gap-1 cursor-pointer"
+                    title="Lấy lại danh sách buổi trước"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Buổi trước</span>
+                  </button>
+                )}
+              </div>
+
               <input
                 type="text"
-                placeholder="Lọc tên..."
+                placeholder="Lọc tên cố định..."
                 value={memberFilter}
                 onChange={(e) => setMemberFilter(e.target.value)}
-                className="px-2.5 py-1 rounded-xl bg-white border border-[#D8D2C2] text-xs w-28 focus:w-36 transition-all text-[#1D2620]"
+                className="px-2.5 py-1 rounded-xl bg-white border border-[#D8D2C2] text-xs w-32 focus:w-40 transition-all text-[#1D2620]"
               />
             </div>
 
-            {/* Quick Member Selector Pills */}
+            {/* Quick Member Selector Pills (Đã lọc sạch các vãng lai / +1 / +2) */}
             <div className="flex flex-wrap gap-1.5 p-2.5 rounded-2xl bg-[#F5F2E9] border border-[#E4DFD3] max-h-36 overflow-y-auto">
               {filteredMembersList.map((member) => {
-                const isSelected = selectedParticipants.some((p) => p.name.toLowerCase() === member.name.toLowerCase());
+                const isSelected = selectedParticipants.some(
+                  (p) => p.name.toLowerCase() === member.name.toLowerCase()
+                );
                 return (
                   <button
                     key={member.id}
@@ -293,14 +376,19 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
               })}
             </div>
 
-            {/* Add Guest Player */}
+            {/* Add Guest Player / +1 / +2 */}
             <div className="flex gap-2">
               <input
                 type="text"
-                placeholder="Thêm khách ngoài (VD: Bạn anh Vũ)..."
+                placeholder="Thêm khách vãng lai (VD: Tuấn +1, Bạn anh Vũ)..."
                 value={guestName}
                 onChange={(e) => setGuestName(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddGuest(); } }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    handleAddGuest();
+                  }
+                }}
                 className="flex-1 px-3 py-2 rounded-xl bg-white border border-[#D8D2C2] text-xs font-medium text-[#1D2620] focus:border-[#1F7A52]"
               />
               <button
@@ -313,7 +401,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
             </div>
 
             {/* Selected Participants List */}
-            <div className="space-y-1.5 max-h-32 overflow-y-auto pr-1">
+            <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
               {selectedParticipants.map((p, idx) => (
                 <div
                   key={p.id}
@@ -331,7 +419,8 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                     <button
                       type="button"
                       onClick={() => handleRemoveParticipant(p.id)}
-                      className="p-1 text-[#7A8A7C] hover:text-[#C53030] transition-colors"
+                      className="p-1 text-[#7A8A7C] hover:text-[#C53030] transition-colors cursor-pointer"
+                      title="Xóa khỏi buổi này"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -339,7 +428,6 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                 </div>
               ))}
             </div>
-
           </div>
 
           {/* Submit buttons */}
@@ -358,7 +446,6 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
               Tạo Buổi Chơi
             </button>
           </div>
-
         </form>
       </div>
     </div>

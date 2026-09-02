@@ -219,12 +219,22 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#5C695E] uppercase tracking-wider">
-                Người Tham Gia ({paidCount}/{session.participants.length} đã trả):
+                Danh Sách Người Chơi ({paidCount}/{session.participants.length} đã trả):
+              </span>
+              <span className="text-[11px] text-[#C53030] font-bold">
+                {session.participants.length - paidCount > 0 ? `Còn ${session.participants.length - paidCount} người chưa trả` : 'Đã thu đủ 100%'}
               </span>
             </div>
 
             <div className="space-y-2">
-              {session.participants.map((p) => {
+              {[...session.participants]
+                .sort((a, b) => {
+                  // Cứ có nợ / chưa trả là lên đầu hết
+                  if (a.status !== 'paid' && b.status === 'paid') return -1;
+                  if (a.status === 'paid' && b.status !== 'paid') return 1;
+                  return a.name.localeCompare(b.name, 'vi');
+                })
+                .map((p) => {
                 const isPaid = p.status === 'paid';
                 const isSelecting = activePaymentSelect === p.id;
 

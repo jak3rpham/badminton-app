@@ -190,9 +190,6 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
             <h1 className="text-2xl sm:text-3xl font-black text-[#1D2620] tracking-tight">
               Sổ Nợ & Truy Thu Tiền Cầu
             </h1>
-            <p className="text-[#5C695E] text-xs sm:text-sm mt-1 max-w-xl">
-              Gom nhóm tự động tất cả các buổi chơi chưa thanh toán của từng thành viên. Tạo mã VietQR/MoMo và tin nhắn nhắc nợ chỉ trong 1 chạm.
-            </p>
           </div>
 
           {/* Quick Action Button */}

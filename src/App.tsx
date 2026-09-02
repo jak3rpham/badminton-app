@@ -277,6 +277,7 @@ export const App: React.FC = () => {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         members={members}
+        lastSession={sessions.length > 0 ? sessions[0] : null}
         onSaveSession={handleAddSession}
       />
 
