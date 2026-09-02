@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
 import { 
   X, 
-  MapPin, 
   CheckCircle2, 
   QrCode, 
   Share2, 
@@ -64,7 +63,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
       particleCount: 70,
       spread: 60,
       origin: { y: 0.6 },
-      colors: ['#059669', '#0284c7', '#d97706']
+      colors: ['#1F7A52', '#0284C7', '#D97706']
     });
   };
 
@@ -143,30 +142,30 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#1D2620]/60 backdrop-blur-xs overflow-y-auto animate-fadeIn">
       <div 
-        className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-t-3xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col"
+        className="relative w-full max-w-2xl bg-[#FAF8F5] border border-[#E4DFD3] rounded-t-3xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-start justify-between pb-4 border-b border-slate-100">
+        <div className="flex items-start justify-between pb-4 border-b border-[#EBE7DC]">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-bold text-emerald-800 px-2.5 py-0.5 rounded-full bg-emerald-100 border border-emerald-200">
+              <span className="text-xs font-bold text-[#1F7A52] px-2.5 py-0.5 rounded-full bg-[#E6F4EA] border border-[#D1EAD5]">
                 {formatDateVietnamese(session.date)}
               </span>
-              <span className="text-xs font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">
+              <span className="text-xs font-black text-[#1F7A52] bg-[#EFF7F0] px-2 py-0.5 rounded border border-[#D1EAD5]">
                 {formatVND(perPerson)} / người
               </span>
             </div>
-            <h2 className="text-lg sm:text-2xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-lg sm:text-2xl font-black text-[#1D2620] tracking-tight">
               {session.title}
             </h2>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
+            className="p-2 text-[#7A8A7C] hover:text-[#1D2620] rounded-xl hover:bg-[#ECE8DC] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -175,43 +174,43 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
         {/* Content Body */}
         <div className="space-y-4 my-4 overflow-y-auto pr-1 flex-1">
           
-          {/* Quick Metrics Bar (Light Theme) */}
-          <div className="grid grid-cols-3 gap-2.5 sm:gap-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+          {/* Quick Metrics Bar (Warm Theme) */}
+          <div className="grid grid-cols-3 gap-2.5 sm:gap-3 bg-[#F5F2E9] p-3.5 rounded-2xl border border-[#E4DFD3]">
             <div className="text-center">
-              <span className="text-[10px] uppercase font-bold text-slate-400 block">Tổng chi phí</span>
-              <span className="text-xs sm:text-base font-black text-slate-900">{formatVND(session.totalExpense)}</span>
+              <span className="text-[10px] uppercase font-bold text-[#7A8A7C] block">Tổng chi phí</span>
+              <span className="text-xs sm:text-base font-black text-[#1D2620]">{formatVND(session.totalExpense)}</span>
             </div>
-            <div className="text-center border-x border-slate-200">
-              <span className="text-[10px] uppercase font-bold text-slate-400 block">Đã thu</span>
-              <span className="text-xs sm:text-base font-black text-emerald-600">{formatVND(totalPaid)}</span>
+            <div className="text-center border-x border-[#DDD7C9]">
+              <span className="text-[10px] uppercase font-bold text-[#7A8A7C] block">Đã thu</span>
+              <span className="text-xs sm:text-base font-black text-[#1F7A52]">{formatVND(totalPaid)}</span>
             </div>
             <div className="text-center">
-              <span className="text-[10px] uppercase font-bold text-slate-400 block">Còn nợ</span>
-              <span className="text-xs sm:text-base font-black text-rose-600">{formatVND(totalUnpaid)}</span>
+              <span className="text-[10px] uppercase font-bold text-[#7A8A7C] block">Còn nợ</span>
+              <span className="text-xs sm:text-base font-black text-[#C53030]">{formatVND(totalUnpaid)}</span>
             </div>
           </div>
 
           {/* Expense Breakdown List */}
           <div className="space-y-2">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider block">
+            <span className="text-xs font-bold text-[#5C695E] uppercase tracking-wider block">
               Các Khoản Chi ({session.expenses.length} khoản):
             </span>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                <span className="text-slate-400 block text-[10px]">Tiền sân:</span>
-                <span className="font-bold text-slate-800">{formatVND(session.cost_san || 0)}</span>
+              <div className="p-2.5 rounded-xl bg-[#F5F2E9] border border-[#E4DFD3] text-xs">
+                <span className="text-[#7A8A7C] block text-[10px]">Tiền sân:</span>
+                <span className="font-bold text-[#1D2620]">{formatVND(session.cost_san || 0)}</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                <span className="text-slate-400 block text-[10px]">Tiền cầu:</span>
-                <span className="font-bold text-slate-800">{formatVND(session.cost_cau || 0)}</span>
+              <div className="p-2.5 rounded-xl bg-[#F5F2E9] border border-[#E4DFD3] text-xs">
+                <span className="text-[#7A8A7C] block text-[10px]">Tiền cầu:</span>
+                <span className="font-bold text-[#1D2620]">{formatVND(session.cost_cau || 0)}</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                <span className="text-slate-400 block text-[10px]">Tiền nước:</span>
-                <span className="font-bold text-slate-800">{formatVND(session.cost_nuoc || 0)}</span>
+              <div className="p-2.5 rounded-xl bg-[#F5F2E9] border border-[#E4DFD3] text-xs">
+                <span className="text-[#7A8A7C] block text-[10px]">Tiền nước:</span>
+                <span className="font-bold text-[#1D2620]">{formatVND(session.cost_nuoc || 0)}</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                <span className="text-slate-400 block text-[10px]">Khác:</span>
-                <span className="font-bold text-slate-800">{formatVND(session.cost_khac || 0)}</span>
+              <div className="p-2.5 rounded-xl bg-[#F5F2E9] border border-[#E4DFD3] text-xs">
+                <span className="text-[#7A8A7C] block text-[10px]">Khác:</span>
+                <span className="font-bold text-[#1D2620]">{formatVND(session.cost_khac || 0)}</span>
               </div>
             </div>
           </div>
@@ -219,7 +218,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
           {/* Participants Status List */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              <span className="text-xs font-bold text-[#5C695E] uppercase tracking-wider">
                 Người Tham Gia ({paidCount}/{session.participants.length} đã trả):
               </span>
             </div>
@@ -234,8 +233,8 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                     key={p.id}
                     className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-2xl border transition-all ${
                       isPaid 
-                        ? 'bg-emerald-50/40 border-emerald-200/80' 
-                        : 'bg-white border-slate-200 shadow-2xs'
+                        ? 'bg-[#EFF7F0] border-[#D1EAD5]' 
+                        : 'bg-[#FAF8F5] border-[#E4DFD3] shadow-2xs'
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -247,17 +246,17 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-slate-900 text-xs sm:text-sm">{p.name}</span>
-                          <span className={`text-[10px] px-2 py-0.2 rounded-full font-bold ${
+                          <span className="font-bold text-[#1D2620] text-xs sm:text-sm">{p.name}</span>
+                          <span className={`text-[10px] px-2.5 py-0.2 rounded-full font-bold ${
                             isPaid 
-                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' 
-                              : 'bg-rose-100 text-rose-700 border border-rose-200'
+                              ? 'bg-[#E6F4EA] text-[#1F7A52] border border-[#D1EAD5]' 
+                              : 'bg-[#FFF1F0] text-[#C53030] border border-[#FCDAD7]'
                           }`}>
                             {isPaid ? `Đã trả ${p.method ? `(${p.method})` : ''}` : 'Chưa trả'}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-500 mt-0.5">
-                          Số tiền: <span className="text-slate-900 font-bold">{formatVND(p.calculatedAmount)}</span>
+                        <p className="text-[11px] text-[#5C695E] mt-0.5">
+                          Số tiền: <span className="text-[#1D2620] font-bold">{formatVND(p.calculatedAmount)}</span>
                         </p>
                       </div>
                     </div>
@@ -266,7 +265,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                       {!isPaid && (
                         <button
                           onClick={() => handleOpenPlayerQR(p)}
-                          className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-emerald-700 border border-slate-200 text-xs font-semibold cursor-pointer"
+                          className="p-2 rounded-xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#1F7A52] border border-[#DDD7C9] text-xs font-semibold cursor-pointer"
                           title="Tạo mã QR VietQR"
                         >
                           <QrCode className="w-4 h-4" />
@@ -276,34 +275,34 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                       {isPaid ? (
                         <button
                           onClick={() => handleToggleParticipantStatus(p.id, false)}
-                          className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                          className="px-3 py-1.5 rounded-xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#5C695E] hover:text-[#1D2620] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
                         >
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-[#1F7A52]" />
                           <span>Đã trả (Hủy)</span>
                         </button>
                       ) : isSelecting ? (
-                        <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl border border-emerald-300 animate-fadeIn">
+                        <div className="flex items-center gap-1 p-1 bg-[#ECE8DC] rounded-xl border border-[#DDD7C9] animate-fadeIn">
                           <button
                             onClick={() => handleToggleParticipantStatus(p.id, true, 'bank')}
-                            className="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold cursor-pointer"
+                            className="px-2 py-1 rounded-lg bg-[#1A73E8] hover:bg-[#1557B0] text-white text-[11px] font-bold cursor-pointer"
                           >
                             Bank
                           </button>
                           <button
                             onClick={() => handleToggleParticipantStatus(p.id, true, 'momo')}
-                            className="px-2 py-1 rounded-lg bg-pink-600 hover:bg-pink-700 text-white text-[11px] font-bold cursor-pointer"
+                            className="px-2 py-1 rounded-lg bg-[#D82D8B] hover:bg-[#B31D6F] text-white text-[11px] font-bold cursor-pointer"
                           >
                             MoMo
                           </button>
                           <button
                             onClick={() => handleToggleParticipantStatus(p.id, true, 'cash')}
-                            className="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold cursor-pointer"
+                            className="px-2 py-1 rounded-lg bg-[#1F7A52] hover:bg-[#186241] text-white text-[11px] font-bold cursor-pointer"
                           >
                             Tiền mặt
                           </button>
                           <button
                             onClick={() => setActivePaymentSelect(null)}
-                            className="px-1 text-[11px] text-slate-400"
+                            className="px-1 text-[11px] text-[#7A8A7C]"
                           >
                             ✕
                           </button>
@@ -311,7 +310,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                       ) : (
                         <button
                           onClick={() => setActivePaymentSelect(p.id)}
-                          className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                          className="px-3 py-1.5 rounded-xl bg-[#1F7A52] hover:bg-[#186241] text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
                         >
                           <Check className="w-3.5 h-3.5 stroke-[3]" />
                           <span>Thu tiền</span>
@@ -327,7 +326,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="pt-3 border-t border-slate-100 flex flex-wrap gap-2.5 justify-between">
+        <div className="pt-3 border-t border-[#EBE7DC] flex flex-wrap gap-2.5 justify-between">
           <button
             onClick={() => {
               if (confirm('Bạn có chắc chắn muốn xóa buổi chơi này không?')) {
@@ -335,7 +334,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                 onClose();
               }
             }}
-            className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-[#FFF1F0] hover:bg-[#FFE3E0] text-[#C53030] border border-[#FCDAD7] text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
           >
             <Trash2 className="w-4 h-4" />
             <span>Xóa buổi chơi</span>
@@ -344,14 +343,14 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
           <div className="flex gap-2">
             <button
               onClick={handleCopyBill}
-              className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#1D2620] text-xs font-bold flex items-center gap-1.5 cursor-pointer"
             >
-              <Share2 className="w-4 h-4 text-emerald-600" />
+              <Share2 className="w-4 h-4 text-[#1F7A52]" />
               <span>Sao chép Bill Zalo</span>
             </button>
             <button
               onClick={onClose}
-              className="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold cursor-pointer"
+              className="px-5 py-2 rounded-xl bg-[#1F7A52] hover:bg-[#186241] text-white text-xs font-extrabold cursor-pointer"
             >
               Xong
             </button>

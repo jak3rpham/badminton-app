@@ -2,61 +2,78 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --bg-page: #F5F3EC;       /* Nền màu kem cát ấm dịu mắt (Warm Linen Sand) */
+  --bg-card: #FAF8F5;       /* Thẻ màu trắng sứ ngà ấm (Warm Porcelain) */
+  --bg-card-subtle: #EDEAE0; /* Khối con phân tách nhẹ nhàng */
+  --border-card: #E4DFD3;   /* Viền mềm mại tự nhiên */
+  --text-main: #1D2620;     /* Chữ sẫm màu rêu đen êm dịu, không gắt */
+  --text-muted: #5C695E;    /* Chữ phụ màu xám cỏ khô nhã nhặn */
+  --brand-forest: #1F7A52;  /* Xanh lá rừng thể thao đậm */
+  --brand-sage: #D5E8D8;    /* Xanh xô thơm dịu */
+}
+
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 font-sans min-h-screen antialiased selection:bg-emerald-500/20 selection:text-emerald-900;
+    background-color: var(--bg-page);
+    color: var(--text-main);
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    selection-background-color: #D5E8D8;
+    selection-color: #1F7A52;
   }
 }
 
-/* Custom Clean Scrollbar for Light Theme */
+/* Custom Soothing Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #ECE9DF;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #C8C2B4;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #10b981;
+  background: #1F7A52;
 }
 
-/* Light Glass & Card Tokens */
-.glass-panel-light {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(226, 232, 240, 0.9);
+/* Soft Cards & Glass */
+.soft-card {
+  background: #FAF8F5;
+  border: 1px solid #E4DFD3;
+  box-shadow: 0 2px 8px -2px rgba(45, 55, 48, 0.04), 0 1px 3px -1px rgba(45, 55, 48, 0.02);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.glass-card-light {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
-  transition: all 0.2s ease-in-out;
+.soft-card:hover {
+  border-color: #B5D6BB;
+  box-shadow: 0 8px 20px -4px rgba(31, 122, 82, 0.08);
 }
 
-.glass-card-light:hover {
-  border-color: #a7f3d0;
-  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+.soft-glass {
+  background: rgba(245, 243, 236, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-color: #E4DFD3;
 }
 
-.glass-input-light {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  color: #0f172a;
+.soft-input {
+  background: #FFFFFF;
+  border: 1px solid #D8D2C2;
+  color: #1D2620;
 }
 
-.glass-input-light:focus {
+.soft-input:focus {
   outline: none;
-  border-color: #10B981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+  border-color: #1F7A52;
+  box-shadow: 0 0 0 3px rgba(31, 122, 82, 0.12);
 }
 
 /* Safe areas for iOS mobile notch */

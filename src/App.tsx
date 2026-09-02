@@ -209,7 +209,7 @@ export const App: React.FC = () => {
   const totalUnpaidAmount = debtSummaries.reduce((sum, item) => sum + item.totalDebt, 0);
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col selection:bg-emerald-500/20 selection:text-emerald-900 font-sans">
+    <div className="min-h-screen bg-[#F5F3EC] text-[#1D2620] flex flex-col selection:bg-[#D5E8D8] selection:text-[#1F7A52] font-sans">
       
       {/* Navigation Header */}
       <Navbar

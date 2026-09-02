@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Plus, Trash2, Check, Sparkles } from 'lucide-react';
+import { X, Trash2, Check, Sparkles } from 'lucide-react';
 import { Session, Member, Participant, ExpenseItem } from '../types';
 import { getRandomAvatarColor, formatVND } from '../utils/format';
 import { calculateSessionMath } from '../utils/supabaseData';
@@ -143,24 +143,24 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#1D2620]/60 backdrop-blur-xs overflow-y-auto animate-fadeIn">
       <div 
-        className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-t-3xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col"
+        className="relative w-full max-w-2xl bg-[#FAF8F5] border border-[#E4DFD3] rounded-t-3xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="flex items-center justify-between pb-3 border-b border-[#EBE7DC]">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-emerald-100 text-emerald-700">
+            <div className="p-2 rounded-xl bg-[#E6F4EA] text-[#1F7A52]">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-900">Tạo Buổi Chơi Cầu Lông Mới</h2>
-              <p className="text-xs text-slate-500">Tự động tính tiền mỗi người & đồng bộ Supabase</p>
+              <h2 className="text-lg font-black text-[#1D2620]">Tạo Buổi Chơi Cầu Lông Mới</h2>
+              <p className="text-xs text-[#5C695E]">Tự động chia tiền & làm tròn số tiền mỗi người</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
+            className="p-2 text-[#7A8A7C] hover:text-[#1D2620] rounded-xl hover:bg-[#ECE8DC] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -170,7 +170,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
           
           {/* Date Picker */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-[#4F5D51] uppercase tracking-wider mb-1">
               Ngày Chơi *
             </label>
             <input
@@ -178,78 +178,78 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
               required
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm font-semibold focus:outline-none focus:bg-white focus:border-emerald-500 shadow-2xs"
+              className="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-[#D8D2C2] text-[#1D2620] text-xs sm:text-sm font-semibold focus:outline-none focus:border-[#1F7A52] shadow-2xs"
             />
           </div>
 
           {/* Expenses Calculation Section */}
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-            <h3 className="text-xs font-black text-emerald-800 uppercase tracking-wider">
+          <div className="p-4 rounded-2xl bg-[#F5F2E9] border border-[#E4DFD3] space-y-3">
+            <h3 className="text-xs font-black text-[#1F7A52] uppercase tracking-wider">
               Chi Tiết Chi Phí (VNĐ)
             </h3>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               <div>
-                <label className="block text-[11px] font-semibold text-slate-600 mb-1">Tiền sân</label>
+                <label className="block text-[11px] font-semibold text-[#5C695E] mb-1">Tiền sân</label>
                 <input
                   type="number"
                   step="1000"
                   min="0"
                   value={costSan}
                   onChange={(e) => setCostSan(parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-900 focus:border-emerald-500"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#D8D2C2] text-xs font-bold text-[#1D2620] focus:border-[#1F7A52]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-600 mb-1">Tiền cầu</label>
+                <label className="block text-[11px] font-semibold text-[#5C695E] mb-1">Tiền cầu</label>
                 <input
                   type="number"
                   step="1000"
                   min="0"
                   value={costCau}
                   onChange={(e) => setCostCau(parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-900 focus:border-emerald-500"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#D8D2C2] text-xs font-bold text-[#1D2620] focus:border-[#1F7A52]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-600 mb-1">Tiền nước</label>
+                <label className="block text-[11px] font-semibold text-[#5C695E] mb-1">Tiền nước</label>
                 <input
                   type="number"
                   step="1000"
                   min="0"
                   value={costNuoc}
                   onChange={(e) => setCostNuoc(parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-900 focus:border-emerald-500"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#D8D2C2] text-xs font-bold text-[#1D2620] focus:border-[#1F7A52]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-slate-600 mb-1">Chi phí khác</label>
+                <label className="block text-[11px] font-semibold text-[#5C695E] mb-1">Chi phí khác</label>
                 <input
                   type="number"
                   step="1000"
                   min="0"
                   value={costKhac}
                   onChange={(e) => setCostKhac(parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs font-bold text-slate-900 focus:border-emerald-500"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#D8D2C2] text-xs font-bold text-[#1D2620] focus:border-[#1F7A52]"
                 />
               </div>
             </div>
 
             {/* Calculated Result Box */}
-            <div className="mt-3 pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
+            <div className="mt-3 pt-3 border-t border-[#E4DFD3] flex items-center justify-between text-xs">
               <div>
-                <span className="text-slate-500 block text-[10px]">Tổng chi phí:</span>
-                <span className="font-extrabold text-slate-900 text-sm">{formatVND(math.total)}</span>
+                <span className="text-[#7A8A7C] block text-[10px]">Tổng chi phí:</span>
+                <span className="font-extrabold text-[#1D2620] text-sm">{formatVND(math.total)}</span>
               </div>
 
               <div className="text-right">
-                <span className="text-slate-500 block text-[10px]">Mỗi người ({attendeeCount} người):</span>
-                <span className="font-black text-emerald-700 text-sm sm:text-base">{formatVND(math.per)}</span>
+                <span className="text-[#7A8A7C] block text-[10px]">Mỗi người ({attendeeCount} người):</span>
+                <span className="font-black text-[#1F7A52] text-sm sm:text-base">{formatVND(math.per)}</span>
                 {math.surplus > 0 && (
-                  <span className="text-[10px] text-slate-400 block">+ {formatVND(math.surplus)} vào quỹ nhóm</span>
+                  <span className="text-[10px] text-[#7A8A7C] block">+ {formatVND(math.surplus)} vào quỹ nhóm</span>
                 )}
               </div>
             </div>
@@ -259,7 +259,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
           {/* Participants Selection */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider">
+              <h3 className="text-xs font-black text-[#1D2620] uppercase tracking-wider">
                 Chọn Thành Viên Tham Gia ({selectedParticipants.length} người)
               </h3>
               <input
@@ -267,12 +267,12 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                 placeholder="Lọc tên..."
                 value={memberFilter}
                 onChange={(e) => setMemberFilter(e.target.value)}
-                className="px-2.5 py-1 rounded-xl bg-slate-50 border border-slate-200 text-xs w-28 focus:w-36 transition-all"
+                className="px-2.5 py-1 rounded-xl bg-white border border-[#D8D2C2] text-xs w-28 focus:w-36 transition-all text-[#1D2620]"
               />
             </div>
 
             {/* Quick Member Selector Pills */}
-            <div className="flex flex-wrap gap-1.5 p-2.5 rounded-2xl bg-slate-50 border border-slate-200 max-h-36 overflow-y-auto">
+            <div className="flex flex-wrap gap-1.5 p-2.5 rounded-2xl bg-[#F5F2E9] border border-[#E4DFD3] max-h-36 overflow-y-auto">
               {filteredMembersList.map((member) => {
                 const isSelected = selectedParticipants.some((p) => p.name.toLowerCase() === member.name.toLowerCase());
                 return (
@@ -282,8 +282,8 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                     onClick={() => handleToggleMember(member)}
                     className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-emerald-600 text-white shadow-2xs font-bold'
-                        : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+                        ? 'bg-[#1F7A52] text-white shadow-2xs font-bold'
+                        : 'bg-[#FAF8F5] text-[#3E4E42] hover:bg-[#ECE8DC] border border-[#DDD7C9]'
                     }`}
                   >
                     <span>{member.name}</span>
@@ -301,12 +301,12 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                 value={guestName}
                 onChange={(e) => setGuestName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddGuest(); } }}
-                className="flex-1 px-3 py-2 rounded-xl bg-slate-50 border border-slate-300 text-xs font-medium text-slate-900 focus:bg-white focus:border-emerald-500"
+                className="flex-1 px-3 py-2 rounded-xl bg-white border border-[#D8D2C2] text-xs font-medium text-[#1D2620] focus:border-[#1F7A52]"
               />
               <button
                 type="button"
                 onClick={handleAddGuest}
-                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-emerald-800 text-xs font-bold cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#1F7A52] text-xs font-bold cursor-pointer"
               >
                 + Thêm
               </button>
@@ -317,21 +317,21 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
               {selectedParticipants.map((p, idx) => (
                 <div
                   key={p.id}
-                  className="flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-200 text-xs"
+                  className="flex items-center justify-between p-2 rounded-xl bg-[#F5F2E9] border border-[#E4DFD3] text-xs"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-[10px]">
+                    <span className="w-5 h-5 rounded-full bg-[#E6F4EA] text-[#1F7A52] flex items-center justify-center font-bold text-[10px]">
                       {idx + 1}
                     </span>
-                    <span className="font-bold text-slate-900">{p.name}</span>
+                    <span className="font-bold text-[#1D2620]">{p.name}</span>
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="font-extrabold text-emerald-700">{formatVND(math.per)}</span>
+                    <span className="font-extrabold text-[#1F7A52]">{formatVND(math.per)}</span>
                     <button
                       type="button"
                       onClick={() => handleRemoveParticipant(p.id)}
-                      className="p-1 text-slate-400 hover:text-rose-600 transition-colors"
+                      className="p-1 text-[#7A8A7C] hover:text-[#C53030] transition-colors"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -343,17 +343,17 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
           </div>
 
           {/* Submit buttons */}
-          <div className="pt-3 border-t border-slate-100 flex gap-3">
+          <div className="pt-3 border-t border-[#EBE7DC] flex gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 px-4 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-bold transition-colors cursor-pointer"
+              className="flex-1 py-2.5 px-4 rounded-2xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#5C695E] text-xs sm:text-sm font-bold transition-colors cursor-pointer"
             >
               Hủy
             </button>
             <button
               type="submit"
-              className="flex-1 py-2.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-black shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+              className="flex-1 py-2.5 px-4 rounded-2xl bg-[#1F7A52] hover:bg-[#186241] text-white text-xs sm:text-sm font-black shadow-sm transition-all cursor-pointer"
             >
               Tạo Buổi Chơi
             </button>

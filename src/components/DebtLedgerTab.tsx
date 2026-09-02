@@ -9,7 +9,6 @@ import {
   ChevronDown, 
   ChevronUp, 
   Calendar, 
-  Sparkles, 
   AlertCircle, 
   Share2, 
   Check, 
@@ -97,7 +96,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
       particleCount: 80,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ['#059669', '#0284c7', '#d97706', '#db2777']
+      colors: ['#1F7A52', '#0284C7', '#D97706', '#DB2777']
     });
   };
 
@@ -179,19 +178,19 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
   return (
     <div className="space-y-5 pb-24 animate-fadeIn">
       
-      {/* Top Header Card (Light Theme) */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-50 via-white to-teal-50/50 border border-emerald-200/80 p-5 sm:p-7 shadow-xs">
+      {/* Top Header Card (Warm Porcelain Theme) */}
+      <div className="relative overflow-hidden rounded-3xl bg-[#FAF8F5] border border-[#E4DFD3] p-5 sm:p-7 shadow-xs">
         
         <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 text-rose-600 font-bold text-xs uppercase tracking-wider mb-1 px-2.5 py-0.5 rounded-full bg-rose-50 border border-rose-200">
-              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+            <div className="inline-flex items-center gap-2 text-[#C53030] font-bold text-xs uppercase tracking-wider mb-1 px-2.5 py-0.5 rounded-full bg-[#FFF1F0] border border-[#FCDAD7]">
+              <span className="w-2 h-2 rounded-full bg-[#E53E3E] animate-pulse" />
               <span>Sổ Nợ Tập Trung Tất Cả Các Game</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#1D2620] tracking-tight">
               Sổ Nợ & Truy Thu Tiền Cầu
             </h1>
-            <p className="text-slate-600 text-xs sm:text-sm mt-1 max-w-xl">
+            <p className="text-[#5C695E] text-xs sm:text-sm mt-1 max-w-xl">
               Gom nhóm tự động tất cả các buổi chơi chưa thanh toán của từng thành viên. Tạo mã VietQR/MoMo và tin nhắn nhắc nợ chỉ trong 1 chạm.
             </p>
           </div>
@@ -200,49 +199,49 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
           {debtSummaries.length > 0 && (
             <button
               onClick={handleCopyAllDebtsSummary}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 text-xs sm:text-sm font-bold transition-all shadow-xs active:scale-95 cursor-pointer whitespace-nowrap"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-[#ECE8DC] hover:bg-[#E2DDD0] border border-[#DDD7C9] text-[#1D2620] text-xs sm:text-sm font-bold transition-all shadow-xs active:scale-95 cursor-pointer whitespace-nowrap"
             >
-              <Share2 className="w-4 h-4 text-emerald-600" />
+              <Share2 className="w-4 h-4 text-[#1F7A52]" />
               <span>Sao chép danh sách nợ</span>
             </button>
           )}
         </div>
 
-        {/* 3 Metric Cards (Light Theme) */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-5 pt-5 border-t border-slate-200/80">
+        {/* 3 Metric Cards (Warm Soft Theme) */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-5 pt-5 border-t border-[#EBE7DC]">
           
-          <div className="bg-white rounded-2xl p-4 border border-rose-200 shadow-xs flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+          <div className="bg-[#FFF5F4] rounded-2xl p-4 border border-[#FCDAD7] shadow-2xs flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-[#FDE8E7] text-[#C53030] flex items-center justify-center shrink-0">
               <WalletCards className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Tổng tiền còn nợ</p>
-              <p className="text-xl sm:text-2xl font-black text-rose-600 tracking-tight mt-0.5">
+              <p className="text-[11px] font-bold text-[#A84545] uppercase tracking-wider">Tổng tiền còn nợ</p>
+              <p className="text-xl sm:text-2xl font-black text-[#C53030] tracking-tight mt-0.5">
                 {formatVND(totalDebtAmount)}
               </p>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 border border-amber-200 shadow-xs flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
+          <div className="bg-[#FEFBF0] rounded-2xl p-4 border border-[#FBEFBF] shadow-2xs flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-[#FEF3D6] text-[#B7791F] flex items-center justify-center shrink-0">
               <AlertCircle className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Thành viên nợ</p>
-              <p className="text-xl sm:text-2xl font-black text-amber-700 tracking-tight mt-0.5">
-                {totalDebtorsCount} <span className="text-xs font-semibold text-slate-500">người</span>
+              <p className="text-[11px] font-bold text-[#8C6D1F] uppercase tracking-wider">Thành viên nợ</p>
+              <p className="text-xl sm:text-2xl font-black text-[#B7791F] tracking-tight mt-0.5">
+                {totalDebtorsCount} <span className="text-xs font-semibold text-[#5C695E]">người</span>
               </p>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl p-4 border border-emerald-200 shadow-xs flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+          <div className="bg-[#EFF7F0] rounded-2xl p-4 border border-[#D1EAD5] shadow-2xs flex items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-[#E6F4EA] text-[#1F7A52] flex items-center justify-center shrink-0">
               <Calendar className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Số lượt nợ game</p>
-              <p className="text-xl sm:text-2xl font-black text-emerald-800 tracking-tight mt-0.5">
-                {totalUnpaidSessionsCount} <span className="text-xs font-semibold text-slate-500">lượt</span>
+              <p className="text-[11px] font-bold text-[#3E6E48] uppercase tracking-wider">Số lượt nợ game</p>
+              <p className="text-xl sm:text-2xl font-black text-[#1F7A52] tracking-tight mt-0.5">
+                {totalUnpaidSessionsCount} <span className="text-xs font-semibold text-[#5C695E]">lượt</span>
               </p>
             </div>
           </div>
@@ -255,18 +254,18 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
         
         {/* Search Input */}
         <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#7A8A7C]" />
           <input
             type="text"
             placeholder="Tìm theo tên người còn nợ..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-white border border-slate-300 text-slate-900 text-xs sm:text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 shadow-xs"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#FAF8F5] border border-[#D8D2C2] text-[#1D2620] text-xs sm:text-sm font-medium placeholder:text-[#8C988D] focus:outline-none focus:ring-2 focus:ring-[#1F7A52]/15 focus:border-[#1F7A52] shadow-2xs"
           />
           {searchTerm && (
             <button
               onClick={() => setSearchTerm('')}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-700"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-[#7A8A7C] hover:text-[#1D2620]"
             >
               Xóa
             </button>
@@ -275,11 +274,11 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
 
         {/* Sort Selector */}
         <div className="flex items-center gap-2 self-end sm:self-auto">
-          <ArrowUpDown className="w-4 h-4 text-slate-400 hidden sm:block" />
+          <ArrowUpDown className="w-4 h-4 text-[#7A8A7C] hidden sm:block" />
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="bg-white border border-slate-300 rounded-2xl px-3 py-2.5 text-xs sm:text-sm font-semibold text-slate-700 cursor-pointer shadow-xs focus:outline-none focus:border-emerald-500"
+            className="bg-[#FAF8F5] border border-[#D8D2C2] rounded-2xl px-3 py-2.5 text-xs sm:text-sm font-bold text-[#1D2620] cursor-pointer shadow-2xs focus:outline-none focus:border-[#1F7A52]"
           >
             <option value="debt-desc">Nợ nhiều nhất trước</option>
             <option value="debt-asc">Nợ ít nhất trước</option>
@@ -290,7 +289,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
 
       </div>
 
-      {/* Debtors List (Light Theme) */}
+      {/* Debtors List (Warm Soft Theme) */}
       {filteredDebtors.length > 0 ? (
         <div className="space-y-3.5">
           {filteredDebtors.map((debtor) => {
@@ -300,7 +299,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
             return (
               <div 
                 key={debtor.participantName}
-                className="rounded-3xl bg-white border border-slate-200/90 overflow-hidden shadow-xs transition-all duration-200 hover:shadow-md hover:border-emerald-300"
+                className="rounded-3xl bg-[#FAF8F5] border border-[#E4DFD3] overflow-hidden shadow-xs transition-all duration-200 hover:shadow-md hover:border-[#B5D6BB]"
               >
                 {/* Main Card Header */}
                 <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -308,63 +307,63 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                   {/* Player Info */}
                   <div className="flex items-center gap-3.5">
                     <div 
-                      className="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-white text-base shadow-xs shrink-0"
+                      className="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-white text-base shadow-2xs shrink-0"
                       style={{ backgroundColor: debtor.avatarColor }}
                     >
                       {getInitials(debtor.participantName)}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h3 className="text-base font-bold text-slate-900 tracking-tight">
+                        <h3 className="text-base font-bold text-[#1D2620] tracking-tight">
                           {debtor.participantName}
                         </h3>
-                        <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-100 text-rose-700 border border-rose-200">
+                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#FFF1F0] text-[#C53030] border border-[#FCDAD7]">
                           {debtor.unpaidSessionsCount} buổi nợ
                         </span>
                       </div>
-                      <p className="text-xs text-slate-500 mt-0.5">
-                        Tổng tham gia: <span className="text-slate-700 font-semibold">{debtor.totalSessionsInvolved} buổi</span>
+                      <p className="text-xs text-[#5C695E] mt-0.5">
+                        Tổng tham gia: <span className="text-[#1D2620] font-semibold">{debtor.totalSessionsInvolved} buổi</span>
                       </p>
                     </div>
                   </div>
 
                   {/* Total Debt & Primary Action Buttons */}
-                  <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                  <div className="flex flex-wrap items-center justify-between sm:justify-end gap-3 pt-3 sm:pt-0 border-t sm:border-t-0 border-[#EBE7DC]">
                     
                     <div className="text-left sm:text-right">
-                      <p className="text-[10px] uppercase font-bold text-slate-400">Tổng nợ tích lũy</p>
-                      <p className="text-lg sm:text-xl font-black text-rose-600 tracking-tight">
+                      <p className="text-[10px] uppercase font-bold text-[#7A8A7C]">Tổng nợ tích lũy</p>
+                      <p className="text-lg sm:text-xl font-black text-[#C53030] tracking-tight">
                         {formatVND(debtor.totalDebt)}
                       </p>
                     </div>
 
                     {isSelectingPayment ? (
                       /* Payment Method Selection Bar */
-                      <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl border border-emerald-300 animate-fadeIn">
+                      <div className="flex items-center gap-1.5 p-1 bg-[#ECE8DC] rounded-2xl border border-[#DDD7C9] animate-fadeIn">
                         <button
                           onClick={() => handleConfirmPay('bank')}
-                          className="px-2.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1 shadow-xs cursor-pointer"
+                          className="px-2.5 py-1.5 rounded-xl bg-[#1A73E8] hover:bg-[#1557B0] text-white text-xs font-bold flex items-center gap-1 shadow-2xs cursor-pointer"
                         >
                           <CreditCard className="w-3.5 h-3.5" />
                           <span>Bank</span>
                         </button>
                         <button
                           onClick={() => handleConfirmPay('momo')}
-                          className="px-2.5 py-1.5 rounded-xl bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold flex items-center gap-1 shadow-xs cursor-pointer"
+                          className="px-2.5 py-1.5 rounded-xl bg-[#D82D8B] hover:bg-[#B31D6F] text-white text-xs font-bold flex items-center gap-1 shadow-2xs cursor-pointer"
                         >
                           <Smartphone className="w-3.5 h-3.5" />
                           <span>MoMo</span>
                         </button>
                         <button
                           onClick={() => handleConfirmPay('cash')}
-                          className="px-2.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1 shadow-xs cursor-pointer"
+                          className="px-2.5 py-1.5 rounded-xl bg-[#1F7A52] hover:bg-[#186241] text-white text-xs font-bold flex items-center gap-1 shadow-2xs cursor-pointer"
                         >
                           <Coins className="w-3.5 h-3.5" />
                           <span>Tiền mặt</span>
                         </button>
                         <button
                           onClick={() => setActivePaymentSelect(null)}
-                          className="px-2 py-1.5 text-xs text-slate-500 hover:text-slate-800"
+                          className="px-2 py-1.5 text-xs text-[#5C695E] hover:text-[#1D2620]"
                         >
                           ✕
                         </button>
@@ -374,20 +373,20 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                         {/* VietQR button */}
                         <button
                           onClick={() => handleOpenQR(debtor)}
-                          className="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-100 hover:bg-emerald-50 text-emerald-800 border border-slate-200 hover:border-emerald-300 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-2xs"
+                          className="p-2 sm:px-3 sm:py-2 rounded-xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#1D2620] border border-[#DDD7C9] text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-2xs"
                           title="Tạo mã VietQR / MoMo chuyển khoản tổng nợ"
                         >
-                          <QrCode className="w-4 h-4 text-emerald-600" />
+                          <QrCode className="w-4 h-4 text-[#1F7A52]" />
                           <span className="hidden md:inline">Mã QR</span>
                         </button>
 
                         {/* Reminder message copy */}
                         <button
                           onClick={() => handleCopyReminder(debtor)}
-                          className="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-100 hover:bg-blue-50 text-blue-800 border border-slate-200 hover:border-blue-300 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-2xs"
+                          className="p-2 sm:px-3 sm:py-2 rounded-xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#1A73E8] border border-[#DDD7C9] text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-2xs"
                           title="Sao chép tin nhắn nhắc nợ gửi Zalo/Messenger"
                         >
-                          <MessageSquare className="w-4 h-4 text-blue-600" />
+                          <MessageSquare className="w-4 h-4 text-[#1A73E8]" />
                           <span className="hidden md:inline">Nhắn Zalo</span>
                         </button>
 
@@ -398,7 +397,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                             playerName: debtor.participantName,
                             totalAmount: debtor.totalDebt,
                           })}
-                          className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-xs"
+                          className="px-3.5 py-2 rounded-xl bg-[#1F7A52] hover:bg-[#186241] text-white text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-xs"
                           title="Đánh dấu đã thu đủ toàn bộ số tiền nợ"
                         >
                           <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
@@ -408,7 +407,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                         {/* Expand / Collapse toggle */}
                         <button
                           onClick={() => toggleExpand(debtor.participantName)}
-                          className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer"
+                          className="p-2 rounded-xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#5C695E] hover:text-[#1D2620] transition-colors cursor-pointer"
                           title={isExpanded ? 'Thu gọn chi tiết' : 'Xem chi tiết từng buổi nợ'}
                         >
                           {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -422,9 +421,9 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
 
                 {/* Expanded Section: Breakdown of Each Game/Session */}
                 {isExpanded && (
-                  <div className="bg-slate-50 border-t border-slate-200 p-4 sm:p-5 space-y-2.5 animate-fadeIn">
+                  <div className="bg-[#F5F2E9] border-t border-[#E4DFD3] p-4 sm:p-5 space-y-2.5 animate-fadeIn">
                     <div className="flex items-center justify-between pb-1.5">
-                      <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                      <span className="text-[11px] font-bold text-[#5C695E] uppercase tracking-wider">
                         Chi tiết từng buổi chơi còn nợ ({debtor.debtDetails.length} buổi):
                       </span>
                     </div>
@@ -436,57 +435,57 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                         return (
                           <div 
                             key={item.sessionId + idx}
-                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-2xl bg-white border border-slate-200 shadow-2xs hover:border-slate-300 transition-colors"
+                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-2xl bg-[#FAF8F5] border border-[#E4DFD3] shadow-2xs hover:border-[#B5D6BB] transition-colors"
                           >
                             <div className="flex items-start sm:items-center gap-3">
-                              <div className="p-2 rounded-xl bg-emerald-50 text-emerald-700 shrink-0 mt-0.5 sm:mt-0">
-                                <Calendar className="w-4 h-4 text-emerald-600" />
+                              <div className="p-2 rounded-xl bg-[#E6F4EA] text-[#1F7A52] shrink-0 mt-0.5 sm:mt-0">
+                                <Calendar className="w-4 h-4 text-[#1F7A52]" />
                               </div>
                               <div>
                                 <div className="flex items-center gap-2">
-                                  <p className="font-bold text-slate-900 text-xs sm:text-sm">
+                                  <p className="font-bold text-[#1D2620] text-xs sm:text-sm">
                                     {item.sessionTitle}
                                   </p>
-                                  <span className="text-[10px] px-2 py-0.2 rounded-full bg-slate-100 text-slate-600 font-semibold">
+                                  <span className="text-[10px] px-2 py-0.2 rounded-full bg-[#ECE8DC] text-[#5C695E] font-semibold">
                                     {item.courtName}
                                   </span>
                                 </div>
-                                <p className="text-[11px] text-slate-500 mt-0.5">
-                                  {formatDateVietnamese(item.date)} • Phải trả: <span className="text-slate-800 font-bold">{formatVND(item.calculatedAmount)}</span>
+                                <p className="text-[11px] text-[#5C695E] mt-0.5">
+                                  {formatDateVietnamese(item.date)} • Phải trả: <span className="text-[#1D2620] font-bold">{formatVND(item.calculatedAmount)}</span>
                                   {item.paidAmount > 0 && ` (Đã trả trước: ${formatVND(item.paidAmount)})`}
                                 </p>
                               </div>
                             </div>
 
-                            <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                            <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#EBE7DC]">
                               <div className="text-left sm:text-right">
-                                <span className="text-[10px] text-slate-400 font-semibold block sm:inline mr-1">Còn thiếu:</span>
-                                <span className="font-bold text-rose-600 text-xs sm:text-sm">{formatVND(item.debtAmount)}</span>
+                                <span className="text-[10px] text-[#7A8A7C] font-semibold block sm:inline mr-1">Còn thiếu:</span>
+                                <span className="font-bold text-[#C53030] text-xs sm:text-sm">{formatVND(item.debtAmount)}</span>
                               </div>
 
                               {isSelectingSingle ? (
-                                <div className="flex items-center gap-1 p-1 bg-slate-100 rounded-xl border border-emerald-300 animate-fadeIn">
+                                <div className="flex items-center gap-1 p-1 bg-[#ECE8DC] rounded-xl border border-[#DDD7C9] animate-fadeIn">
                                   <button
                                     onClick={() => handleConfirmPay('bank')}
-                                    className="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold cursor-pointer"
+                                    className="px-2 py-1 rounded-lg bg-[#1A73E8] hover:bg-[#1557B0] text-white text-[11px] font-bold cursor-pointer"
                                   >
                                     Bank
                                   </button>
                                   <button
                                     onClick={() => handleConfirmPay('momo')}
-                                    className="px-2 py-1 rounded-lg bg-pink-600 hover:bg-pink-700 text-white text-[11px] font-bold cursor-pointer"
+                                    className="px-2 py-1 rounded-lg bg-[#D82D8B] hover:bg-[#B31D6F] text-white text-[11px] font-bold cursor-pointer"
                                   >
                                     MoMo
                                   </button>
                                   <button
                                     onClick={() => handleConfirmPay('cash')}
-                                    className="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold cursor-pointer"
+                                    className="px-2 py-1 rounded-lg bg-[#1F7A52] hover:bg-[#186241] text-white text-[11px] font-bold cursor-pointer"
                                   >
                                     Tiền mặt
                                   </button>
                                   <button
                                     onClick={() => setActivePaymentSelect(null)}
-                                    className="px-1 text-[11px] text-slate-500"
+                                    className="px-1 text-[11px] text-[#5C695E]"
                                   >
                                     ✕
                                   </button>
@@ -500,7 +499,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                                     sessionId: item.sessionId,
                                     participantId: item.participantId,
                                   })}
-                                  className="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-emerald-600 hover:text-white text-emerald-800 border border-slate-200 text-xs font-bold flex items-center gap-1 transition-all cursor-pointer"
+                                  className="px-2.5 py-1.5 rounded-xl bg-[#ECE8DC] hover:bg-[#1F7A52] hover:text-white text-[#1D2620] border border-[#DDD7C9] text-xs font-bold flex items-center gap-1 transition-all cursor-pointer"
                                   title="Thanh toán buổi này"
                                 >
                                   <Check className="w-3.5 h-3.5" />
@@ -521,27 +520,27 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
         </div>
       ) : (
         /* Empty State */
-        <div className="rounded-3xl bg-white border border-slate-200 p-8 sm:p-12 text-center flex flex-col items-center justify-center shadow-xs">
+        <div className="rounded-3xl bg-[#FAF8F5] border border-[#E4DFD3] p-8 sm:p-12 text-center flex flex-col items-center justify-center shadow-xs">
           {searchTerm ? (
             <>
-              <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-500 mb-3">
+              <div className="w-14 h-14 rounded-2xl bg-[#ECE8DC] flex items-center justify-center text-[#5C695E] mb-3">
                 <Search className="w-7 h-7" />
               </div>
-              <h3 className="text-base font-bold text-slate-800">Không tìm thấy ai tên "{searchTerm}" còn nợ</h3>
+              <h3 className="text-base font-bold text-[#1D2620]">Không tìm thấy ai tên "{searchTerm}" còn nợ</h3>
               <button
                 onClick={() => setSearchTerm('')}
-                className="mt-3 px-4 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer"
+                className="mt-3 px-4 py-1.5 rounded-xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#1D2620] text-xs font-semibold cursor-pointer"
               >
                 Xóa bộ lọc
               </button>
             </>
           ) : (
             <>
-              <div className="w-16 h-16 rounded-3xl bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-700 mb-3 shadow-xs">
-                <Sparkles className="w-8 h-8" />
+              <div className="w-16 h-16 rounded-3xl bg-[#E6F4EA] border border-[#D1EAD5] flex items-center justify-center text-[#1F7A52] mb-3 shadow-2xs">
+                <span className="text-3xl">🎉</span>
               </div>
-              <h3 className="text-lg font-black text-slate-900">Tuyệt vời! Không còn ai nợ tiền 🎉</h3>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-md">
+              <h3 className="text-lg font-black text-[#1D2620]">Tuyệt vời! Không còn ai nợ tiền</h3>
+              <p className="text-xs sm:text-sm text-[#5C695E] mt-1 max-w-md">
                 Tất cả thành viên trong nhóm đều đã thanh toán sòng phẳng cho mọi buổi chơi cầu lông!
               </p>
             </>
