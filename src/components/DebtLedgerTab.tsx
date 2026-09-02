@@ -192,7 +192,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
               Sổ Nợ & Truy Thu Tiền Cầu
             </h1>
             <p className="text-slate-600 text-xs sm:text-sm mt-1 max-w-xl">
-              Gom nhóm tự động tất cả các buổi chơi chưa thanh toán từ Supabase. Tạo mã VietQR/MoMo và tin nhắn nhắc nợ chỉ trong 1 chạm.
+              Gom nhóm tự động tất cả các buổi chơi chưa thanh toán của từng thành viên. Tạo mã VietQR/MoMo và tin nhắn nhắc nợ chỉ trong 1 chạm.
             </p>
           </div>
 

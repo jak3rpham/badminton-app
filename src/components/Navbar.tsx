@@ -43,14 +43,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="text-xl transform group-hover:rotate-12 transition-transform duration-300">🏸</span>
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
-                <span className="font-black text-base sm:text-lg tracking-tight text-slate-900">
-                  Cầu Lông Pay
-                </span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
-                  PRO
-                </span>
-              </div>
+              <span className="font-black text-base sm:text-lg tracking-tight text-slate-900 block leading-tight">
+                Cầu Lông Pay
+              </span>
               <p className="text-[11px] text-slate-500 hidden sm:block">Chia tiền & Sổ nợ tập trung</p>
             </div>
           </div>

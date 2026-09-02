@@ -53,7 +53,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
             Danh Sách Buổi Chơi
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Tổng cộng {sessions.length} buổi chơi đã được lưu trữ trên Supabase
+            Tổng cộng {sessions.length} buổi chơi đã được ghi nhận trong hệ thống
           </p>
         </div>
 

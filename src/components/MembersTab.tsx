@@ -59,7 +59,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({
             Danh Bạ Thành Viên
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Quản lý {members.length} thành viên trong nhóm cầu lông (Lưu trên Supabase)
+            Quản lý {members.length} thành viên trong nhóm cầu lông
           </p>
         </div>
 
@@ -78,7 +78,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({
           onSubmit={handleCreate}
           className="p-5 sm:p-6 rounded-3xl bg-white border border-slate-200 shadow-sm space-y-4 animate-fadeIn"
         >
-          <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Thêm Thành Viên Vào Supabase</h3>
+          <h3 className="text-sm font-black text-slate-900 uppercase tracking-wider">Thêm Thành Viên Mới</h3>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>

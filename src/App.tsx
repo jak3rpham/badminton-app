@@ -220,23 +220,6 @@ export const App: React.FC = () => {
         onOpenCreateSession={() => setIsCreateModalOpen(true)}
       />
 
-      {/* Supabase Status Indicator Banner */}
-      <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-3 flex items-center justify-between text-[11px]">
-        <div className="flex items-center gap-2 bg-white px-3 py-1 rounded-full border border-slate-200 shadow-2xs">
-          <span className={`w-2 h-2 rounded-full ${isSupabaseConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
-          <span className="text-slate-600 font-medium">
-            {isSupabaseConnected ? (
-              <span>Đã kết nối <strong className="text-emerald-700">Supabase Cloud (Realtime)</strong></span>
-            ) : (
-              <span>Chế độ lưu trữ Offline / Local</span>
-            )}
-          </span>
-        </div>
-        <span className="text-slate-400 hidden sm:inline">
-          Dữ liệu an toàn & đồng bộ thời gian thực
-        </span>
-      </div>
-
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-4">
         {activeTab === 'dashboard' && (

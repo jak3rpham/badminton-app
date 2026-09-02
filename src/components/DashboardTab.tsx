@@ -76,40 +76,34 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
   return (
     <div className="space-y-6 pb-24 animate-fadeIn">
       
-      {/* Hero Banner (Light Sports Emerald Gradient) */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-800 via-teal-800 to-emerald-900 text-white p-6 sm:p-8 shadow-md">
-        <div className="absolute right-0 top-0 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Top Header & Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            Tổng Quan Chi Phí
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+            Thống kê thu chi & tình hình nợ tiền sân qua {sessions.length} buổi chơi
+          </p>
+        </div>
 
-        <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-5">
-          <div className="space-y-2">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold backdrop-blur-md">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Cầu Lông Pay - Đồng Bộ Supabase Cloud</span>
-            </div>
-            <h1 className="text-2xl sm:text-4xl font-black tracking-tight">
-              Sân Cầu Vui Vẻ, Tiền Bạc Rõ Ràng 🏸
-            </h1>
-            <p className="text-emerald-100 text-xs sm:text-sm max-w-xl leading-relaxed">
-              Tự động chia đều theo buổi, gom nhóm nợ qua từng game, sinh mã VietQR và nhắc nợ Zalo chỉ với 1 cú click.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-2">
+          {debtSummaries.length > 0 && (
             <button
               onClick={() => setActiveTab('debt-ledger')}
-              className="px-4 py-3 rounded-2xl bg-white/15 hover:bg-white/25 border border-white/30 text-white text-xs sm:text-sm font-bold flex items-center gap-2 transition-all cursor-pointer backdrop-blur-md"
+              className="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
             >
-              <WalletCards className="w-4 h-4 text-amber-300" />
-              <span>Xem Sổ Nợ ({debtSummaries.length} người)</span>
+              <WalletCards className="w-4 h-4" />
+              <span>Xem Sổ Nợ ({debtSummaries.length})</span>
             </button>
-            <button
-              onClick={onOpenCreateSession}
-              className="px-5 py-3 rounded-2xl bg-white text-emerald-900 hover:bg-emerald-50 text-xs sm:text-sm font-black flex items-center gap-2 transition-all shadow-lg active:scale-95 cursor-pointer"
-            >
-              <Plus className="w-4 h-4 stroke-[3]" />
-              <span>Tạo Buổi Chơi Mới</span>
-            </button>
-          </div>
+          )}
+          <button
+            onClick={onOpenCreateSession}
+            className="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-md shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer"
+          >
+            <Plus className="w-4 h-4 stroke-[3]" />
+            <span>Tạo Buổi Chơi</span>
+          </button>
         </div>
       </div>
 

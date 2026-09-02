@@ -133,7 +133,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
           Cài Đặt Tài Khoản Nhận Tiền
         </h1>
         <p className="text-xs sm:text-sm text-slate-500 mt-1">
-          Cấu hình tài khoản ngân hàng (VietQR) và MoMo. Dữ liệu được lưu trực tiếp trên Supabase.
+          Cấu hình tài khoản ngân hàng (VietQR) và MoMo nhận tiền của thủ quỹ
         </p>
       </div>
 
@@ -240,7 +240,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
               className="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
             >
               {savedSuccess ? <Check className="w-4 h-4 stroke-[3]" /> : <Save className="w-4 h-4" />}
-              <span>{savedSuccess ? 'Đã Lưu Lên Supabase!' : 'Lưu Thông Tin Ngân Hàng & MoMo'}</span>
+              <span>{savedSuccess ? 'Đã Lưu Thành Công!' : 'Lưu Thông Tin Ngân Hàng & MoMo'}</span>
             </button>
           </div>
         </form>
