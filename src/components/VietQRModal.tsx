@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Copy, Check, Download, ExternalLink, ShieldCheck, QrCode } from 'lucide-react';
+import { X, Copy, Check, Download, ExternalLink, ShieldCheck, QrCode, Smartphone } from 'lucide-react';
 import { BankConfig } from '../types';
 import { formatVND } from '../utils/format';
 import { getVietQRUrl } from '../utils/vietqr';
@@ -64,8 +64,8 @@ export const VietQRModal: React.FC<VietQRModalProps> = ({
         </div>
 
         {/* QR Code Container */}
-        <div className="my-5 flex flex-col items-center">
-          <div className="p-3 bg-white rounded-2xl shadow-xl border-4 border-emerald-500/20 max-w-[280px] w-full flex items-center justify-center min-h-[280px]">
+        <div className="my-4 flex flex-col items-center">
+          <div className="p-3 bg-white rounded-2xl shadow-xl border-4 border-emerald-500/20 max-w-[260px] w-full flex items-center justify-center min-h-[260px]">
             {qrUrl ? (
               <img
                 src={qrUrl}
@@ -83,11 +83,24 @@ export const VietQRModal: React.FC<VietQRModalProps> = ({
             )}
           </div>
 
-          <div className="mt-3 flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
+          <div className="mt-2.5 flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
             <span>Chính xác số tiền & nội dung tự động</span>
           </div>
         </div>
+
+        {/* MoMo Link Direct Button if configured */}
+        {bankConfig.momoLink && (
+          <a
+            href={bankConfig.momoLink}
+            target="_blank"
+            rel="noreferrer"
+            className="mb-3 w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-500 hover:to-rose-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-md shadow-pink-900/30 transition-all cursor-pointer text-decoration-none"
+          >
+            <Smartphone className="w-4 h-4" />
+            <span>Mở MoMo để chuyển khoản {formatVND(amount)} ↗</span>
+          </a>
+        )}
 
         {/* Info Rows */}
         <div className="space-y-2.5 bg-slate-950/60 rounded-2xl p-4 border border-slate-800/80 text-xs">
@@ -114,6 +127,22 @@ export const VietQRModal: React.FC<VietQRModalProps> = ({
               </button>
             </div>
           </div>
+
+          {bankConfig.momo && (
+            <div className="flex justify-between items-center">
+              <span className="text-slate-400">MoMo:</span>
+              <div className="flex items-center gap-1.5">
+                <span className="font-mono font-semibold text-pink-400">{bankConfig.momo}</span>
+                <button
+                  onClick={() => handleCopy(bankConfig.momo!, 'momo')}
+                  className="p-1 text-slate-400 hover:text-pink-400 transition-colors"
+                  title="Sao chép số MoMo"
+                >
+                  {copiedField === 'momo' ? <Check className="w-3.5 h-3.5 text-pink-400" /> : <Copy className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+            </div>
+          )}
 
           <div className="flex justify-between items-center pt-2 border-t border-slate-800/80">
             <span className="text-slate-400">Số tiền:</span>
@@ -145,7 +174,7 @@ export const VietQRModal: React.FC<VietQRModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="mt-5 flex gap-2.5">
+        <div className="mt-4 flex gap-2.5">
           <button
             onClick={() => handleCopy(`${bankConfig.bankId} ${bankConfig.accountNo} - ${formatVND(amount)} - ${description}`, 'all')}
             className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors cursor-pointer"

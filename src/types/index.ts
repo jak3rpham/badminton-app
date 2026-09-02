@@ -1,5 +1,7 @@
 export type PaymentStatus = 'paid' | 'unpaid' | 'partial';
 
+export type PaymentMethod = 'momo' | 'bank' | 'cash';
+
 export type SplitMode = 'equal' | 'by_hours' | 'custom';
 
 export interface Participant {
@@ -7,18 +9,19 @@ export interface Participant {
   memberId?: string;
   name: string;
   avatarColor: string;
-  hoursPlayed?: number; // Số giờ chơi (nếu tính theo giờ)
-  customAmount?: number; // Số tiền tuỳ chỉnh nếu mode = custom
-  calculatedAmount: number; // Số tiền phải trả cho buổi này
-  paidAmount: number; // Số tiền đã thanh toán
+  hoursPlayed?: number;
+  customAmount?: number;
+  calculatedAmount: number;
+  paidAmount: number;
   status: PaymentStatus;
+  method?: PaymentMethod | null;
   notes?: string;
   paidAt?: string;
 }
 
 export interface ExpenseItem {
   id: string;
-  name: string; // VD: "Thuê sân 2h", "Cầu Hải Yến 6 quả", "Nước suối + Revive"
+  name: string;
   category: 'court' | 'shuttle' | 'drinks' | 'other';
   quantity?: number;
   unitPrice?: number;
@@ -27,23 +30,26 @@ export interface ExpenseItem {
 
 export interface Session {
   id: string;
-  title: string; // VD: "Sân Cầu Lông Kỳ Hòa - Sân 4"
+  title: string;
   courtName: string;
   date: string; // YYYY-MM-DD
-  startTime: string; // "18:00"
-  endTime: string; // "20:00"
-  splitMode: SplitMode;
-  totalCourtHours?: number; // VD: 2 giờ
-  courtRatePerHour?: number; // VD: 120,000đ/giờ
-  shuttleCount?: number; // VD: 6 quả
-  shuttlePricePerUnit?: number; // VD: 25,000đ/quả
-  otherExpenses?: number; // Tiền nước uống, đồ ăn
-  customTotalExpense?: number; // Hoặc tổng chi phí nhập trực tiếp
+  startTime?: string;
+  endTime?: string;
+  splitMode?: SplitMode;
+  cost_san?: number;
+  cost_cau?: number;
+  cost_nuoc?: number;
+  cost_khac?: number;
+  totalCourtHours?: number;
+  courtRatePerHour?: number;
+  shuttleCount?: number;
+  shuttlePricePerUnit?: number;
+  otherExpenses?: number;
   expenses: ExpenseItem[];
   totalExpense: number;
   participants: Participant[];
   notes?: string;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface Member {
@@ -51,16 +57,19 @@ export interface Member {
   name: string;
   phone?: string;
   avatarColor: string;
-  isRegular: boolean; // Thành viên cố định hay khách vãng lai
+  isRegular: boolean;
   defaultNote?: string;
+  created_at?: string;
 }
 
 export interface BankConfig {
-  bankId: string; // VD: "MB", "VCB", "ACB", "TCB", "VPB", "ICB"
+  bankId: string;
   bankName: string;
   accountNo: string;
   accountName: string;
-  defaultTransferPrefix: string; // VD: "Tien cau"
+  defaultTransferPrefix: string;
+  momo?: string;
+  momoLink?: string;
 }
 
 export interface DebtDetailItem {
@@ -70,7 +79,7 @@ export interface DebtDetailItem {
   date: string;
   calculatedAmount: number;
   paidAmount: number;
-  debtAmount: number; // calculatedAmount - paidAmount
+  debtAmount: number;
   status: PaymentStatus;
   participantId: string;
 }
@@ -79,7 +88,7 @@ export interface PlayerDebtSummary {
   participantName: string;
   memberId?: string;
   avatarColor: string;
-  totalDebt: number; // Tổng số tiền nợ qua tất cả các game
+  totalDebt: number;
   totalSessionsInvolved: number;
   unpaidSessionsCount: number;
   debtDetails: DebtDetailItem[];

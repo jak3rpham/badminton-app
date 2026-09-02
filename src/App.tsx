@@ -9,6 +9,15 @@ import {
   saveBankConfigToStorage,
   calculateAllPlayerDebts
 } from './utils/storage';
+import { 
+  fetchAllSupabaseData, 
+  createSessionInSupabase, 
+  deleteSessionInSupabase, 
+  addMemberInSupabase, 
+  deleteMemberInSupabase,
+  updateAttendeePaidInSupabase
+} from './utils/supabaseData';
+import { supabase } from './utils/supabase';
 import { Navbar } from './components/Navbar';
 import { DashboardTab } from './components/DashboardTab';
 import { SessionsTab } from './components/SessionsTab';
@@ -24,7 +33,9 @@ export const App: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>(() => loadSessionsFromStorage());
   const [members, setMembers] = useState<Member[]>(() => loadMembersFromStorage());
   const [bankConfig, setBankConfig] = useState<BankConfig>(() => loadBankConfigFromStorage());
-  const [activeTab, setActiveTab] = useState<ActiveTab>('debt-ledger'); // Default show requested Debt Ledger tab or dashboard
+  const [activeTab, setActiveTab] = useState<ActiveTab>('debt-ledger');
+  const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // Modals
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -51,7 +62,6 @@ export const App: React.FC = () => {
     setSessions(newSessions);
     saveSessionsToStorage(newSessions);
 
-    // If currently inspecting a session, update it too
     if (selectedSession) {
       const updated = newSessions.find(s => s.id === selectedSession.id);
       if (updated) {
@@ -70,36 +80,119 @@ export const App: React.FC = () => {
     saveBankConfigToStorage(newConfig);
   };
 
-  // Handlers for Session CRUD
-  const handleAddSession = (newSession: Session) => {
-    const updated = [newSession, ...sessions];
-    handleUpdateSessions(updated);
-    showToast(`Đã tạo buổi chơi mới "${newSession.title}" thành công! 🏸`, 'success');
+  // Load live Supabase Data on mount
+  const loadData = async () => {
+    setIsLoading(true);
+    try {
+      const liveData = await fetchAllSupabaseData();
+      if (liveData) {
+        setSessions(liveData.sessions);
+        setMembers(liveData.members);
+        setBankConfig(liveData.bankConfig);
+        saveSessionsToStorage(liveData.sessions);
+        saveMembersToStorage(liveData.members);
+        saveBankConfigToStorage(liveData.bankConfig);
+        setIsSupabaseConnected(true);
+      } else {
+        setIsSupabaseConnected(false);
+      }
+    } catch (err) {
+      console.warn('Error loading Supabase data:', err);
+      setIsSupabaseConnected(false);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleUpdateSingleSession = (updatedSession: Session) => {
+  useEffect(() => {
+    loadData();
+
+    // Subscribe to Supabase realtime changes
+    const channel = supabase
+      .channel('schema-db-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'attendees' }, () => {
+        loadData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'sessions' }, () => {
+        loadData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'members' }, () => {
+        loadData();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'settings' }, () => {
+        loadData();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  // Handlers for Session CRUD with Supabase
+  const handleAddSession = async (newSession: Session) => {
+    const updated = [newSession, ...sessions];
+    handleUpdateSessions(updated);
+    showToast(`Đã tạo buổi chơi mới "${newSession.title}"! 🏸`, 'success');
+
+    try {
+      await createSessionInSupabase({
+        date: newSession.date,
+        cost_san: newSession.cost_san || (newSession.totalCourtHours || 2) * (newSession.courtRatePerHour || 0),
+        cost_cau: newSession.cost_cau || (newSession.shuttleCount || 0) * (newSession.shuttlePricePerUnit || 0),
+        cost_nuoc: newSession.cost_nuoc || (newSession.otherExpenses || 0),
+        cost_khac: newSession.cost_khac || 0,
+        attendeeNames: newSession.participants.map(p => p.name),
+      });
+      // Reload to get generated Supabase UUIDs
+      loadData();
+    } catch (err) {
+      console.warn('Sync to Supabase warning:', err);
+    }
+  };
+
+  const handleUpdateSingleSession = async (updatedSession: Session) => {
     const updated = sessions.map(s => s.id === updatedSession.id ? updatedSession : s);
     handleUpdateSessions(updated);
     setSelectedSession(updatedSession);
   };
 
-  const handleDeleteSession = (sessionId: string) => {
+  const handleDeleteSession = async (sessionId: string) => {
     const updated = sessions.filter(s => s.id !== sessionId);
     handleUpdateSessions(updated);
     showToast('Đã xóa buổi chơi khỏi hệ thống!', 'info');
+
+    try {
+      await deleteSessionInSupabase(sessionId);
+    } catch (err) {
+      console.warn('Sync delete to Supabase warning:', err);
+    }
   };
 
-  // Handlers for Member CRUD
-  const handleAddMember = (newMember: Member) => {
+  // Handlers for Member CRUD with Supabase
+  const handleAddMember = async (newMember: Member) => {
     const updated = [...members, newMember];
     handleUpdateMembers(updated);
     showToast(`Đã thêm thành viên "${newMember.name}" vào danh bạ!`, 'success');
+
+    try {
+      await addMemberInSupabase(newMember.name);
+      loadData();
+    } catch (err) {
+      console.warn('Sync add member to Supabase warning:', err);
+    }
   };
 
-  const handleDeleteMember = (memberId: string) => {
+  const handleDeleteMember = async (memberId: string) => {
     const updated = members.filter(m => m.id !== memberId);
     handleUpdateMembers(updated);
     showToast('Đã xóa thành viên khỏi danh bạ!', 'info');
+
+    try {
+      await deleteMemberInSupabase(memberId);
+    } catch (err) {
+      console.warn('Sync delete member to Supabase warning:', err);
+    }
   };
 
   // Handle Restore all data
@@ -130,8 +223,25 @@ export const App: React.FC = () => {
         onOpenCreateSession={() => setIsCreateModalOpen(true)}
       />
 
+      {/* Supabase Status Indicator Banner */}
+      <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-3 flex items-center justify-between text-[11px]">
+        <div className="flex items-center gap-2">
+          <span className={`w-2 h-2 rounded-full ${isSupabaseConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
+          <span className="text-slate-400">
+            {isSupabaseConnected ? (
+              <span>Đang kết nối <strong className="text-emerald-400">Supabase Cloud (Realtime)</strong></span>
+            ) : (
+              <span>Chế độ lưu trữ Offline / Local</span>
+            )}
+          </span>
+        </div>
+        <span className="text-slate-500 hidden sm:inline">
+          Dữ liệu đồng bộ với <span className="text-slate-400 font-mono">badminton-app-weld.vercel.app</span>
+        </span>
+      </div>
+
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-4">
         {activeTab === 'dashboard' && (
           <DashboardTab
             sessions={sessions}

@@ -15,10 +15,13 @@ import {
   Share2, 
   Check, 
   ArrowUpDown,
-  UserCheck
+  Smartphone,
+  CreditCard,
+  Coins
 } from 'lucide-react';
-import { Session, BankConfig, PlayerDebtSummary } from '../types';
+import { Session, BankConfig, PlayerDebtSummary, PaymentMethod } from '../types';
 import { calculateAllPlayerDebts, markAllDebtsAsPaidForPlayer, markSingleDebtAsPaid } from '../utils/storage';
+import { markAllDebtsPaidForPlayerInSupabase, updateAttendeePaidInSupabase } from '../utils/supabaseData';
 import { formatVND, formatDateVietnamese, getInitials } from '../utils/format';
 import { generateDebtReminderMessage } from '../utils/vietqr';
 import { VietQRModal } from './VietQRModal';
@@ -40,6 +43,15 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
   const [sortBy, setSortBy] = useState<'debt-desc' | 'debt-asc' | 'name-asc' | 'sessions-desc'>('debt-desc');
   const [expandedPlayers, setExpandedPlayers] = useState<Record<string, boolean>>({});
   
+  // State for choosing payment method before clearing
+  const [activePaymentSelect, setActivePaymentSelect] = useState<{
+    type: 'all' | 'single';
+    playerName: string;
+    totalAmount: number;
+    sessionId?: string;
+    participantId?: string;
+  } | null>(null);
+
   // State for VietQR Modal
   const [qrModalData, setQrModalData] = useState<{
     isOpen: boolean;
@@ -86,24 +98,39 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
       particleCount: 80,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ['#10B981', '#06B6D4', '#F59E0B', '#3B82F6']
+      colors: ['#10B981', '#06B6D4', '#F59E0B', '#3B82F6', '#EC4899']
     });
   };
 
-  // Action: Pay all debts for one player
-  const handleMarkAllAsPaid = (playerName: string, totalAmount: number) => {
-    const updated = markAllDebtsAsPaidForPlayer(playerName, sessions);
-    setSessions(updated);
-    triggerConfetti();
-    onShowToast(`Đã thanh toán toàn bộ nợ (${formatVND(totalAmount)}) của ${playerName}! 🎉`, 'success');
-  };
+  // Action: Confirm payment with method (Bank / MoMo / Cash)
+  const handleConfirmPay = async (method: PaymentMethod = 'bank') => {
+    if (!activePaymentSelect) return;
 
-  // Action: Pay single debt item
-  const handleMarkSingleAsPaid = (sessionId: string, participantId: string, playerName: string, amount: number) => {
-    const updated = markSingleDebtAsPaid(sessionId, participantId, sessions);
-    setSessions(updated);
-    triggerConfetti();
-    onShowToast(`Đã thanh toán ${formatVND(amount)} của ${playerName} cho buổi này!`, 'success');
+    const { type, playerName, totalAmount, sessionId, participantId } = activePaymentSelect;
+
+    if (type === 'all') {
+      const updated = markAllDebtsAsPaidForPlayer(playerName, sessions);
+      setSessions(updated);
+      try {
+        await markAllDebtsPaidForPlayerInSupabase(playerName, method);
+      } catch (err) {
+        console.warn('Sync to Supabase warning:', err);
+      }
+      triggerConfetti();
+      onShowToast(`Đã thu ${formatVND(totalAmount)} của ${playerName} qua ${method.toUpperCase()}! 🎉`, 'success');
+    } else if (type === 'single' && sessionId && participantId) {
+      const updated = markSingleDebtAsPaid(sessionId, participantId, sessions);
+      setSessions(updated);
+      try {
+        await updateAttendeePaidInSupabase(participantId, true, method);
+      } catch (err) {
+        console.warn('Sync to Supabase warning:', err);
+      }
+      triggerConfetti();
+      onShowToast(`Đã thu ${formatVND(totalAmount)} của ${playerName} cho buổi này!`, 'success');
+    }
+
+    setActivePaymentSelect(null);
   };
 
   // Action: Open VietQR modal for total debt
@@ -140,6 +167,9 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
       lines.push(`----------------------------------------`);
       lines.push(`💳 STK Thủ Quỹ: ${bankConfig.bankName} - ${bankConfig.accountNo} (${bankConfig.accountName})`);
     }
+    if (bankConfig.momoLink) {
+      lines.push(`📱 MoMo: ${bankConfig.momoLink}`);
+    }
 
     lines.push(`\nNhờ mọi người thanh toán sớm để thủ quỹ xoay vòng đóng tiền sân nhé! Cảm ơn cả nhà! ❤️`);
 
@@ -165,7 +195,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
               Sổ Nợ & Truy Thu Tiền Cầu
             </h1>
             <p className="text-slate-400 text-xs sm:text-sm mt-1 max-w-xl">
-              Gom nhóm tự động tất cả các buổi chơi chưa thanh toán của từng thành viên. Tạo mã QR và tin nhắn nhắc nợ chỉ trong 1 chạm.
+              Gom nhóm tự động tất cả các buổi chơi chưa thanh toán từ Supabase. Tạo mã VietQR/MoMo và tin nhắn nhắc nợ chỉ trong 1 chạm.
             </p>
           </div>
 
@@ -266,8 +296,9 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
       {/* Debtors List */}
       {filteredDebtors.length > 0 ? (
         <div className="space-y-4">
-          {filteredDebtors.map((debtor, index) => {
+          {filteredDebtors.map((debtor) => {
             const isExpanded = !!expandedPlayers[debtor.participantName];
+            const isSelectingPayment = activePaymentSelect?.playerName === debtor.participantName && activePaymentSelect.type === 'all';
 
             return (
               <div 
@@ -310,46 +341,83 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-1.5 sm:gap-2">
-                      {/* VietQR button */}
-                      <button
-                        onClick={() => handleOpenQR(debtor)}
-                        className="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/20 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-sm"
-                        title="Tạo mã VietQR chuyển khoản tổng nợ"
-                      >
-                        <QrCode className="w-4 h-4" />
-                        <span className="hidden md:inline">Mã QR</span>
-                      </button>
+                    {isSelectingPayment ? (
+                      /* Payment Method Selection Bar */
+                      <div className="flex items-center gap-1.5 p-1 bg-slate-950 rounded-xl border border-emerald-500/30 animate-fadeIn">
+                        <button
+                          onClick={() => handleConfirmPay('bank')}
+                          className="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1 transition-all"
+                        >
+                          <CreditCard className="w-3.5 h-3.5" />
+                          <span>Bank</span>
+                        </button>
+                        <button
+                          onClick={() => handleConfirmPay('momo')}
+                          className="px-2.5 py-1.5 rounded-lg bg-pink-600 hover:bg-pink-500 text-white text-xs font-bold flex items-center gap-1 transition-all"
+                        >
+                          <Smartphone className="w-3.5 h-3.5" />
+                          <span>MoMo</span>
+                        </button>
+                        <button
+                          onClick={() => handleConfirmPay('cash')}
+                          className="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1 transition-all"
+                        >
+                          <Coins className="w-3.5 h-3.5" />
+                          <span>Tiền mặt</span>
+                        </button>
+                        <button
+                          onClick={() => setActivePaymentSelect(null)}
+                          className="px-2 py-1.5 text-xs text-slate-400 hover:text-white"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-1.5 sm:gap-2">
+                        {/* VietQR button */}
+                        <button
+                          onClick={() => handleOpenQR(debtor)}
+                          className="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/20 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-sm"
+                          title="Tạo mã QR VietQR / MoMo chuyển khoản tổng nợ"
+                        >
+                          <QrCode className="w-4 h-4" />
+                          <span className="hidden md:inline">Mã QR</span>
+                        </button>
 
-                      {/* Reminder message copy */}
-                      <button
-                        onClick={() => handleCopyReminder(debtor)}
-                        className="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/20 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-sm"
-                        title="Sao chép tin nhắn nhắc nợ gửi Zalo/Messenger"
-                      >
-                        <MessageSquare className="w-4 h-4" />
-                        <span className="hidden md:inline">Nhắn Zalo</span>
-                      </button>
+                        {/* Reminder message copy */}
+                        <button
+                          onClick={() => handleCopyReminder(debtor)}
+                          className="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/20 text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-sm"
+                          title="Sao chép tin nhắn nhắc nợ gửi Zalo/Messenger"
+                        >
+                          <MessageSquare className="w-4 h-4" />
+                          <span className="hidden md:inline">Nhắn Zalo</span>
+                        </button>
 
-                      {/* Mark all as paid */}
-                      <button
-                        onClick={() => handleMarkAllAsPaid(debtor.participantName, debtor.totalDebt)}
-                        className="px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-md shadow-emerald-500/20"
-                        title="Đánh dấu đã thu đủ toàn bộ số tiền nợ"
-                      >
-                        <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
-                        <span>Đã thu xong</span>
-                      </button>
+                        {/* Mark all as paid */}
+                        <button
+                          onClick={() => setActivePaymentSelect({
+                            type: 'all',
+                            playerName: debtor.participantName,
+                            totalAmount: debtor.totalDebt,
+                          })}
+                          className="px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-md shadow-emerald-500/20"
+                          title="Đánh dấu đã thu đủ toàn bộ số tiền nợ"
+                        >
+                          <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
+                          <span>Đã thu xong</span>
+                        </button>
 
-                      {/* Expand / Collapse toggle */}
-                      <button
-                        onClick={() => toggleExpand(debtor.participantName)}
-                        className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
-                        title={isExpanded ? 'Thu gọn chi tiết' : 'Xem chi tiết từng buổi nợ'}
-                      >
-                        {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                      </button>
-                    </div>
+                        {/* Expand / Collapse toggle */}
+                        <button
+                          onClick={() => toggleExpand(debtor.participantName)}
+                          className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                          title={isExpanded ? 'Thu gọn chi tiết' : 'Xem chi tiết từng buổi nợ'}
+                        >
+                          {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    )}
 
                   </div>
 
@@ -365,48 +433,87 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                     </div>
 
                     <div className="space-y-2.5">
-                      {debtor.debtDetails.map((item, idx) => (
-                        <div 
-                          key={item.sessionId + idx}
-                          className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800/70 hover:border-slate-700/80 transition-colors"
-                        >
-                          <div className="flex items-start sm:items-center gap-3">
-                            <div className="p-2 rounded-xl bg-slate-800 text-slate-300 shrink-0 mt-0.5 sm:mt-0">
-                              <Calendar className="w-4 h-4 text-emerald-400" />
-                            </div>
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <p className="font-semibold text-white text-xs sm:text-sm">
-                                  {item.sessionTitle}
-                                </p>
-                                <span className="text-[10px] px-2 py-0.2 rounded-full bg-slate-800 text-slate-300 font-medium">
-                                  {item.courtName}
-                                </span>
+                      {debtor.debtDetails.map((item, idx) => {
+                        const isSelectingSingle = activePaymentSelect?.participantId === item.participantId;
+
+                        return (
+                          <div 
+                            key={item.sessionId + idx}
+                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 sm:p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800/70 hover:border-slate-700/80 transition-colors"
+                          >
+                            <div className="flex items-start sm:items-center gap-3">
+                              <div className="p-2 rounded-xl bg-slate-800 text-slate-300 shrink-0 mt-0.5 sm:mt-0">
+                                <Calendar className="w-4 h-4 text-emerald-400" />
                               </div>
-                              <p className="text-[11px] text-slate-400 mt-0.5">
-                                {formatDateVietnamese(item.date)} • Phải trả: <span className="text-slate-300 font-medium">{formatVND(item.calculatedAmount)}</span>
-                                {item.paidAmount > 0 && ` (Đã trả trước: ${formatVND(item.paidAmount)})`}
-                              </p>
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <p className="font-semibold text-white text-xs sm:text-sm">
+                                    {item.sessionTitle}
+                                  </p>
+                                  <span className="text-[10px] px-2 py-0.2 rounded-full bg-slate-800 text-slate-300 font-medium">
+                                    {item.courtName}
+                                  </span>
+                                </div>
+                                <p className="text-[11px] text-slate-400 mt-0.5">
+                                  {formatDateVietnamese(item.date)} • Phải trả: <span className="text-slate-300 font-medium">{formatVND(item.calculatedAmount)}</span>
+                                  {item.paidAmount > 0 && ` (Đã trả trước: ${formatVND(item.paidAmount)})`}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800/50">
+                              <div className="text-left sm:text-right">
+                                <span className="text-[10px] text-slate-500 font-semibold block sm:inline mr-1">Còn thiếu:</span>
+                                <span className="font-bold text-red-400 text-sm">{formatVND(item.debtAmount)}</span>
+                              </div>
+
+                              {isSelectingSingle ? (
+                                <div className="flex items-center gap-1 p-1 bg-slate-950 rounded-xl border border-emerald-500/30 animate-fadeIn">
+                                  <button
+                                    onClick={() => handleConfirmPay('bank')}
+                                    className="px-2 py-1 rounded bg-blue-600 hover:bg-blue-500 text-white text-[11px] font-bold"
+                                  >
+                                    Bank
+                                  </button>
+                                  <button
+                                    onClick={() => handleConfirmPay('momo')}
+                                    className="px-2 py-1 rounded bg-pink-600 hover:bg-pink-500 text-white text-[11px] font-bold"
+                                  >
+                                    MoMo
+                                  </button>
+                                  <button
+                                    onClick={() => handleConfirmPay('cash')}
+                                    className="px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold"
+                                  >
+                                    Tiền mặt
+                                  </button>
+                                  <button
+                                    onClick={() => setActivePaymentSelect(null)}
+                                    className="px-1 text-[11px] text-slate-400"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => setActivePaymentSelect({
+                                    type: 'single',
+                                    playerName: debtor.participantName,
+                                    totalAmount: item.debtAmount,
+                                    sessionId: item.sessionId,
+                                    participantId: item.participantId,
+                                  })}
+                                  className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-emerald-600 hover:text-white text-emerald-400 border border-emerald-500/20 text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer"
+                                  title="Thanh toán buổi này"
+                                >
+                                  <Check className="w-3.5 h-3.5" />
+                                  <span>Trả buổi này</span>
+                                </button>
+                              )}
                             </div>
                           </div>
-
-                          <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-800/50">
-                            <div className="text-left sm:text-right">
-                              <span className="text-[10px] text-slate-500 font-semibold block sm:inline mr-1">Còn thiếu:</span>
-                              <span className="font-bold text-red-400 text-sm">{formatVND(item.debtAmount)}</span>
-                            </div>
-
-                            <button
-                              onClick={() => handleMarkSingleAsPaid(item.sessionId, item.participantId, debtor.participantName, item.debtAmount)}
-                              className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-emerald-600 hover:text-white text-emerald-400 border border-emerald-500/20 text-xs font-semibold flex items-center gap-1 transition-all cursor-pointer"
-                              title="Thanh toán buổi này"
-                            >
-                              <Check className="w-3.5 h-3.5" />
-                              <span>Trả buổi này</span>
-                            </button>
-                          </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -416,7 +523,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
           })}
         </div>
       ) : (
-        /* Empty State (No Debts or Filter Found) */
+        /* Empty State */
         <div className="rounded-3xl glass-card border border-slate-800/80 p-8 sm:p-12 text-center flex flex-col items-center justify-center">
           {searchTerm ? (
             <>
