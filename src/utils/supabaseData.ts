@@ -232,6 +232,97 @@ export const deleteSessionInSupabase = async (sessionId: string) => {
 };
 
 /**
+ * CẬP NHẬT BUỔI CHƠI TRÊN SUPABASE (CHI PHÍ, NGÀY, DANH SÁCH NGƯỜI CHƠI)
+ */
+export const updateSessionInSupabase = async (
+  sessionId: string,
+  session: {
+    date: string;
+    cost_san: number;
+    cost_cau: number;
+    cost_nuoc: number;
+    cost_khac: number;
+    participants: Participant[];
+  }
+) => {
+  // 1. Cập nhật thông tin buổi chơi
+  const { error: sessionError } = await supabase
+    .from('sessions')
+    .update({
+      date: session.date,
+      cost_san: session.cost_san,
+      cost_cau: session.cost_cau,
+      cost_nuoc: session.cost_nuoc,
+      cost_khac: session.cost_khac,
+    })
+    .eq('id', sessionId);
+
+  if (sessionError) throw sessionError;
+
+  // 2. Lấy danh sách attendees hiện có trong Supabase của buổi này
+  const { data: existingAttendees, error: fetchError } = await supabase
+    .from('attendees')
+    .select('*')
+    .eq('session_id', sessionId);
+
+  if (fetchError) throw fetchError;
+
+  const currentDbAttendees: DbAttendee[] = existingAttendees || [];
+
+  // Tìm các attendee bị xóa / giữ lại / thêm mới
+  const remainingIds = new Set<string>();
+  const toInsert: Array<{ session_id: string; name: string; paid: boolean; method: string | null }> = [];
+
+  for (const p of session.participants) {
+    const matched = currentDbAttendees.find(
+      (dbAtt) => dbAtt.id === p.id || dbAtt.name.trim().toLowerCase() === p.name.trim().toLowerCase()
+    );
+
+    if (matched) {
+      remainingIds.add(matched.id);
+      // Cập nhật trạng thái nếu có thay đổi
+      if (matched.paid !== (p.status === 'paid') || matched.method !== (p.method || null)) {
+        await supabase
+          .from('attendees')
+          .update({
+            paid: p.status === 'paid',
+            method: p.status === 'paid' ? (p.method || 'bank') : null,
+          })
+          .eq('id', matched.id);
+      }
+    } else {
+      toInsert.push({
+        session_id: sessionId,
+        name: p.name.trim(),
+        paid: p.status === 'paid',
+        method: p.method || null,
+      });
+    }
+  }
+
+  // Xóa những người không còn trong danh sách
+  const toDeleteIds = currentDbAttendees
+    .filter((dbAtt) => !remainingIds.has(dbAtt.id))
+    .map((dbAtt) => dbAtt.id);
+
+  if (toDeleteIds.length > 0) {
+    const { error: deleteError } = await supabase
+      .from('attendees')
+      .delete()
+      .in('id', toDeleteIds);
+    if (deleteError) throw deleteError;
+  }
+
+  // Thêm người mới
+  if (toInsert.length > 0) {
+    const { error: insertError } = await supabase
+      .from('attendees')
+      .insert(toInsert);
+    if (insertError) throw insertError;
+  }
+};
+
+/**
  * THÊM THÀNH VIÊN MỚI VÀO SUPABASE
  */
 export const addMemberInSupabase = async (name: string) => {

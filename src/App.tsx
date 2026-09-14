@@ -13,6 +13,7 @@ import {
   fetchAllSupabaseData, 
   createSessionInSupabase, 
   deleteSessionInSupabase, 
+  updateSessionInSupabase,
   addMemberInSupabase, 
   deleteMemberInSupabase,
 } from './utils/supabaseData';
@@ -38,6 +39,7 @@ export const App: React.FC = () => {
 
   // Modals
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [sessionToEdit, setSessionToEdit] = useState<Session | null>(null);
   const [selectedSession, setSelectedSession] = useState<Session | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
@@ -129,24 +131,59 @@ export const App: React.FC = () => {
   }, []);
 
   // Handlers for Session CRUD with Supabase
-  const handleAddSession = async (newSession: Session) => {
-    const updated = [newSession, ...sessions];
-    handleUpdateSessions(updated);
-    showToast(`Đã tạo buổi chơi mới "${newSession.title}"! 🏸`, 'success');
+  const handleOpenCreateSession = () => {
+    setSessionToEdit(null);
+    setIsCreateModalOpen(true);
+  };
 
-    try {
-      await createSessionInSupabase({
-        date: newSession.date,
-        cost_san: newSession.cost_san || 0,
-        cost_cau: newSession.cost_cau || 0,
-        cost_nuoc: newSession.cost_nuoc || 0,
-        cost_khac: newSession.cost_khac || 0,
-        attendeeNames: newSession.participants.map(p => p.name),
-      });
-      loadData();
-    } catch (err) {
-      console.warn('Sync to Supabase warning:', err);
+  const handleOpenEditSession = (session: Session) => {
+    setSessionToEdit(session);
+    setIsCreateModalOpen(true);
+  };
+
+  const handleSaveSession = async (savedSession: Session) => {
+    if (sessionToEdit) {
+      // Chế độ chỉnh sửa buổi chơi
+      const updated = sessions.map(s => s.id === savedSession.id ? savedSession : s);
+      handleUpdateSessions(updated);
+      setSelectedSession(savedSession);
+      showToast(`Đã cập nhật buổi chơi "${savedSession.title}"! 🏸`, 'success');
+
+      try {
+        await updateSessionInSupabase(savedSession.id, {
+          date: savedSession.date,
+          cost_san: savedSession.cost_san || 0,
+          cost_cau: savedSession.cost_cau || 0,
+          cost_nuoc: savedSession.cost_nuoc || 0,
+          cost_khac: savedSession.cost_khac || 0,
+          participants: savedSession.participants,
+        });
+        loadData();
+      } catch (err) {
+        console.warn('Sync update session to Supabase warning:', err);
+      }
+    } else {
+      // Chế độ tạo mới buổi chơi
+      const updated = [savedSession, ...sessions];
+      handleUpdateSessions(updated);
+      showToast(`Đã tạo buổi chơi mới "${savedSession.title}"! 🏸`, 'success');
+
+      try {
+        await createSessionInSupabase({
+          date: savedSession.date,
+          cost_san: savedSession.cost_san || 0,
+          cost_cau: savedSession.cost_cau || 0,
+          cost_nuoc: savedSession.cost_nuoc || 0,
+          cost_khac: savedSession.cost_khac || 0,
+          attendeeNames: savedSession.participants.map(p => p.name),
+        });
+        loadData();
+      } catch (err) {
+        console.warn('Sync to Supabase warning:', err);
+      }
     }
+
+    setSessionToEdit(null);
   };
 
   const handleUpdateSingleSession = async (updatedSession: Session) => {
@@ -217,7 +254,7 @@ export const App: React.FC = () => {
         setActiveTab={setActiveTab}
         unpaidPlayersCount={debtSummaries.length}
         totalUnpaidAmount={totalUnpaidAmount}
-        onOpenCreateSession={() => setIsCreateModalOpen(true)}
+        onOpenCreateSession={handleOpenCreateSession}
       />
 
       {/* Main Container */}
@@ -227,7 +264,7 @@ export const App: React.FC = () => {
             sessions={sessions}
             bankConfig={bankConfig}
             setActiveTab={setActiveTab}
-            onOpenCreateSession={() => setIsCreateModalOpen(true)}
+            onOpenCreateSession={handleOpenCreateSession}
             onSelectSession={handleOpenDetailModal}
           />
         )}
@@ -236,7 +273,7 @@ export const App: React.FC = () => {
           <SessionsTab
             sessions={sessions}
             bankConfig={bankConfig}
-            onOpenCreateSession={() => setIsCreateModalOpen(true)}
+            onOpenCreateSession={handleOpenCreateSession}
             onSelectSession={handleOpenDetailModal}
           />
         )}
@@ -275,10 +312,14 @@ export const App: React.FC = () => {
       {/* Modals */}
       <CreateSessionModal
         isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
+        onClose={() => {
+          setIsCreateModalOpen(false);
+          setSessionToEdit(null);
+        }}
         members={members}
+        sessionToEdit={sessionToEdit}
         lastSession={sessions.length > 0 ? sessions[0] : null}
-        onSaveSession={handleAddSession}
+        onSaveSession={handleSaveSession}
       />
 
       <SessionDetailModal
@@ -288,6 +329,7 @@ export const App: React.FC = () => {
         bankConfig={bankConfig}
         onUpdateSession={handleUpdateSingleSession}
         onDeleteSession={handleDeleteSession}
+        onEditSession={handleOpenEditSession}
         onShowToast={showToast}
       />
 

@@ -9,7 +9,8 @@ import {
   Check, 
   CreditCard,
   Smartphone,
-  Coins
+  Coins,
+  Edit3
 } from 'lucide-react';
 import { Session, BankConfig, Participant, PaymentMethod } from '../types';
 import { formatVND, formatDateVietnamese, getInitials } from '../utils/format';
@@ -24,6 +25,7 @@ interface SessionDetailModalProps {
   bankConfig: BankConfig;
   onUpdateSession: (session: Session) => void;
   onDeleteSession: (sessionId: string) => void;
+  onEditSession?: (session: Session) => void;
   onShowToast: (message: string, type?: 'success' | 'info' | 'error') => void;
 }
 
@@ -34,6 +36,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
   bankConfig,
   onUpdateSession,
   onDeleteSession,
+  onEditSession,
   onShowToast,
 }) => {
   const [selectedPlayerQR, setSelectedPlayerQR] = useState<{
@@ -163,12 +166,25 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
             </h2>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-2 text-[#7A8A7C] hover:text-[#1D2620] rounded-xl hover:bg-[#ECE8DC] transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-1.5">
+            {onEditSession && (
+              <button
+                onClick={() => onEditSession(session)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#E6F4EA] hover:bg-[#D5E8D8] text-[#1F7A52] border border-[#D1EAD5] text-xs font-bold transition-colors cursor-pointer shadow-2xs"
+                title="Chỉnh sửa buổi chơi & số lượng người tham gia"
+              >
+                <Edit3 className="w-3.5 h-3.5" />
+                <span>Sửa buổi</span>
+              </button>
+            )}
+
+            <button
+              onClick={onClose}
+              className="p-2 text-[#7A8A7C] hover:text-[#1D2620] rounded-xl hover:bg-[#ECE8DC] transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Content Body */}
@@ -351,6 +367,15 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
           </button>
 
           <div className="flex gap-2">
+            {onEditSession && (
+              <button
+                onClick={() => onEditSession(session)}
+                className="px-3.5 py-2 rounded-xl bg-[#E6F4EA] hover:bg-[#D5E8D8] text-[#1F7A52] border border-[#D1EAD5] text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
+              >
+                <Edit3 className="w-4 h-4" />
+                <span>Sửa buổi</span>
+              </button>
+            )}
             <button
               onClick={handleCopyBill}
               className="px-4 py-2 rounded-xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#1D2620] text-xs font-bold flex items-center gap-1.5 cursor-pointer"

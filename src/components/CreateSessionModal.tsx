@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, Trash2, Check, Sparkles, UserCheck, RotateCcw } from 'lucide-react';
-import { Session, Member, Participant, ExpenseItem } from '../types';
+import { X, Trash2, Check, Sparkles, UserCheck, RotateCcw, Edit3 } from 'lucide-react';
+import { Session, Member, Participant, ExpenseItem, PaymentMethod } from '../types';
 import { getRandomAvatarColor, formatVND } from '../utils/format';
 import { calculateSessionMath } from '../utils/supabaseData';
 
@@ -9,6 +9,7 @@ interface CreateSessionModalProps {
   onClose: () => void;
   members: Member[];
   lastSession?: Session | null;
+  sessionToEdit?: Session | null;
   onSaveSession: (session: Session) => void;
 }
 
@@ -31,9 +32,11 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
   onClose,
   members,
   lastSession,
+  sessionToEdit,
   onSaveSession,
 }) => {
   const todayStr = new Date().toISOString().split('T')[0];
+  const isEditing = Boolean(sessionToEdit);
 
   // Form states
   const [date, setDate] = useState(todayStr);
@@ -42,48 +45,76 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
   const [costNuoc, setCostNuoc] = useState<number>(() => lastSession?.cost_nuoc || 0);
   const [costKhac, setCostKhac] = useState<number>(() => lastSession?.cost_khac || 0);
 
-  // Selected participants state: Tự động lấy danh sách người chơi từ buổi trước (lastSession)
+  // Selected participants state
   const [selectedParticipants, setSelectedParticipants] = useState<
     Array<{
       id: string;
       memberId?: string;
       name: string;
       avatarColor: string;
+      status?: 'paid' | 'unpaid' | 'partial';
+      paidAmount?: number;
+      method?: PaymentMethod | null;
+      paidAt?: string;
     }>
   >([]);
 
-  // Tự động load danh sách từ buổi chơi trước khi mở modal
+  // Tự động load danh sách từ sessionToEdit hoặc buổi chơi trước khi mở modal
   useEffect(() => {
     if (isOpen) {
-      setDate(new Date().toISOString().split('T')[0]);
-      if (lastSession && lastSession.participants && lastSession.participants.length > 0) {
-        // Tự động sao chép danh sách người chơi từ buổi gần nhất
+      if (sessionToEdit) {
+        setDate(sessionToEdit.date);
+        setCostSan(sessionToEdit.cost_san || 0);
+        setCostCau(sessionToEdit.cost_cau || 0);
+        setCostNuoc(sessionToEdit.cost_nuoc || 0);
+        setCostKhac(sessionToEdit.cost_khac || 0);
         setSelectedParticipants(
-          lastSession.participants.map((p) => ({
-            id: 'p-' + Math.random().toString(36).substr(2, 9),
+          sessionToEdit.participants.map((p) => ({
+            id: p.id,
             memberId: p.memberId,
             name: p.name,
             avatarColor: p.avatarColor || getRandomAvatarColor(p.name),
+            status: p.status,
+            paidAmount: p.paidAmount,
+            method: p.method,
+            paidAt: p.paidAt,
           }))
         );
-        setCostSan(lastSession.cost_san || 108000);
-        setCostCau(lastSession.cost_cau || 121000);
-        setCostNuoc(lastSession.cost_nuoc || 0);
-        setCostKhac(lastSession.cost_khac || 0);
-      } else if (members.length > 0) {
-        // Nếu chưa có buổi nào trước đó, lấy các thành viên chính thức đầu tiên
-        const regularMembers = members.filter((m) => !isTemporaryOrGuestName(m.name));
-        setSelectedParticipants(
-          regularMembers.slice(0, 6).map((m) => ({
-            id: 'p-' + Math.random().toString(36).substr(2, 9),
-            memberId: m.id,
-            name: m.name,
-            avatarColor: m.avatarColor,
-          }))
-        );
+      } else {
+        setDate(new Date().toISOString().split('T')[0]);
+        if (lastSession && lastSession.participants && lastSession.participants.length > 0) {
+          // Tự động sao chép danh sách người chơi từ buổi gần nhất
+          setSelectedParticipants(
+            lastSession.participants.map((p) => ({
+              id: 'p-' + Math.random().toString(36).substr(2, 9),
+              memberId: p.memberId,
+              name: p.name,
+              avatarColor: p.avatarColor || getRandomAvatarColor(p.name),
+              status: 'unpaid',
+              paidAmount: 0,
+            }))
+          );
+          setCostSan(lastSession.cost_san || 108000);
+          setCostCau(lastSession.cost_cau || 121000);
+          setCostNuoc(lastSession.cost_nuoc || 0);
+          setCostKhac(lastSession.cost_khac || 0);
+        } else if (members.length > 0) {
+          // Nếu chưa có buổi nào trước đó, lấy các thành viên chính thức đầu tiên
+          const regularMembers = members.filter((m) => !isTemporaryOrGuestName(m.name));
+          setSelectedParticipants(
+            regularMembers.slice(0, 6).map((m) => ({
+              id: 'p-' + Math.random().toString(36).substr(2, 9),
+              memberId: m.id,
+              name: m.name,
+              avatarColor: m.avatarColor,
+              status: 'unpaid',
+              paidAmount: 0,
+            }))
+          );
+        }
       }
     }
-  }, [isOpen, lastSession]);
+  }, [isOpen, lastSession, sessionToEdit]);
 
   // Custom guest player input
   const [guestName, setGuestName] = useState('');
@@ -110,6 +141,8 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
           memberId: member.id,
           name: member.name,
           avatarColor: member.avatarColor,
+          status: 'unpaid' as const,
+          paidAmount: 0,
         },
       ]);
     }
@@ -124,6 +157,8 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
         id: 'p-' + Math.random().toString(36).substr(2, 9),
         name: guestName.trim(),
         avatarColor: getRandomAvatarColor(guestName.trim()),
+        status: 'unpaid' as const,
+        paidAmount: 0,
       },
     ]);
     setGuestName('');
@@ -143,6 +178,8 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
           memberId: p.memberId,
           name: p.name,
           avatarColor: p.avatarColor || getRandomAvatarColor(p.name),
+          status: 'unpaid',
+          paidAmount: 0,
         }))
       );
     }
@@ -165,20 +202,25 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
     if (costNuoc > 0) expenses.push({ id: 'exp-3', name: 'Tiền nước', category: 'drinks', total: costNuoc });
     if (costKhac > 0) expenses.push({ id: 'exp-4', name: 'Khác', category: 'other', total: costKhac });
 
-    const participants: Participant[] = selectedParticipants.map((p) => ({
-      id: p.id,
-      memberId: p.memberId,
-      name: p.name,
-      avatarColor: p.avatarColor,
-      calculatedAmount: math.per,
-      paidAmount: 0,
-      status: 'unpaid' as const,
-    }));
+    const participants: Participant[] = selectedParticipants.map((p) => {
+      const isPaid = p.status === 'paid';
+      return {
+        id: p.id || ('p-' + Math.random().toString(36).substr(2, 9)),
+        memberId: p.memberId,
+        name: p.name,
+        avatarColor: p.avatarColor,
+        calculatedAmount: math.per,
+        paidAmount: isPaid ? math.per : 0,
+        status: isPaid ? ('paid' as const) : ('unpaid' as const),
+        method: p.method,
+        paidAt: p.paidAt,
+      };
+    });
 
-    const newSession: Session = {
-      id: 's-' + Date.now(),
-      title: `Buổi Cầu Lông ngày ${date}`,
-      courtName: 'Sân Cầu Lông',
+    const sessionData: Session = {
+      id: sessionToEdit ? sessionToEdit.id : ('s-' + Date.now()),
+      title: sessionToEdit?.title || `Buổi Cầu Lông ngày ${date}`,
+      courtName: sessionToEdit?.courtName || 'Sân Cầu Lông',
       date: date || todayStr,
       cost_san: costSan,
       cost_cau: costCau,
@@ -189,10 +231,10 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
       surplus: math.surplus,
       expenses: expenses,
       participants: participants,
-      createdAt: new Date().toISOString(),
+      createdAt: sessionToEdit?.createdAt || new Date().toISOString(),
     };
 
-    onSaveSession(newSession);
+    onSaveSession(sessionData);
     onClose();
   };
 
@@ -210,14 +252,18 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
         <div className="flex items-center justify-between pb-3 border-b border-[#EBE7DC]">
           <div className="flex items-center gap-2">
             <div className="p-2 rounded-xl bg-[#E6F4EA] text-[#1F7A52]">
-              <Sparkles className="w-5 h-5" />
+              {isEditing ? <Edit3 className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
             </div>
             <div>
-              <h2 className="text-lg font-black text-[#1D2620]">Tạo Buổi Chơi Mới</h2>
+              <h2 className="text-lg font-black text-[#1D2620]">
+                {isEditing ? 'Chỉnh Sửa Buổi Chơi' : 'Tạo Buổi Chơi Mới'}
+              </h2>
               <p className="text-xs text-[#5C695E]">
-                {lastSession
-                  ? 'Đã tự động lấy danh sách người chơi từ buổi gần nhất'
-                  : 'Tự động tính tiền & chia đều theo đầu người'}
+                {isEditing
+                  ? 'Điều chỉnh số lượng người chơi, người tham gia hoặc chi phí'
+                  : (lastSession
+                      ? 'Đã tự động lấy danh sách người chơi từ buổi gần nhất'
+                      : 'Tự động tính tiền & chia đều theo đầu người')}
               </p>
             </div>
           </div>
@@ -330,7 +376,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                 <h3 className="text-xs font-black text-[#1D2620] uppercase tracking-wider">
                   Người Tham Gia ({selectedParticipants.length} người)
                 </h3>
-                {lastSession && (
+                {!isEditing && lastSession && (
                   <button
                     type="button"
                     onClick={handleResetToLastSession}
@@ -412,6 +458,11 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                       {idx + 1}
                     </span>
                     <span className="font-bold text-[#1D2620]">{p.name}</span>
+                    {p.status === 'paid' && (
+                      <span className="text-[10px] px-1.5 py-0.2 rounded-md font-bold bg-[#E6F4EA] text-[#1F7A52] border border-[#D1EAD5]">
+                        Đã trả
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -443,7 +494,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
               type="submit"
               className="flex-1 py-2.5 px-4 rounded-2xl bg-[#1F7A52] hover:bg-[#186241] text-white text-xs sm:text-sm font-black shadow-sm transition-all cursor-pointer"
             >
-              Tạo Buổi Chơi
+              {isEditing ? 'Lưu Thay Đổi' : 'Tạo Buổi Chơi'}
             </button>
           </div>
         </form>
