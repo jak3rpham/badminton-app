@@ -1,0 +1,28 @@
+name: Supabase Keep Alive
+
+on:
+  schedule:
+    # Runs every 3 days at 00:00 UTC (Supabase pauses after 7 days of inactivity)
+    - cron: '0 0 */3 * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  keepalive:
+    name: Ping Supabase REST API
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase
+        run: |
+          echo "Sending keepalive ping to Supabase..."
+          RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" \
+            -X GET "${{ secrets.SUPABASE_URL || 'https://zfryjssoaztuihsntdso.supabase.co' }}/rest/v1/settings?select=id" \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpmcnlqc3NvYXp0dWloc250ZHNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MDQwMDAsImV4cCI6MjA5ODM4MDAwMH0.EJFfMiYc8N6HHKoFesHB9hHOIWx_QjeKNInGjIk6V4k' }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpmcnlqc3NvYXp0dWloc250ZHNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4MDQwMDAsImV4cCI6MjA5ODM4MDAwMH0.EJFfMiYc8N6HHKoFesHB9hHOIWx_QjeKNInGjIk6V4k' }}")
+          
+          echo "$RESPONSE"
+          STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS" | cut -d':' -f2)
+          if [ "$STATUS" -ge 200 ] && [ "$STATUS" -lt 300 ]; then
+            echo "Keepalive ping successful (Status: $STATUS)"
+          else
+            echo "Warning: Received status code: $STATUS"
+          fi
