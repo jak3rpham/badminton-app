@@ -12,7 +12,8 @@ import { formatVND, formatDateVietnamese, getInitials } from '../utils/format';
 interface SessionsTabProps {
   sessions: Session[];
   bankConfig: BankConfig;
-  onOpenCreateSession: () => void;
+  /** Không truyền = chế độ chỉ xem (thành viên) */
+  onOpenCreateSession?: () => void;
   onSelectSession: (session: Session) => void;
 }
 
@@ -56,13 +57,15 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={onOpenCreateSession}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-[#1F7A52] hover:bg-[#186241] text-white text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition-all cursor-pointer"
-        >
-          <Plus className="w-4 h-4 stroke-[3]" />
-          <span>Tạo Buổi Chơi Mới</span>
-        </button>
+        {onOpenCreateSession && (
+          <button
+            onClick={onOpenCreateSession}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-[#1F7A52] hover:bg-[#186241] text-white text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition-all cursor-pointer"
+          >
+            <Plus className="w-4 h-4 stroke-[3]" />
+            <span>Tạo Buổi Chơi Mới</span>
+          </button>
+        )}
       </div>
 
       {/* Filter and Search Bar */}

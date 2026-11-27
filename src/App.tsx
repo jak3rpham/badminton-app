@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { ActiveTab, Session, Member, BankConfig } from './types';
 import { 
   loadSessionsFromStorage, 
@@ -18,7 +18,11 @@ import {
   deleteMemberInSupabase,
 } from './utils/supabaseData';
 import { supabase } from './utils/supabase';
-import { Navbar } from './components/Navbar';
+import { Navbar, getNavItems } from './components/Navbar';
+import { MyDebtTab } from './components/MyDebtTab';
+import { LoginModal } from './components/LoginModal';
+import { InstallGuide, shouldAutoShowInstallGuide, markInstallGuideSeen } from './components/InstallGuide';
+import { useAuth } from './hooks/useAuth';
 import { DashboardTab } from './components/DashboardTab';
 import { SessionsTab } from './components/SessionsTab';
 import { DebtLedgerTab } from './components/DebtLedgerTab';
@@ -33,7 +37,11 @@ export const App: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>(() => loadSessionsFromStorage());
   const [members, setMembers] = useState<Member[]>(() => loadMembersFromStorage());
   const [bankConfig, setBankConfig] = useState<BankConfig>(() => loadBankConfigFromStorage());
-  const [activeTab, setActiveTab] = useState<ActiveTab>('debt-ledger');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('my-debt');
+  const { isAdmin, isReady: isAuthReady, signIn, signOut } = useAuth();
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isInstallGuideOpen, setIsInstallGuideOpen] = useState<boolean>(() => shouldAutoShowInstallGuide());
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
   const [isSupabaseConnected, setIsSupabaseConnected] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -94,6 +102,7 @@ export const App: React.FC = () => {
         saveMembersToStorage(liveData.members);
         saveBankConfigToStorage(liveData.bankConfig);
         setIsSupabaseConnected(true);
+        setLastUpdatedAt(new Date());
       } else {
         setIsSupabaseConnected(false);
       }
@@ -129,6 +138,28 @@ export const App: React.FC = () => {
       supabase.removeChannel(channel);
     };
   }, []);
+
+  // Đổi quyền (đăng nhập/đăng xuất) → đưa về tab hợp lệ
+  useEffect(() => {
+    if (!isAuthReady) return;
+    const allowed = getNavItems(isAdmin, 0).map(i => i.id);
+    if (isAdmin && activeTab === 'my-debt') {
+      setActiveTab('debt-ledger');
+    } else if (!allowed.includes(activeTab)) {
+      setActiveTab(allowed[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin, isAuthReady]);
+
+  const closeInstallGuide = useCallback(() => {
+    markInstallGuideSeen();
+    setIsInstallGuideOpen(false);
+  }, []);
+
+  const handleSignOut = async () => {
+    await signOut();
+    showToast('Đã đăng xuất.', 'info');
+  };
 
   // Handlers for Session CRUD with Supabase
   const handleOpenCreateSession = () => {
@@ -255,11 +286,23 @@ export const App: React.FC = () => {
         unpaidPlayersCount={debtSummaries.length}
         totalUnpaidAmount={totalUnpaidAmount}
         onOpenCreateSession={handleOpenCreateSession}
+        isAdmin={isAdmin}
+        onOpenLogin={() => setIsLoginOpen(true)}
+        onSignOut={handleSignOut}
+        onOpenInstallGuide={() => setIsInstallGuideOpen(true)}
       />
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-24 lg:pb-8">
-        {activeTab === 'dashboard' && (
+        {activeTab === 'my-debt' && (
+          <MyDebtTab
+            sessions={sessions}
+            members={members}
+            bankConfig={bankConfig}
+          />
+        )}
+
+        {isAdmin && activeTab === 'dashboard' && (
           <DashboardTab
             sessions={sessions}
             bankConfig={bankConfig}
@@ -273,7 +316,7 @@ export const App: React.FC = () => {
           <SessionsTab
             sessions={sessions}
             bankConfig={bankConfig}
-            onOpenCreateSession={handleOpenCreateSession}
+            onOpenCreateSession={isAdmin ? handleOpenCreateSession : undefined}
             onSelectSession={handleOpenDetailModal}
           />
         )}
@@ -284,10 +327,11 @@ export const App: React.FC = () => {
             setSessions={handleUpdateSessions}
             bankConfig={bankConfig}
             onShowToast={showToast}
+            canEdit={isAdmin}
           />
         )}
 
-        {activeTab === 'members' && (
+        {isAdmin && activeTab === 'members' && (
           <MembersTab
             members={members}
             sessions={sessions}
@@ -297,7 +341,7 @@ export const App: React.FC = () => {
           />
         )}
 
-        {activeTab === 'settings' && (
+        {isAdmin && activeTab === 'settings' && (
           <SettingsTab
             bankConfig={bankConfig}
             onSaveBankConfig={handleUpdateBankConfig}
@@ -307,11 +351,20 @@ export const App: React.FC = () => {
             onShowToast={showToast}
           />
         )}
+        {lastUpdatedAt && (
+          <p className="mt-6 text-center text-[11px] text-[#8C988D]">
+            {isSupabaseConnected ? 'Cập nhật' : 'Mất kết nối — dữ liệu từ lần cập nhật'}{' '}
+            {lastUpdatedAt.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
+            {lastUpdatedAt.toDateString() === new Date().toDateString()
+              ? ' hôm nay'
+              : ` ${lastUpdatedAt.toLocaleDateString('vi-VN')}`}
+          </p>
+        )}
       </main>
 
       {/* Modals */}
       <CreateSessionModal
-        isOpen={isCreateModalOpen}
+        isOpen={isAdmin && isCreateModalOpen}
         onClose={() => {
           setIsCreateModalOpen(false);
           setSessionToEdit(null);
@@ -329,9 +382,21 @@ export const App: React.FC = () => {
         bankConfig={bankConfig}
         onUpdateSession={handleUpdateSingleSession}
         onDeleteSession={handleDeleteSession}
-        onEditSession={handleOpenEditSession}
+        onEditSession={isAdmin ? handleOpenEditSession : undefined}
         onShowToast={showToast}
+        canEdit={isAdmin}
       />
+
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
+        onSignIn={async (adminCode) => {
+          await signIn(adminCode);
+          showToast('Đã đăng nhập chế độ trưởng nhóm.', 'success');
+        }}
+      />
+
+      <InstallGuide isOpen={isInstallGuideOpen} onClose={closeInstallGuide} />
 
       {/* Toast Notifications */}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />

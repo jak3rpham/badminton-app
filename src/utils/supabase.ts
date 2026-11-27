@@ -5,6 +5,12 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJ
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+/**
+ * Tài khoản trưởng nhóm cố định. "Mã admin" người dùng nhập chính là mật khẩu
+ * của tài khoản này trên Supabase Auth — nên quyền ghi vẫn do RLS kiểm soát ở server.
+ */
+export const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || 'admin@caulongpay.app';
+
 export interface DbMember {
   id: string;
   name: string;

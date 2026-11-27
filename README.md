@@ -35,6 +35,22 @@
 
 ---
 
+## 🔐 Phân Quyền: Thành Viên Xem, Trưởng Nhóm Sửa
+
+- **Thành viên** chỉ cần mở link: tab *Của tôi* (chọn tên → thấy số nợ, QR, nút chép STK/nội dung), *Buổi chơi* và *Sổ nợ* ở chế độ chỉ xem.
+- **Trưởng nhóm** bấm `⋯` → *Nhập mã admin* để tạo buổi, thu tiền, sửa thành viên và cài đặt.
+
+"Mã admin" thực chất là mật khẩu của một tài khoản Supabase cố định `admin@caulongpay.app` (đổi được qua biến môi trường `VITE_ADMIN_EMAIL`). Cài đặt một lần trên Supabase (project của app):
+1. **Authentication → Users → Add user → Create new user**: email `admin@caulongpay.app`, password = mã admin bạn muốn (tối thiểu 6 ký tự), tick *Auto Confirm User*.
+2. **Authentication → Sign In / Providers**: tắt *Allow new users to sign up*.
+3. **SQL Editor**: chạy toàn bộ [`supabase/rls-admin.sql`](supabase/rls-admin.sql).
+
+Đổi mã admin: vào Users → `admin@caulongpay.app` → đặt lại mật khẩu.
+
+Ẩn nút trên giao diện không phải là bảo mật. Quyền ghi thật sự do RLS quyết định: chỉ email có trong bảng `admins` mới ghi được dữ liệu.
+
+---
+
 ## 🛠️ Công Nghệ Sử Dụng
 
 - **React 19** + **TypeScript** + **Vite**

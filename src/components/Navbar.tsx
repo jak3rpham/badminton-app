@@ -1,5 +1,17 @@
-import React from 'react';
-import { LayoutDashboard, CalendarDays, WalletCards, Users, Settings, Plus } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  LayoutDashboard,
+  CalendarDays,
+  WalletCards,
+  Users,
+  Settings,
+  Plus,
+  UserRound,
+  MoreHorizontal,
+  Smartphone,
+  LogIn,
+  LogOut,
+} from 'lucide-react';
 import { ActiveTab } from '../types';
 
 interface NavbarProps {
@@ -8,26 +20,67 @@ interface NavbarProps {
   unpaidPlayersCount: number;
   totalUnpaidAmount: number;
   onOpenCreateSession: () => void;
+  isAdmin: boolean;
+  onOpenLogin: () => void;
+  onSignOut: () => void;
+  onOpenInstallGuide: () => void;
 }
+
+type NavItem = { id: ActiveTab; label: string; icon: React.ElementType; badge?: number };
+
+export const getNavItems = (isAdmin: boolean, unpaidPlayersCount: number): NavItem[] => {
+  const debtBadge = unpaidPlayersCount > 0 ? unpaidPlayersCount : undefined;
+
+  if (!isAdmin) {
+    // Thành viên: chỉ những gì họ cần — nợ của mình, các buổi, sổ nợ chung (chỉ xem)
+    return [
+      { id: 'my-debt', label: 'Của tôi', icon: UserRound },
+      { id: 'sessions', label: 'Buổi chơi', icon: CalendarDays },
+      { id: 'debt-ledger', label: 'Sổ nợ', icon: WalletCards, badge: debtBadge },
+    ];
+  }
+
+  return [
+    { id: 'dashboard', label: 'Tổng Quan', icon: LayoutDashboard },
+    { id: 'sessions', label: 'Buổi Chơi', icon: CalendarDays },
+    { id: 'debt-ledger', label: 'Sổ Nợ', icon: WalletCards, badge: debtBadge },
+    { id: 'members', label: 'Thành Viên', icon: Users },
+    { id: 'settings', label: 'Cài Đặt', icon: Settings },
+  ];
+};
 
 export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   setActiveTab,
   unpaidPlayersCount,
   onOpenCreateSession,
+  isAdmin,
+  onOpenLogin,
+  onSignOut,
+  onOpenInstallGuide,
 }) => {
-  const navItems = [
-    { id: 'dashboard' as ActiveTab, label: 'Tổng Quan', icon: LayoutDashboard },
-    { id: 'sessions' as ActiveTab, label: 'Buổi Chơi', icon: CalendarDays },
-    { 
-      id: 'debt-ledger' as ActiveTab, 
-      label: 'Sổ Nợ', 
-      icon: WalletCards, 
-      badge: unpaidPlayersCount > 0 ? unpaidPlayersCount : undefined,
-    },
-    { id: 'members' as ActiveTab, label: 'Thành Viên', icon: Users },
-    { id: 'settings' as ActiveTab, label: 'Cài Đặt', icon: Settings },
-  ];
+  const navItems = getNavItems(isAdmin, unpaidPlayersCount);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setIsMenuOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setIsMenuOpen(false);
+    document.addEventListener('mousedown', onDown);
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [isMenuOpen]);
+
+  const runMenu = (fn: () => void) => {
+    setIsMenuOpen(false);
+    fn();
+  };
 
   return (
     <>
@@ -35,10 +88,10 @@ export const Navbar: React.FC<NavbarProps> = ({
       <header className="sticky top-0 z-40 w-full border-b border-[#E4DFD3] bg-[#F5F3EC]/95 backdrop-blur-md transition-all shadow-xs pt-safe">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 sm:h-16 gap-3">
-            
+
             {/* Logo Brand (Left) */}
-            <div 
-              onClick={() => setActiveTab('dashboard')}
+            <div
+              onClick={() => setActiveTab(navItems[0].id)}
               className="flex items-center gap-2 sm:gap-2.5 cursor-pointer group select-none shrink-0"
             >
               <div className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-[#1F7A52] text-white shadow-xs group-hover:bg-[#186241] transition-colors shrink-0">
@@ -48,11 +101,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="font-black text-base sm:text-lg tracking-tight text-[#1D2620] block">
                   Cầu Lông Pay
                 </span>
-                <p className="text-[10px] sm:text-[11px] text-[#5C695E] hidden sm:block">Chia tiền & Sổ nợ tập trung</p>
+                <p className="text-[10px] sm:text-[11px] text-[#5C695E] hidden sm:block">
+                  {isAdmin ? 'Chế độ trưởng nhóm' : 'Chia tiền & Sổ nợ tập trung'}
+                </p>
               </div>
             </div>
 
-            {/* Large Screen Navigation Links (Only on wide screens >= 1024px, completely separate to avoid overlap) */}
+            {/* Large Screen Navigation Links */}
             <nav className="hidden lg:flex items-center gap-1 bg-[#ECE8DC] p-1 rounded-2xl border border-[#DDD7C9]">
               {navItems.map((item) => {
                 const Icon = item.icon;
@@ -79,23 +134,50 @@ export const Navbar: React.FC<NavbarProps> = ({
               })}
             </nav>
 
-            {/* Action Button: Create Session (Right) */}
+            {/* Right actions */}
             <div className="flex items-center gap-1.5 shrink-0">
-              <button
-                onClick={onOpenCreateSession}
-                className="flex items-center gap-1 sm:gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#1F7A52] hover:bg-[#186241] active:scale-95 transition-all shadow-xs cursor-pointer whitespace-nowrap"
-              >
-                <Plus className="w-4 h-4 stroke-[3]" />
-                <span className="hidden sm:inline">Tạo Buổi Chơi</span>
-                <span className="sm:hidden font-bold">Tạo mới</span>
-              </button>
+              {isAdmin && (
+                <button
+                  onClick={onOpenCreateSession}
+                  className="flex items-center gap-1 sm:gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#1F7A52] hover:bg-[#186241] active:scale-95 transition-all shadow-xs cursor-pointer whitespace-nowrap"
+                >
+                  <Plus className="w-4 h-4 stroke-[3]" />
+                  <span className="hidden sm:inline">Tạo Buổi Chơi</span>
+                  <span className="sm:hidden font-bold">Tạo mới</span>
+                </button>
+              )}
+
+              <div className="relative" ref={menuRef}>
+                <button
+                  onClick={() => setIsMenuOpen((v) => !v)}
+                  className="p-2 rounded-xl text-[#4F5D51] hover:bg-[#ECE8DC] transition-colors cursor-pointer"
+                  aria-label="Thêm tùy chọn"
+                  aria-expanded={isMenuOpen}
+                >
+                  <MoreHorizontal className="w-5 h-5" />
+                </button>
+
+                {isMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-[#FAF8F5] border border-[#E4DFD3] shadow-xl p-1.5 animate-fadeIn z-50">
+                    <MenuItem icon={Smartphone} label="Cài app lên điện thoại" onClick={() => runMenu(onOpenInstallGuide)} />
+                    {isAdmin ? (
+                      <>
+                        <div className="px-3 pt-2 pb-1 text-[11px] text-[#7A8A7C]">Đang ở chế độ trưởng nhóm</div>
+                        <MenuItem icon={LogOut} label="Đăng xuất" onClick={() => runMenu(onSignOut)} />
+                      </>
+                    ) : (
+                      <MenuItem icon={LogIn} label="Nhập mã admin" onClick={() => runMenu(onOpenLogin)} />
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
 
           </div>
         </div>
       </header>
 
-      {/* Sticky Bottom Navigation Bar (Always active on Mobile & Tablet < 1024px) */}
+      {/* Sticky Bottom Navigation Bar (Mobile & Tablet < 1024px) */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#FAF8F5]/98 backdrop-blur-xl border-t border-[#E4DFD3] px-2 py-1.5 flex justify-around items-center shadow-lg pb-safe">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -127,3 +209,17 @@ export const Navbar: React.FC<NavbarProps> = ({
     </>
   );
 };
+
+const MenuItem: React.FC<{ icon: React.ElementType; label: string; onClick: () => void }> = ({
+  icon: Icon,
+  label,
+  onClick,
+}) => (
+  <button
+    onClick={onClick}
+    className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-semibold text-[#1D2620] hover:bg-[#ECE8DC] transition-colors cursor-pointer text-left"
+  >
+    <Icon className="w-4 h-4 text-[#5C695E]" />
+    {label}
+  </button>
+);

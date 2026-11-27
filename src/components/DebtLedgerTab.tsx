@@ -29,6 +29,8 @@ interface DebtLedgerTabProps {
   setSessions: (sessions: Session[]) => void;
   bankConfig: BankConfig;
   onShowToast: (message: string, type?: 'success' | 'info' | 'error') => void;
+  /** false = thành viên chỉ xem: ẩn thu tiền và nhắc nợ */
+  canEdit?: boolean;
 }
 
 export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
@@ -36,6 +38,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
   setSessions,
   bankConfig,
   onShowToast,
+  canEdit = false,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'debt-desc' | 'debt-asc' | 'name-asc' | 'sessions-desc'>('debt-desc');
@@ -193,7 +196,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
           </div>
 
           {/* Quick Action Button */}
-          {debtSummaries.length > 0 && (
+          {canEdit && debtSummaries.length > 0 && (
             <button
               onClick={handleCopyAllDebtsSummary}
               className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-[#ECE8DC] hover:bg-[#E2DDD0] border border-[#DDD7C9] text-[#1D2620] text-xs sm:text-sm font-bold transition-all shadow-xs active:scale-95 cursor-pointer whitespace-nowrap"
@@ -378,6 +381,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                         </button>
 
                         {/* Reminder message copy */}
+                        {canEdit && (
                         <button
                           onClick={() => handleCopyReminder(debtor)}
                           className="p-2 sm:px-3 sm:py-2 rounded-xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#1A73E8] border border-[#DDD7C9] text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-2xs"
@@ -386,8 +390,10 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                           <MessageSquare className="w-4 h-4 text-[#1A73E8]" />
                           <span className="hidden md:inline">Nhắn Zalo</span>
                         </button>
+                        )}
 
                         {/* Mark all as paid */}
+                        {canEdit && (
                         <button
                           onClick={() => setActivePaymentSelect({
                             type: 'all',
@@ -400,6 +406,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                           <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
                           <span>Đã thu xong</span>
                         </button>
+                        )}
 
                         {/* Expand / Collapse toggle */}
                         <button
@@ -487,7 +494,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                                     ✕
                                   </button>
                                 </div>
-                              ) : (
+                              ) : canEdit && (
                                 <button
                                   onClick={() => setActivePaymentSelect({
                                     type: 'single',

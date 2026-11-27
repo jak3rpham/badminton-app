@@ -97,4 +97,4 @@ export interface PlayerDebtSummary {
   lastPlayedDate?: string;
 }
 
-export type ActiveTab = 'dashboard' | 'sessions' | 'debt-ledger' | 'members' | 'settings';
+export type ActiveTab = 'my-debt' | 'dashboard' | 'sessions' | 'debt-ledger' | 'members' | 'settings';

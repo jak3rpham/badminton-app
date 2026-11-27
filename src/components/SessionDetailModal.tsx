@@ -27,6 +27,8 @@ interface SessionDetailModalProps {
   onDeleteSession: (sessionId: string) => void;
   onEditSession?: (session: Session) => void;
   onShowToast: (message: string, type?: 'success' | 'info' | 'error') => void;
+  /** false = thành viên chỉ xem: ẩn thu tiền, sửa, xóa */
+  canEdit?: boolean;
 }
 
 export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
@@ -38,6 +40,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
   onDeleteSession,
   onEditSession,
   onShowToast,
+  canEdit = false,
 }) => {
   const [selectedPlayerQR, setSelectedPlayerQR] = useState<{
     isOpen: boolean;
@@ -145,11 +148,15 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#1D2620]/60 backdrop-blur-xs overflow-y-auto animate-fadeIn">
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#1D2620]/60 backdrop-blur-xs overflow-y-auto animate-fadeIn"
+      onClick={onClose}
+    >
       <div 
-        className="relative w-full max-w-2xl bg-[#FAF8F5] border border-[#E4DFD3] rounded-t-3xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col"
+        className="relative w-full max-w-2xl bg-[#FAF8F5] border border-[#E4DFD3] rounded-t-3xl sm:rounded-3xl px-5 pb-5 pt-2 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col animate-sheetUp"
         onClick={(e) => e.stopPropagation()}
       >
+        <div className="sm:hidden mx-auto mb-2 h-1.5 w-10 rounded-full bg-[#DDD7C9]" />
         {/* Header */}
         <div className="flex items-start justify-between pb-4 border-b border-[#EBE7DC]">
           <div>
@@ -298,7 +305,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                         </button>
                       )}
 
-                      {isPaid ? (
+                      {!canEdit ? null : isPaid ? (
                         <button
                           onClick={() => handleToggleParticipantStatus(p.id, false)}
                           className="px-3 py-1.5 rounded-xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#5C695E] hover:text-[#1D2620] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
@@ -353,6 +360,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
 
         {/* Footer Actions */}
         <div className="pt-3 border-t border-[#EBE7DC] flex flex-wrap gap-2.5 justify-between">
+          {canEdit ? (
           <button
             onClick={() => {
               if (confirm('Bạn có chắc chắn muốn xóa buổi chơi này không?')) {
@@ -365,6 +373,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
             <Trash2 className="w-4 h-4" />
             <span>Xóa buổi chơi</span>
           </button>
+          ) : <span />}
 
           <div className="flex gap-2">
             {onEditSession && (
