@@ -31,20 +31,20 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#1D2620]/60 backdrop-blur-xs animate-fadeIn"
+      className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-scrim/60 backdrop-blur-xs animate-fadeIn"
       onClick={onClose}
     >
       <div
-        className={`relative w-full ${maxWidth} bg-[#FAF8F5] border border-[#E4DFD3] rounded-t-3xl sm:rounded-3xl px-5 pb-5 pt-2 sm:p-6 shadow-2xl max-h-[90vh] flex flex-col animate-sheetUp pb-safe`}
+        className={`relative w-full ${maxWidth} bg-surface border border-line rounded-t-3xl sm:rounded-3xl px-5 pb-5 pt-2 sm:p-6 shadow-2xl max-h-[90vh] flex flex-col animate-sheetUp pb-safe`}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sm:hidden mx-auto mb-2 h-1.5 w-10 rounded-full bg-[#DDD7C9]" />
+        <div className="sm:hidden mx-auto mb-2 h-1.5 w-10 rounded-full bg-line-strong" />
         {title && (
           <div className="flex items-center justify-between pb-3">
-            <h3 className="text-base font-black text-[#1D2620]">{title}</h3>
+            <h3 className="text-base font-bold text-ink">{title}</h3>
             <button
               onClick={onClose}
-              className="p-1.5 text-[#7A8A7C] hover:text-[#1D2620] rounded-xl hover:bg-[#ECE8DC] transition-colors cursor-pointer"
+              className="p-1.5 text-ink-3 hover:text-ink rounded-xl hover:bg-muted transition-colors cursor-pointer"
               aria-label="Đóng"
             >
               <X className="w-5 h-5" />

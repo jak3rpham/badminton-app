@@ -135,7 +135,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
     );
 
     navigator.clipboard.writeText(text);
-    onShowToast('Đã sao chép hóa đơn buổi chơi! Dán vào Zalo để thông báo cho nhóm nhé.', 'success');
+    onShowToast('Đã chép bill. Dán vào nhóm Zalo để báo mọi người.', 'success');
   };
 
   const handleOpenPlayerQR = (p: Participant) => {
@@ -149,26 +149,26 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#1D2620]/60 backdrop-blur-xs overflow-y-auto animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-scrim/60 backdrop-blur-xs overflow-y-auto animate-fadeIn"
       onClick={onClose}
     >
       <div 
-        className="relative w-full max-w-2xl bg-[#FAF8F5] border border-[#E4DFD3] rounded-t-3xl sm:rounded-3xl px-5 pb-5 pt-2 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col animate-sheetUp"
+        className="relative w-full max-w-2xl bg-surface border border-line rounded-t-3xl sm:rounded-3xl px-5 pb-5 pt-2 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col animate-sheetUp"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sm:hidden mx-auto mb-2 h-1.5 w-10 rounded-full bg-[#DDD7C9]" />
+        <div className="sm:hidden mx-auto mb-2 h-1.5 w-10 rounded-full bg-line-strong" />
         {/* Header */}
-        <div className="flex items-start justify-between pb-4 border-b border-[#EBE7DC]">
+        <div className="flex items-start justify-between pb-4 border-b border-line">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-bold text-[#1F7A52] px-2.5 py-0.5 rounded-full bg-[#E6F4EA] border border-[#D1EAD5]">
+              <span className="text-xs font-bold text-accent px-2.5 py-0.5 rounded-full bg-accent-soft border border-accent-line">
                 {formatDateVietnamese(session.date)}
               </span>
-              <span className="text-xs font-black text-[#1F7A52] bg-[#EFF7F0] px-2 py-0.5 rounded border border-[#D1EAD5]">
+              <span className="text-xs font-bold text-accent bg-accent-soft px-2 py-0.5 rounded border border-accent-line">
                 {formatVND(perPerson)} / người
               </span>
             </div>
-            <h2 className="text-lg sm:text-2xl font-black text-[#1D2620] tracking-tight">
+            <h2 className="text-lg sm:text-2xl font-bold text-ink tracking-tight">
               {session.title}
             </h2>
           </div>
@@ -177,7 +177,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
             {onEditSession && (
               <button
                 onClick={() => onEditSession(session)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#E6F4EA] hover:bg-[#D5E8D8] text-[#1F7A52] border border-[#D1EAD5] text-xs font-bold transition-colors cursor-pointer shadow-2xs"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent-soft hover:bg-accent-soft text-accent border border-accent-line text-xs font-bold transition-colors cursor-pointer shadow-2xs"
                 title="Chỉnh sửa buổi chơi & số lượng người tham gia"
               >
                 <Edit3 className="w-3.5 h-3.5" />
@@ -187,7 +187,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
 
             <button
               onClick={onClose}
-              className="p-2 text-[#7A8A7C] hover:text-[#1D2620] rounded-xl hover:bg-[#ECE8DC] transition-colors cursor-pointer"
+              className="p-2 text-ink-3 hover:text-ink rounded-xl hover:bg-muted transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -198,42 +198,42 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
         <div className="space-y-4 my-4 overflow-y-auto pr-1 flex-1">
           
           {/* Quick Metrics Bar (Warm Theme) */}
-          <div className="grid grid-cols-3 gap-2.5 sm:gap-3 bg-[#F5F2E9] p-3.5 rounded-2xl border border-[#E4DFD3]">
+          <div className="grid grid-cols-3 gap-2.5 sm:gap-3 bg-sunken p-3.5 rounded-2xl border border-line">
             <div className="text-center">
-              <span className="text-[10px] uppercase font-bold text-[#7A8A7C] block">Tổng chi phí</span>
-              <span className="text-xs sm:text-base font-black text-[#1D2620]">{formatVND(session.totalExpense)}</span>
+              <span className="text-xs font-bold text-ink-3 block">Tổng chi phí</span>
+              <span className="text-xs sm:text-base font-bold text-ink">{formatVND(session.totalExpense)}</span>
             </div>
-            <div className="text-center border-x border-[#DDD7C9]">
-              <span className="text-[10px] uppercase font-bold text-[#7A8A7C] block">Đã thu</span>
-              <span className="text-xs sm:text-base font-black text-[#1F7A52]">{formatVND(totalPaid)}</span>
+            <div className="text-center border-x border-line-strong">
+              <span className="text-xs font-bold text-ink-3 block">Đã thu</span>
+              <span className="text-xs sm:text-base font-bold text-accent">{formatVND(totalPaid)}</span>
             </div>
             <div className="text-center">
-              <span className="text-[10px] uppercase font-bold text-[#7A8A7C] block">Còn nợ</span>
-              <span className="text-xs sm:text-base font-black text-[#C53030]">{formatVND(totalUnpaid)}</span>
+              <span className="text-xs font-bold text-ink-3 block">Còn nợ</span>
+              <span className="text-xs sm:text-base font-bold text-danger">{formatVND(totalUnpaid)}</span>
             </div>
           </div>
 
           {/* Expense Breakdown List */}
           <div className="space-y-2">
-            <span className="text-xs font-bold text-[#5C695E] uppercase tracking-wider block">
+            <span className="text-xs font-bold text-ink-2 block">
               Các Khoản Chi ({session.expenses.length} khoản):
             </span>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <div className="p-2.5 rounded-xl bg-[#F5F2E9] border border-[#E4DFD3] text-xs">
-                <span className="text-[#7A8A7C] block text-[10px]">Tiền sân:</span>
-                <span className="font-bold text-[#1D2620]">{formatVND(session.cost_san || 0)}</span>
+              <div className="p-2.5 rounded-xl bg-sunken border border-line text-xs">
+                <span className="text-ink-3 block text-xs">Tiền sân:</span>
+                <span className="font-bold text-ink">{formatVND(session.cost_san || 0)}</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-[#F5F2E9] border border-[#E4DFD3] text-xs">
-                <span className="text-[#7A8A7C] block text-[10px]">Tiền cầu:</span>
-                <span className="font-bold text-[#1D2620]">{formatVND(session.cost_cau || 0)}</span>
+              <div className="p-2.5 rounded-xl bg-sunken border border-line text-xs">
+                <span className="text-ink-3 block text-xs">Tiền cầu:</span>
+                <span className="font-bold text-ink">{formatVND(session.cost_cau || 0)}</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-[#F5F2E9] border border-[#E4DFD3] text-xs">
-                <span className="text-[#7A8A7C] block text-[10px]">Tiền nước:</span>
-                <span className="font-bold text-[#1D2620]">{formatVND(session.cost_nuoc || 0)}</span>
+              <div className="p-2.5 rounded-xl bg-sunken border border-line text-xs">
+                <span className="text-ink-3 block text-xs">Tiền nước:</span>
+                <span className="font-bold text-ink">{formatVND(session.cost_nuoc || 0)}</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-[#F5F2E9] border border-[#E4DFD3] text-xs">
-                <span className="text-[#7A8A7C] block text-[10px]">Khác:</span>
-                <span className="font-bold text-[#1D2620]">{formatVND(session.cost_khac || 0)}</span>
+              <div className="p-2.5 rounded-xl bg-sunken border border-line text-xs">
+                <span className="text-ink-3 block text-xs">Khác:</span>
+                <span className="font-bold text-ink">{formatVND(session.cost_khac || 0)}</span>
               </div>
             </div>
           </div>
@@ -241,10 +241,10 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
           {/* Participants Status List */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#5C695E] uppercase tracking-wider">
+              <span className="text-xs font-bold text-ink-2">
                 Danh Sách Người Chơi ({paidCount}/{session.participants.length} đã trả):
               </span>
-              <span className="text-[11px] text-[#C53030] font-bold">
+              <span className="text-xs text-danger font-bold">
                 {session.participants.length - paidCount > 0 ? `Còn ${session.participants.length - paidCount} người chưa trả` : 'Đã thu đủ 100%'}
               </span>
             </div>
@@ -266,30 +266,30 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                     key={p.id}
                     className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-2xl border transition-all ${
                       isPaid 
-                        ? 'bg-[#EFF7F0] border-[#D1EAD5]' 
-                        : 'bg-[#FAF8F5] border-[#E4DFD3] shadow-2xs'
+                        ? 'bg-accent-soft border-accent-line' 
+                        : 'bg-surface border-line shadow-2xs'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white text-xs shrink-0 shadow-2xs"
+                        className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-on-accent text-xs shrink-0 shadow-2xs"
                         style={{ backgroundColor: p.avatarColor }}
                       >
                         {getInitials(p.name)}
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-bold text-[#1D2620] text-xs sm:text-sm">{p.name}</span>
-                          <span className={`text-[10px] px-2.5 py-0.2 rounded-full font-bold ${
+                          <span className="font-bold text-ink text-xs sm:text-sm">{p.name}</span>
+                          <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold ${
                             isPaid 
-                              ? 'bg-[#E6F4EA] text-[#1F7A52] border border-[#D1EAD5]' 
-                              : 'bg-[#FFF1F0] text-[#C53030] border border-[#FCDAD7]'
+                              ? 'bg-accent-soft text-accent border border-accent-line' 
+                              : 'bg-danger-soft text-danger border border-danger-line'
                           }`}>
                             {isPaid ? `Đã trả ${p.method ? `(${p.method})` : ''}` : 'Chưa trả'}
                           </span>
                         </div>
-                        <p className="text-[11px] text-[#5C695E] mt-0.5">
-                          Số tiền: <span className="text-[#1D2620] font-bold">{formatVND(p.calculatedAmount)}</span>
+                        <p className="text-xs text-ink-2 mt-0.5">
+                          Số tiền: <span className="text-ink font-bold">{formatVND(p.calculatedAmount)}</span>
                         </p>
                       </div>
                     </div>
@@ -298,7 +298,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                       {!isPaid && (
                         <button
                           onClick={() => handleOpenPlayerQR(p)}
-                          className="p-2 rounded-xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#1F7A52] border border-[#DDD7C9] text-xs font-semibold cursor-pointer"
+                          className="p-2 rounded-xl bg-muted hover:bg-muted-hover text-accent border border-line-strong text-xs font-semibold cursor-pointer"
                           title="Tạo mã QR VietQR"
                         >
                           <QrCode className="w-4 h-4" />
@@ -308,34 +308,34 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                       {!canEdit ? null : isPaid ? (
                         <button
                           onClick={() => handleToggleParticipantStatus(p.id, false)}
-                          className="px-3 py-1.5 rounded-xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#5C695E] hover:text-[#1D2620] text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                          className="px-3 py-1.5 rounded-xl bg-muted hover:bg-muted-hover text-ink-2 hover:text-ink text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
                         >
-                          <CheckCircle2 className="w-3.5 h-3.5 text-[#1F7A52]" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-accent" />
                           <span>Đã trả (Hủy)</span>
                         </button>
                       ) : isSelecting ? (
-                        <div className="flex items-center gap-1 p-1 bg-[#ECE8DC] rounded-xl border border-[#DDD7C9] animate-fadeIn">
+                        <div className="flex items-center gap-1 p-1 bg-muted rounded-xl border border-line-strong animate-fadeIn">
                           <button
                             onClick={() => handleToggleParticipantStatus(p.id, true, 'bank')}
-                            className="px-2 py-1 rounded-lg bg-[#1A73E8] hover:bg-[#1557B0] text-white text-[11px] font-bold cursor-pointer"
+                            className="px-2 py-1 rounded-lg bg-info hover:bg-info-strong text-on-accent text-xs font-bold cursor-pointer"
                           >
                             Bank
                           </button>
                           <button
                             onClick={() => handleToggleParticipantStatus(p.id, true, 'momo')}
-                            className="px-2 py-1 rounded-lg bg-[#D82D8B] hover:bg-[#B31D6F] text-white text-[11px] font-bold cursor-pointer"
+                            className="px-2 py-1 rounded-lg bg-momo hover:bg-momo-strong text-on-accent text-xs font-bold cursor-pointer"
                           >
                             MoMo
                           </button>
                           <button
                             onClick={() => handleToggleParticipantStatus(p.id, true, 'cash')}
-                            className="px-2 py-1 rounded-lg bg-[#1F7A52] hover:bg-[#186241] text-white text-[11px] font-bold cursor-pointer"
+                            className="px-2 py-1 rounded-lg bg-accent hover:bg-accent-strong text-on-accent text-xs font-bold cursor-pointer"
                           >
                             Tiền mặt
                           </button>
                           <button
                             onClick={() => setActivePaymentSelect(null)}
-                            className="px-1 text-[11px] text-[#7A8A7C]"
+                            className="px-1 text-xs text-ink-3"
                           >
                             ✕
                           </button>
@@ -343,7 +343,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                       ) : (
                         <button
                           onClick={() => setActivePaymentSelect(p.id)}
-                          className="px-3 py-1.5 rounded-xl bg-[#1F7A52] hover:bg-[#186241] text-white text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                          className="px-3 py-1.5 rounded-xl bg-accent hover:bg-accent-strong text-on-accent text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
                         >
                           <Check className="w-3.5 h-3.5 stroke-[3]" />
                           <span>Thu tiền</span>
@@ -359,7 +359,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
         </div>
 
         {/* Footer Actions */}
-        <div className="pt-3 border-t border-[#EBE7DC] flex flex-wrap gap-2.5 justify-between">
+        <div className="pt-3 border-t border-line flex flex-wrap gap-2.5 justify-between">
           {canEdit ? (
           <button
             onClick={() => {
@@ -368,7 +368,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                 onClose();
               }
             }}
-            className="px-3.5 py-2 rounded-xl bg-[#FFF1F0] hover:bg-[#FFE3E0] text-[#C53030] border border-[#FCDAD7] text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-danger-soft hover:bg-danger-soft text-danger border border-danger-line text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
           >
             <Trash2 className="w-4 h-4" />
             <span>Xóa buổi chơi</span>
@@ -379,7 +379,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
             {onEditSession && (
               <button
                 onClick={() => onEditSession(session)}
-                className="px-3.5 py-2 rounded-xl bg-[#E6F4EA] hover:bg-[#D5E8D8] text-[#1F7A52] border border-[#D1EAD5] text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                className="px-3.5 py-2 rounded-xl bg-accent-soft hover:bg-accent-soft text-accent border border-accent-line text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
               >
                 <Edit3 className="w-4 h-4" />
                 <span>Sửa buổi</span>
@@ -387,14 +387,14 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
             )}
             <button
               onClick={handleCopyBill}
-              className="px-4 py-2 rounded-xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#1D2620] text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-muted hover:bg-muted-hover text-ink text-xs font-bold flex items-center gap-1.5 cursor-pointer"
             >
-              <Share2 className="w-4 h-4 text-[#1F7A52]" />
-              <span>Sao chép Bill Zalo</span>
+              <Share2 className="w-4 h-4 text-accent" />
+              <span>Chép bill gửi Zalo</span>
             </button>
             <button
               onClick={onClose}
-              className="px-5 py-2 rounded-xl bg-[#1F7A52] hover:bg-[#186241] text-white text-xs font-extrabold cursor-pointer"
+              className="px-5 py-2 rounded-xl bg-accent hover:bg-accent-strong text-on-accent text-xs font-bold cursor-pointer"
             >
               Xong
             </button>

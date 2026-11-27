@@ -178,7 +178,7 @@ export const App: React.FC = () => {
       const updated = sessions.map(s => s.id === savedSession.id ? savedSession : s);
       handleUpdateSessions(updated);
       setSelectedSession(savedSession);
-      showToast(`Đã cập nhật buổi chơi "${savedSession.title}"! 🏸`, 'success');
+      showToast(`Đã cập nhật buổi chơi "${savedSession.title}"`, 'success');
 
       try {
         await updateSessionInSupabase(savedSession.id, {
@@ -197,7 +197,7 @@ export const App: React.FC = () => {
       // Chế độ tạo mới buổi chơi
       const updated = [savedSession, ...sessions];
       handleUpdateSessions(updated);
-      showToast(`Đã tạo buổi chơi mới "${savedSession.title}"! 🏸`, 'success');
+      showToast(`Đã tạo buổi chơi mới "${savedSession.title}"`, 'success');
 
       try {
         await createSessionInSupabase({
@@ -226,7 +226,7 @@ export const App: React.FC = () => {
   const handleDeleteSession = async (sessionId: string) => {
     const updated = sessions.filter(s => s.id !== sessionId);
     handleUpdateSessions(updated);
-    showToast('Đã xóa buổi chơi khỏi hệ thống!', 'info');
+    showToast('Đã xóa buổi chơi', 'info');
 
     try {
       await deleteSessionInSupabase(sessionId);
@@ -239,7 +239,7 @@ export const App: React.FC = () => {
   const handleAddMember = async (newMember: Member) => {
     const updated = [...members, newMember];
     handleUpdateMembers(updated);
-    showToast(`Đã thêm thành viên "${newMember.name}" vào danh bạ!`, 'success');
+    showToast(`Đã thêm thành viên "${newMember.name}" vào danh bạ`, 'success');
 
     try {
       await addMemberInSupabase(newMember.name);
@@ -252,7 +252,7 @@ export const App: React.FC = () => {
   const handleDeleteMember = async (memberId: string) => {
     const updated = members.filter(m => m.id !== memberId);
     handleUpdateMembers(updated);
-    showToast('Đã xóa thành viên khỏi danh bạ!', 'info');
+    showToast('Đã xóa thành viên', 'info');
 
     try {
       await deleteMemberInSupabase(memberId);
@@ -277,7 +277,7 @@ export const App: React.FC = () => {
   const totalUnpaidAmount = debtSummaries.reduce((sum, item) => sum + item.totalDebt, 0);
 
   return (
-    <div className="min-h-screen bg-[#F5F3EC] text-[#1D2620] flex flex-col selection:bg-[#D5E8D8] selection:text-[#1F7A52] font-sans">
+    <div className="min-h-screen bg-canvas text-ink flex flex-col selection:bg-accent-soft selection:text-accent font-sans">
       
       {/* Navigation Header */}
       <Navbar
@@ -352,7 +352,7 @@ export const App: React.FC = () => {
           />
         )}
         {lastUpdatedAt && (
-          <p className="mt-6 text-center text-[11px] text-[#8C988D]">
+          <p className="mt-6 text-center text-xs text-ink-3">
             {isSupabaseConnected ? 'Cập nhật' : 'Mất kết nối — dữ liệu từ lần cập nhật'}{' '}
             {lastUpdatedAt.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
             {lastUpdatedAt.toDateString() === new Date().toDateString()

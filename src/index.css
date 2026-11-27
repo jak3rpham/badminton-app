@@ -2,81 +2,217 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Bộ màu: kênh RGB để Tailwind ghép được độ trong suốt (bg-ink/60...).
+ * Sáng: kem cát ấm + xanh rừng. Tối: than ấm (không đen thuần) + xanh rừng sáng hơn.
+ * Mọi xám đều nhuốm cùng một tông xanh-ấm để không lẫn xám lạnh/xám nóng.
+ */
 :root {
-  --bg-page: #F5F3EC;       /* Nền màu kem cát ấm dịu mắt (Warm Linen Sand) */
-  --bg-card: #FAF8F5;       /* Thẻ màu trắng sứ ngà ấm (Warm Porcelain) */
-  --bg-card-subtle: #EDEAE0; /* Khối con phân tách nhẹ nhàng */
-  --border-card: #E4DFD3;   /* Viền mềm mại tự nhiên */
-  --text-main: #1D2620;     /* Chữ sẫm màu rêu đen êm dịu, không gắt */
-  --text-muted: #5C695E;    /* Chữ phụ màu xám cỏ khô nhã nhặn */
-  --brand-forest: #1F7A52;  /* Xanh lá rừng thể thao đậm */
-  --brand-sage: #D5E8D8;    /* Xanh xô thơm dịu */
+  color-scheme: light;
+
+  --c-canvas: 245 243 236;
+  --c-surface: 251 250 246;
+  --c-sunken: 241 238 229;
+  --c-muted: 236 232 220;
+  --c-muted-hover: 226 221 208;
+  --c-field: 255 255 255;
+  --c-scrim: 22 28 24;
+
+  --c-line: 230 225 213;
+  --c-line-strong: 214 208 192;
+
+  --c-ink: 29 38 32;
+  --c-ink-2: 84 97 88;
+  --c-ink-3: 124 137 127;
+
+  --c-accent: 31 122 82;
+  --c-accent-strong: 24 98 65;
+  --c-accent-soft: 228 241 232;
+  --c-accent-line: 199 225 206;
+  --c-on-accent: 255 255 255;
+
+  --c-danger: 184 52 45;
+  --c-danger-soft: 251 237 234;
+  --c-danger-line: 243 213 208;
+
+  --c-warn: 160 105 24;
+  --c-warn-soft: 251 242 222;
+  --c-warn-line: 238 220 174;
+
+  --c-info: 45 100 168;
+  --c-info-strong: 34 80 138;
+  --c-info-soft: 230 238 248;
+
+  --c-momo: 194 48 127;
+  --c-momo-strong: 160 30 102;
+
+  --c-chart-2: 74 122 160;
+  --c-chart-4: 166 102 78;
+
+  --c-shadow: 46 52 40;
 }
 
-@layer base {
-  body {
-    background-color: var(--bg-page);
-    color: var(--text-main);
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-    selection-background-color: #D5E8D8;
-    selection-color: #1F7A52;
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --c-canvas: 17 20 18;
+    --c-surface: 24 28 25;
+    --c-sunken: 20 24 21;
+    --c-muted: 34 40 36;
+    --c-muted-hover: 43 50 45;
+    --c-field: 28 33 29;
+    --c-scrim: 0 0 0;
+
+    --c-line: 38 44 40;
+    --c-line-strong: 54 62 56;
+
+    --c-ink: 233 237 232;
+    --c-ink-2: 168 179 170;
+    --c-ink-3: 122 134 125;
+
+    --c-accent: 72 168 121;
+    --c-accent-strong: 98 188 143;
+    --c-accent-soft: 27 46 36;
+    --c-accent-line: 40 70 53;
+    --c-on-accent: 10 22 15;
+
+    --c-danger: 232 125 112;
+    --c-danger-soft: 46 28 26;
+    --c-danger-line: 76 42 38;
+
+    --c-warn: 222 170 82;
+    --c-warn-soft: 43 36 22;
+    --c-warn-line: 74 60 30;
+
+    --c-info: 128 168 220;
+    --c-info-strong: 156 190 232;
+    --c-info-soft: 26 36 50;
+
+    --c-momo: 232 96 168;
+    --c-momo-strong: 240 128 188;
+
+    --c-chart-2: 112 158 196;
+    --c-chart-4: 200 132 104;
+
+    --c-shadow: 0 0 0;
   }
 }
 
-/* Custom Soothing Scrollbar */
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: rgb(var(--c-canvas));
+    color: rgb(var(--c-ink));
+    font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    background: rgb(var(--c-accent-soft));
+    color: rgb(var(--c-accent));
+  }
+
+  h1, h2, h3 {
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Tiền và số liệu: chữ số đều cột để các hàng thẳng nhau */
+  .tabular,
+  [class*='font-mono'] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Icon Lucide: nét mảnh hơn mặc định cho đỡ "mặc định" */
+  svg.lucide {
+    stroke-width: 1.75;
+  }
+
+  button,
+  a,
+  [role='button'] {
+    transition-property: background-color, border-color, color, box-shadow, transform, opacity;
+    transition-duration: 160ms;
+    transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  button:not(:disabled):active,
+  a:active {
+    transform: scale(0.97);
+  }
+
+  :focus-visible {
+    outline: 2px solid rgb(var(--c-accent));
+    outline-offset: 2px;
+    border-radius: 10px;
+  }
+}
+
+/* Thanh cuộn */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #ECE9DF;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #C8C2B4;
+  background: rgb(var(--c-line-strong));
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #1F7A52;
+  background: rgb(var(--c-ink-3));
 }
 
-/* Soft Cards & Glass */
+/* Thẻ: chỉ nền + bóng nhẹ, bỏ viền để bớt "card AI" */
 .soft-card {
-  background: #FAF8F5;
-  border: 1px solid #E4DFD3;
-  box-shadow: 0 2px 8px -2px rgba(45, 55, 48, 0.04), 0 1px 3px -1px rgba(45, 55, 48, 0.02);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  background: rgb(var(--c-surface));
+  box-shadow: 0 1px 2px rgb(var(--c-shadow) / 0.05), 0 0 0 1px rgb(var(--c-line) / 0.7);
+  transition: box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1);
 }
 
 .soft-card:hover {
-  border-color: #B5D6BB;
-  box-shadow: 0 8px 20px -4px rgba(31, 122, 82, 0.08);
+  box-shadow: 0 6px 18px -8px rgb(var(--c-shadow) / 0.18), 0 0 0 1px rgb(var(--c-line-strong) / 0.8);
 }
 
 .soft-glass {
-  background: rgba(245, 243, 236, 0.92);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border-color: #E4DFD3;
+  background: rgb(var(--c-canvas) / 0.88);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
 }
 
 .soft-input {
-  background: #FFFFFF;
-  border: 1px solid #D8D2C2;
-  color: #1D2620;
+  background: rgb(var(--c-field));
+  border: 1px solid rgb(var(--c-line-strong));
+  color: rgb(var(--c-ink));
 }
 
 .soft-input:focus {
   outline: none;
-  border-color: #1F7A52;
-  box-shadow: 0 0 0 3px rgba(31, 122, 82, 0.12);
+  border-color: rgb(var(--c-accent));
+  box-shadow: 0 0 0 3px rgb(var(--c-accent) / 0.14);
 }
 
-/* Safe areas for iOS mobile notch & Home Indicator */
+input::placeholder,
+textarea::placeholder {
+  color: rgb(var(--c-ink-3));
+}
+
+/* Safe areas cho tai thỏ & thanh home của iPhone */
 .pb-safe {
   padding-bottom: max(env(safe-area-inset-bottom, 0px), 10px);
 }
@@ -85,7 +221,7 @@
   padding-top: env(safe-area-inset-top, 0px);
 }
 
-/* Modal / sheet animations (animate-fadeIn đã được dùng sẵn nhưng trước đây chưa định nghĩa) */
+/* Hiệu ứng */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -93,6 +229,11 @@
 
 @keyframes sheetUp {
   from { transform: translateY(24px); opacity: 0.6; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(8px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
@@ -104,9 +245,19 @@
   animation: sheetUp 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+.animate-slideUp {
+  animation: slideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fadeIn,
-  .animate-sheetUp {
+  .animate-sheetUp,
+  .animate-slideUp {
     animation: none;
+  }
+
+  button:not(:disabled):active,
+  a:active {
+    transform: none;
   }
 }

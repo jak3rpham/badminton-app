@@ -45,10 +45,10 @@ export const getIOSNonSafariBrowser = (ua: string): string | null => {
 
 const Step: React.FC<{ n: number; children: React.ReactNode }> = ({ n, children }) => (
   <li className="flex items-start gap-3">
-    <span className="flex items-center justify-center w-6 h-6 shrink-0 rounded-full bg-[#1F7A52] text-white text-xs font-black">
+    <span className="flex items-center justify-center w-6 h-6 shrink-0 rounded-full bg-accent text-on-accent text-xs font-bold">
       {n}
     </span>
-    <span className="text-sm text-[#1D2620] pt-0.5">{children}</span>
+    <span className="text-sm text-ink pt-0.5">{children}</span>
   </li>
 );
 
@@ -73,8 +73,8 @@ export const InstallGuide: React.FC<InstallGuideProps> = ({ isOpen, onClose }) =
 
   // iPhone đang mở trong Zalo / Chrome…: phải sang Safari trước mới cài được
   const openInSafari = iosOtherBrowser && (
-    <div className="rounded-2xl bg-[#FFF8E6] border border-[#F3DFA8] p-3.5">
-      <p className="text-sm font-black text-[#1D2620]">
+    <div className="rounded-2xl bg-warn-soft border border-warn-line p-3.5">
+      <p className="text-sm font-bold text-ink">
         Bạn đang mở bằng {iosOtherBrowser} — cần mở bằng Safari trước
       </p>
       <ol className="space-y-2.5 mt-2">
@@ -89,16 +89,16 @@ export const InstallGuide: React.FC<InstallGuideProps> = ({ isOpen, onClose }) =
       </ol>
       <button
         onClick={copyLink}
-        className="mt-3 w-full py-2 rounded-xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#1D2620] text-xs font-bold cursor-pointer"
+        className="mt-3 w-full py-2 rounded-xl bg-muted hover:bg-muted-hover text-ink text-xs font-bold cursor-pointer"
       >
-        {linkCopied ? 'Đã chép link ✓' : 'Không thấy nút? Chép link để dán vào Safari'}
+        {linkCopied ? 'Đã chép link' : 'Không thấy nút? Chép link để dán vào Safari'}
       </button>
     </div>
   );
 
   const ios = (
     <div>
-      <p className="text-sm font-black text-[#1D2620] mb-2">iPhone (Safari)</p>
+      <p className="text-sm font-bold text-ink mb-2">iPhone (Safari)</p>
       <ol className="space-y-2.5">
         <Step n={1}>Mở link này bằng <b>Safari</b>.</Step>
         <Step n={2}>Bấm nút <b>Chia sẻ</b> (ô vuông có mũi tên lên).</Step>
@@ -109,7 +109,7 @@ export const InstallGuide: React.FC<InstallGuideProps> = ({ isOpen, onClose }) =
 
   const android = (
     <div>
-      <p className="text-sm font-black text-[#1D2620] mb-2">Android (Chrome)</p>
+      <p className="text-sm font-bold text-ink mb-2">Android (Chrome)</p>
       <ol className="space-y-2.5">
         <Step n={1}>Mở link này bằng <b>Chrome</b>.</Step>
         <Step n={2}>Bấm dấu <b>⋮</b> ở góc trên bên phải.</Step>
@@ -123,18 +123,18 @@ export const InstallGuide: React.FC<InstallGuideProps> = ({ isOpen, onClose }) =
 
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} title="Cài app lên điện thoại">
-      <div className="text-center text-5xl py-2" aria-hidden>🏸</div>
+      <img src="/icon-192.png" alt="" className="mx-auto w-14 h-14 rounded-2xl my-2" />
       {openInSafari && <div className="mb-3">{openInSafari}</div>}
-      <div className="rounded-2xl bg-[#F5F2E9] border border-[#E4DFD3] p-4 space-y-5">
-        <p className="text-[11px] font-black uppercase tracking-wider text-[#7A8A7C]">Thêm vào màn hình chính</p>
+      <div className="rounded-2xl bg-sunken border border-line p-4 space-y-5">
+        <p className="text-xs font-bold text-ink-3">Thêm vào màn hình chính</p>
         {sections.map((s, i) => (
           <React.Fragment key={i}>{s}</React.Fragment>
         ))}
-        <p className="text-xs text-[#5C695E]">Lần sau chỉ cần bấm biểu tượng là mở, không cần tìm lại link.</p>
+        <p className="text-xs text-ink-2">Lần sau chỉ cần bấm biểu tượng là mở, không cần tìm lại link.</p>
       </div>
       <button
         onClick={onClose}
-        className="mt-4 w-full py-2.5 rounded-xl bg-[#1F7A52] hover:bg-[#186241] text-white text-sm font-bold cursor-pointer"
+        className="mt-4 w-full py-2.5 rounded-xl bg-accent hover:bg-accent-strong text-on-accent text-sm font-bold cursor-pointer"
       >
         OK
       </button>

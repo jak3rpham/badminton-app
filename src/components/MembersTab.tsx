@@ -55,20 +55,20 @@ export const MembersTab: React.FC<MembersTabProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#1D2620] tracking-tight">
-            Danh Bạ Thành Viên
+          <h1 className="text-2xl sm:text-3xl font-bold text-ink tracking-tight">
+            Danh bạ thành viên
           </h1>
-          <p className="text-xs sm:text-sm text-[#5C695E] mt-1">
+          <p className="text-xs sm:text-sm text-ink-2 mt-1">
             Quản lý {members.length} thành viên trong nhóm cầu lông
           </p>
         </div>
 
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-[#1F7A52] hover:bg-[#186241] text-white text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition-all cursor-pointer"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-accent hover:bg-accent-strong text-on-accent text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition-all cursor-pointer"
         >
           <Plus className="w-4 h-4 stroke-[3]" />
-          <span>{isAdding ? 'Đóng form' : 'Thêm Thành Viên Mới'}</span>
+          <span>{isAdding ? 'Đóng form' : 'Thêm thành viên'}</span>
         </button>
       </div>
 
@@ -76,31 +76,31 @@ export const MembersTab: React.FC<MembersTabProps> = ({
       {isAdding && (
         <form 
           onSubmit={handleCreate}
-          className="p-5 sm:p-6 rounded-3xl bg-[#FAF8F5] border border-[#E4DFD3] shadow-xs space-y-4 animate-fadeIn"
+          className="p-5 sm:p-6 rounded-3xl bg-surface border border-line shadow-xs space-y-4 animate-fadeIn"
         >
-          <h3 className="text-sm font-black text-[#1D2620] uppercase tracking-wider">Thêm Thành Viên Mới</h3>
+          <h3 className="text-sm font-bold text-ink">Thêm thành viên</h3>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-[#4F5D51] mb-1">Họ và tên / Biệt danh *</label>
+              <label className="block text-xs font-bold text-ink-2 mb-1">Họ và tên / Biệt danh *</label>
               <input
                 type="text"
                 required
                 placeholder="VD: Tuấn Smash"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D8D2C2] text-[#1D2620] text-xs font-semibold focus:border-[#1F7A52]"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-field border border-line-strong text-ink text-xs font-semibold focus:border-accent"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#4F5D51] mb-1">Số điện thoại (tùy chọn)</label>
+              <label className="block text-xs font-bold text-ink-2 mb-1">Số điện thoại (tùy chọn)</label>
               <input
                 type="tel"
                 placeholder="0912..."
                 value={newPhone}
                 onChange={(e) => setNewPhone(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D8D2C2] text-[#1D2620] text-xs font-semibold focus:border-[#1F7A52]"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-field border border-line-strong text-ink text-xs font-semibold focus:border-accent"
               />
             </div>
           </div>
@@ -109,13 +109,13 @@ export const MembersTab: React.FC<MembersTabProps> = ({
             <button
               type="button"
               onClick={() => setIsAdding(false)}
-              className="px-4 py-2 rounded-xl bg-[#ECE8DC] text-[#5C695E] text-xs font-semibold hover:bg-[#E2DDD0] cursor-pointer"
+              className="px-4 py-2 rounded-xl bg-muted text-ink-2 text-xs font-semibold hover:bg-muted-hover cursor-pointer"
             >
               Hủy
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-xl bg-[#1F7A52] hover:bg-[#186241] text-white text-xs font-bold shadow-xs cursor-pointer"
+              className="px-5 py-2 rounded-xl bg-accent hover:bg-accent-strong text-on-accent text-xs font-bold shadow-xs cursor-pointer"
             >
               Lưu Thành Viên
             </button>
@@ -125,13 +125,13 @@ export const MembersTab: React.FC<MembersTabProps> = ({
 
       {/* Search Input */}
       <div className="relative">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#7A8A7C]" />
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-3" />
         <input
           type="text"
           placeholder="Tìm theo tên thành viên hoặc số điện thoại..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#FAF8F5] border border-[#D8D2C2] text-[#1D2620] text-xs sm:text-sm font-medium placeholder:text-[#8C988D] focus:outline-none focus:ring-2 focus:ring-[#1F7A52]/15 focus:border-[#1F7A52] shadow-2xs"
+          className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-surface border border-line-strong text-ink text-xs sm:text-sm font-medium placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent/15 focus:border-accent shadow-2xs"
         />
       </div>
 
@@ -150,22 +150,22 @@ export const MembersTab: React.FC<MembersTabProps> = ({
           return (
             <div
               key={member.id}
-              className="rounded-3xl bg-[#FAF8F5] border border-[#E4DFD3] p-4 sm:p-5 shadow-xs flex flex-col justify-between hover:shadow-md hover:border-[#B5D6BB] transition-all"
+              className="rounded-3xl bg-surface border border-line p-4 sm:p-5 shadow-xs flex flex-col justify-between hover:shadow-md hover:border-accent-line transition-all"
             >
               <div>
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div
-                      className="w-11 h-11 rounded-2xl flex items-center justify-center font-black text-white text-base shadow-2xs shrink-0"
+                      className="w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-on-accent text-base shadow-2xs shrink-0"
                       style={{ backgroundColor: member.avatarColor }}
                     >
                       {getInitials(member.name)}
                     </div>
                     <div>
-                      <h3 className="font-bold text-[#1D2620] text-sm sm:text-base tracking-tight">{member.name}</h3>
+                      <h3 className="font-bold text-ink text-sm sm:text-base tracking-tight">{member.name}</h3>
                       {member.phone && (
-                        <p className="text-xs text-[#5C695E] flex items-center gap-1 mt-0.5">
-                          <Phone className="w-3 h-3 text-[#7A8A7C]" />
+                        <p className="text-xs text-ink-2 flex items-center gap-1 mt-0.5">
+                          <Phone className="w-3 h-3 text-ink-3" />
                           <span>{member.phone}</span>
                         </p>
                       )}
@@ -178,7 +178,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({
                         onDeleteMember(member.id);
                       }
                     }}
-                    className="p-1.5 text-[#7A8A7C] hover:text-[#C53030] transition-colors rounded-lg hover:bg-[#ECE8DC]"
+                    className="p-1.5 text-ink-3 hover:text-danger transition-colors rounded-lg hover:bg-muted"
                     title="Xóa thành viên"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -186,32 +186,32 @@ export const MembersTab: React.FC<MembersTabProps> = ({
                 </div>
 
                 <div className="mt-3.5 flex items-center gap-2">
-                  <span className="text-[10px] px-2.5 py-0.5 rounded-full font-bold bg-[#ECE8DC] text-[#5C695E]">
+                  <span className="text-xs px-2.5 py-0.5 rounded-full font-bold bg-muted text-ink-2">
                     Cố định
                   </span>
-                  <span className="text-xs text-[#5C695E] font-medium">
+                  <span className="text-xs text-ink-2 font-medium">
                     Tham gia {gamesJoinedCount} buổi
                   </span>
                 </div>
               </div>
 
               {/* Debt status badge */}
-              <div className="mt-4 pt-3 border-t border-[#EBE7DC] flex items-center justify-between">
+              <div className="mt-4 pt-3 border-t border-line flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] text-[#7A8A7C] block font-semibold">Tình trạng nợ</span>
+                  <span className="text-xs text-ink-3 block font-semibold">Tình trạng nợ</span>
                   {playerDebt && playerDebt.totalDebt > 0 ? (
-                    <span className="text-xs font-black text-[#C53030]">
+                    <span className="text-xs font-bold text-danger">
                       Nợ {formatVND(playerDebt.totalDebt)} ({playerDebt.unpaidSessionsCount} buổi)
                     </span>
                   ) : (
-                    <span className="text-xs font-bold text-[#1F7A52]">Không nợ tiền</span>
+                    <span className="text-xs font-bold text-accent">Không nợ tiền</span>
                   )}
                 </div>
 
                 {playerDebt && playerDebt.totalDebt > 0 && (
                   <button
                     onClick={() => setActiveTab('debt-ledger')}
-                    className="text-xs font-bold text-[#1F7A52] hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-xs font-bold text-accent hover:underline flex items-center gap-1 cursor-pointer"
                   >
                     <WalletCards className="w-3.5 h-3.5" />
                     <span>Thu nợ</span>

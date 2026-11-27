@@ -12,35 +12,36 @@ interface ToastProps {
   onDismiss: (id: string) => void;
 }
 
+const STYLE = {
+  success: { Icon: CheckCircle2, icon: 'text-accent-line' },
+  error: { Icon: AlertCircle, icon: 'text-danger-line' },
+  info: { Icon: Info, icon: 'text-info-soft' },
+} as const;
+
 export const ToastContainer: React.FC<ToastProps> = ({ toasts, onDismiss }) => {
   return (
-    <div className="fixed bottom-16 sm:bottom-6 right-4 sm:right-6 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+    <div
+      className="fixed bottom-24 lg:bottom-6 inset-x-3 sm:inset-x-auto sm:right-6 z-[70] flex flex-col gap-2 sm:max-w-sm sm:w-full pointer-events-none"
+      role="status"
+      aria-live="polite"
+    >
       {toasts.map((toast) => {
-        let Icon = CheckCircle2;
-        let colorClass = 'border-emerald-500/30 text-emerald-400 bg-slate-900/95';
-
-        if (toast.type === 'error') {
-          Icon = AlertCircle;
-          colorClass = 'border-red-500/30 text-red-400 bg-slate-900/95';
-        } else if (toast.type === 'info') {
-          Icon = Info;
-          colorClass = 'border-cyan-500/30 text-cyan-400 bg-slate-900/95';
-        }
-
+        const { Icon, icon } = STYLE[toast.type];
         return (
           <div
             key={toast.id}
-            className={`pointer-events-auto flex items-center justify-between gap-3 p-3.5 rounded-2xl border shadow-2xl backdrop-blur-xl animate-slideUp text-xs font-medium ${colorClass}`}
+            className="pointer-events-auto flex items-start justify-between gap-3 px-4 py-3 rounded-2xl bg-ink text-canvas shadow-xl animate-slideUp text-sm"
           >
-            <div className="flex items-center gap-2.5">
-              <Icon className="w-4 h-4 shrink-0" />
-              <span className="text-slate-100 line-clamp-2">{toast.message}</span>
+            <div className="flex items-start gap-2.5 min-w-0">
+              <Icon className={`w-4 h-4 mt-0.5 shrink-0 ${icon}`} />
+              <span className="line-clamp-3">{toast.message}</span>
             </div>
             <button
               onClick={() => onDismiss(toast.id)}
-              className="p-1 text-slate-400 hover:text-white transition-colors"
+              className="p-1 -m-1 text-canvas/60 hover:text-canvas"
+              aria-label="Đóng thông báo"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         );

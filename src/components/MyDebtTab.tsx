@@ -65,13 +65,13 @@ export const MyDebtTab: React.FC<MyDebtTabProps> = ({ sessions, members, bankCon
     <div className="max-w-xl mx-auto space-y-3">
       {/* Chọn tên */}
       <div className="soft-card rounded-3xl p-4">
-        <label className="flex items-center gap-2 text-[11px] font-black uppercase tracking-wider text-[#7A8A7C] mb-2">
+        <label className="flex items-center gap-2 text-xs font-bold text-ink-3 mb-2">
           <UserRound className="w-4 h-4" /> Bạn là ai?
         </label>
         <select
           value={allNames.find((n) => n.toLowerCase() === myKey) ?? ''}
           onChange={(e) => chooseName(e.target.value)}
-          className="w-full px-3.5 py-3 rounded-xl bg-white border border-[#DDD7C9] text-base font-bold text-[#1D2620] focus:outline-none focus:border-[#1F7A52]"
+          className="w-full px-3.5 py-3 rounded-xl bg-field border border-line-strong text-base font-bold text-ink focus:outline-none focus:border-accent"
         >
           <option value="">— Chọn tên của bạn —</option>
           {allNames.map((n) => (
@@ -81,7 +81,7 @@ export const MyDebtTab: React.FC<MyDebtTabProps> = ({ sessions, members, bankCon
           ))}
         </select>
         {myName && (
-          <p className="text-xs text-[#5C695E] mt-2">
+          <p className="text-xs text-ink-2 mt-2">
             Đã chơi {sessionsPlayed} buổi. Máy này sẽ nhớ tên bạn cho lần sau.
           </p>
         )}
@@ -89,39 +89,39 @@ export const MyDebtTab: React.FC<MyDebtTabProps> = ({ sessions, members, bankCon
 
       {myName && !myDebt && (
         <div className="soft-card rounded-3xl p-6 text-center">
-          <PartyPopper className="w-10 h-10 mx-auto text-[#1F7A52]" />
-          <p className="mt-2 text-lg font-black text-[#1D2620]">Bạn không nợ buổi nào</p>
-          <p className="text-sm text-[#5C695E]">Sạch nợ rồi, hẹn gặp trên sân! 🏸</p>
+          <PartyPopper className="w-10 h-10 mx-auto text-accent" />
+          <p className="mt-2 text-lg font-bold text-ink">Bạn không nợ buổi nào</p>
+          <p className="text-sm text-ink-2">Hẹn gặp trên sân.</p>
         </div>
       )}
 
       {myDebt && (
         <>
           {/* Tổng nợ + nút chuyển khoản */}
-          <div className="rounded-3xl p-5 bg-[#FFF5F4] border border-[#FCDAD7]">
-            <p className="text-[11px] font-black uppercase tracking-wider text-[#A84545]">Bạn còn nợ</p>
-            <p className="text-4xl font-black text-[#C53030] tracking-tight mt-1">{formatVND(myDebt.totalDebt)}</p>
-            <p className="text-xs text-[#A84545] mt-1">{myDebt.unpaidSessionsCount} buổi chưa trả</p>
+          <div className="rounded-3xl p-5 bg-danger-soft border border-danger-line">
+            <p className="text-xs font-bold text-danger">Bạn còn nợ</p>
+            <p className="text-4xl font-bold text-danger tracking-tight mt-1">{formatVND(myDebt.totalDebt)}</p>
+            <p className="text-xs text-danger mt-1">{myDebt.unpaidSessionsCount} buổi chưa trả</p>
             <button
               onClick={() => setIsQrOpen(true)}
-              className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#1F7A52] hover:bg-[#186241] text-white text-sm font-black shadow-xs active:scale-95 transition-all cursor-pointer"
+              className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-accent hover:bg-accent-strong text-on-accent text-sm font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
             >
               <QrCode className="w-5 h-5" />
               Chuyển khoản / MoMo
             </button>
-            <p className="text-[11px] text-[#A84545] mt-2 text-center">
+            <p className="text-xs text-danger mt-2 text-center">
               Chuyển xong trưởng nhóm sẽ đánh dấu đã trả.
             </p>
           </div>
 
           {/* Chi tiết từng buổi */}
           <div className="soft-card rounded-3xl p-4">
-            <p className="text-sm font-black text-[#1D2620] mb-2">Các buổi chưa trả</p>
-            <ul className="divide-y divide-[#EBE7DC]">
+            <p className="text-sm font-bold text-ink mb-2">Các buổi chưa trả</p>
+            <ul className="divide-y divide-line">
               {myDebt.debtDetails.map((d) => (
                 <li key={d.participantId} className="flex items-center justify-between py-2.5">
-                  <span className="text-sm text-[#1D2620]">{formatDateVietnamese(d.date)}</span>
-                  <span className="text-sm font-bold text-[#C53030]">{formatVND(d.debtAmount)}</span>
+                  <span className="text-sm text-ink">{formatDateVietnamese(d.date)}</span>
+                  <span className="text-sm font-bold text-danger">{formatVND(d.debtAmount)}</span>
                 </li>
               ))}
             </ul>

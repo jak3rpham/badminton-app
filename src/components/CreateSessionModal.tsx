@@ -244,21 +244,21 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
     .filter((m) => m.name.toLowerCase().includes(memberFilter.toLowerCase().trim()));
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#1D2620]/60 backdrop-blur-xs overflow-y-auto animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-scrim/60 backdrop-blur-xs overflow-y-auto animate-fadeIn">
       <div
-        className="relative w-full max-w-2xl bg-[#FAF8F5] border border-[#E4DFD3] rounded-t-3xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col"
+        className="relative w-full max-w-2xl bg-surface border border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between pb-3 border-b border-[#EBE7DC]">
+        <div className="flex items-center justify-between pb-3 border-b border-line">
           <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-[#E6F4EA] text-[#1F7A52]">
+            <div className="p-2 rounded-xl bg-accent-soft text-accent">
               {isEditing ? <Edit3 className="w-5 h-5" /> : <Sparkles className="w-5 h-5" />}
             </div>
             <div>
-              <h2 className="text-lg font-black text-[#1D2620]">
-                {isEditing ? 'Chỉnh Sửa Buổi Chơi' : 'Tạo Buổi Chơi Mới'}
+              <h2 className="text-lg font-bold text-ink">
+                {isEditing ? 'Sửa buổi chơi' : 'Tạo buổi chơi'}
               </h2>
-              <p className="text-xs text-[#5C695E]">
+              <p className="text-xs text-ink-2">
                 {isEditing
                   ? 'Điều chỉnh số lượng người chơi, người tham gia hoặc chi phí'
                   : (lastSession
@@ -269,7 +269,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-[#7A8A7C] hover:text-[#1D2620] rounded-xl hover:bg-[#ECE8DC] transition-colors cursor-pointer"
+            className="p-2 text-ink-3 hover:text-ink rounded-xl hover:bg-muted transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -278,7 +278,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
         <form onSubmit={handleSave} className="space-y-4 my-3 overflow-y-auto pr-1 flex-1">
           {/* Date Picker */}
           <div>
-            <label className="block text-xs font-bold text-[#4F5D51] uppercase tracking-wider mb-1">
+            <label className="block text-xs font-bold text-ink-2 mb-1">
               Ngày Chơi *
             </label>
             <input
@@ -286,82 +286,82 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
               required
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-[#D8D2C2] text-[#1D2620] text-xs sm:text-sm font-semibold focus:outline-none focus:border-[#1F7A52] shadow-2xs"
+              className="w-full px-3.5 py-2.5 rounded-2xl bg-field border border-line-strong text-ink text-xs sm:text-sm font-semibold focus:outline-none focus:border-accent shadow-2xs"
             />
           </div>
 
           {/* Expenses Calculation Section */}
-          <div className="p-4 rounded-2xl bg-[#F5F2E9] border border-[#E4DFD3] space-y-3">
-            <h3 className="text-xs font-black text-[#1F7A52] uppercase tracking-wider">
-              Chi Tiết Chi Phí (VNĐ)
+          <div className="p-4 rounded-2xl bg-sunken border border-line space-y-3">
+            <h3 className="text-xs font-bold text-accent">
+              Chi tiết chi phí (VNĐ)
             </h3>
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               <div>
-                <label className="block text-[11px] font-semibold text-[#5C695E] mb-1">Tiền sân</label>
+                <label className="block text-xs font-semibold text-ink-2 mb-1">Tiền sân</label>
                 <input
                   type="number"
                   step="1000"
                   min="0"
                   value={costSan}
                   onChange={(e) => setCostSan(parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#D8D2C2] text-xs font-bold text-[#1D2620] focus:border-[#1F7A52]"
+                  className="w-full px-3 py-2 rounded-xl bg-field border border-line-strong text-xs font-bold text-ink focus:border-accent"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-[#5C695E] mb-1">Tiền cầu</label>
+                <label className="block text-xs font-semibold text-ink-2 mb-1">Tiền cầu</label>
                 <input
                   type="number"
                   step="1000"
                   min="0"
                   value={costCau}
                   onChange={(e) => setCostCau(parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#D8D2C2] text-xs font-bold text-[#1D2620] focus:border-[#1F7A52]"
+                  className="w-full px-3 py-2 rounded-xl bg-field border border-line-strong text-xs font-bold text-ink focus:border-accent"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-[#5C695E] mb-1">Tiền nước</label>
+                <label className="block text-xs font-semibold text-ink-2 mb-1">Tiền nước</label>
                 <input
                   type="number"
                   step="1000"
                   min="0"
                   value={costNuoc}
                   onChange={(e) => setCostNuoc(parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#D8D2C2] text-xs font-bold text-[#1D2620] focus:border-[#1F7A52]"
+                  className="w-full px-3 py-2 rounded-xl bg-field border border-line-strong text-xs font-bold text-ink focus:border-accent"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-[#5C695E] mb-1">Chi phí khác</label>
+                <label className="block text-xs font-semibold text-ink-2 mb-1">Chi phí khác</label>
                 <input
                   type="number"
                   step="1000"
                   min="0"
                   value={costKhac}
                   onChange={(e) => setCostKhac(parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#D8D2C2] text-xs font-bold text-[#1D2620] focus:border-[#1F7A52]"
+                  className="w-full px-3 py-2 rounded-xl bg-field border border-line-strong text-xs font-bold text-ink focus:border-accent"
                 />
               </div>
             </div>
 
             {/* Calculated Result Box */}
-            <div className="mt-3 pt-3 border-t border-[#E4DFD3] flex items-center justify-between text-xs">
+            <div className="mt-3 pt-3 border-t border-line flex items-center justify-between text-xs">
               <div>
-                <span className="text-[#7A8A7C] block text-[10px]">Tổng chi phí:</span>
-                <span className="font-extrabold text-[#1D2620] text-sm">{formatVND(math.total)}</span>
+                <span className="text-ink-3 block text-xs">Tổng chi phí:</span>
+                <span className="font-bold text-ink text-sm">{formatVND(math.total)}</span>
               </div>
 
               <div className="text-right">
-                <span className="text-[#7A8A7C] block text-[10px]">
+                <span className="text-ink-3 block text-xs">
                   Mỗi người ({attendeeCount} người):
                 </span>
-                <span className="font-black text-[#1F7A52] text-sm sm:text-base">
+                <span className="font-bold text-accent text-sm sm:text-base">
                   {formatVND(math.per)}
                 </span>
                 {math.surplus > 0 && (
-                  <span className="text-[10px] text-[#7A8A7C] block">
+                  <span className="text-xs text-ink-3 block">
                     + {formatVND(math.surplus)} vào quỹ nhóm
                   </span>
                 )}
@@ -373,14 +373,14 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <h3 className="text-xs font-black text-[#1D2620] uppercase tracking-wider">
-                  Người Tham Gia ({selectedParticipants.length} người)
+                <h3 className="text-xs font-bold text-ink">
+                  Người tham gia ({selectedParticipants.length} người)
                 </h3>
                 {!isEditing && lastSession && (
                   <button
                     type="button"
                     onClick={handleResetToLastSession}
-                    className="text-[11px] font-semibold text-[#1F7A52] hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-xs font-semibold text-accent hover:underline flex items-center gap-1 cursor-pointer"
                     title="Lấy lại danh sách buổi trước"
                   >
                     <RotateCcw className="w-3 h-3" />
@@ -394,12 +394,12 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                 placeholder="Lọc tên cố định..."
                 value={memberFilter}
                 onChange={(e) => setMemberFilter(e.target.value)}
-                className="px-2.5 py-1 rounded-xl bg-white border border-[#D8D2C2] text-xs w-32 focus:w-40 transition-all text-[#1D2620]"
+                className="px-2.5 py-1 rounded-xl bg-field border border-line-strong text-xs w-32 focus:w-40 transition-all text-ink"
               />
             </div>
 
             {/* Quick Member Selector Pills (Đã lọc sạch các vãng lai / +1 / +2) */}
-            <div className="flex flex-wrap gap-1.5 p-2.5 rounded-2xl bg-[#F5F2E9] border border-[#E4DFD3] max-h-36 overflow-y-auto">
+            <div className="flex flex-wrap gap-1.5 p-2.5 rounded-2xl bg-sunken border border-line max-h-36 overflow-y-auto">
               {filteredMembersList.map((member) => {
                 const isSelected = selectedParticipants.some(
                   (p) => p.name.toLowerCase() === member.name.toLowerCase()
@@ -411,8 +411,8 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                     onClick={() => handleToggleMember(member)}
                     className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                       isSelected
-                        ? 'bg-[#1F7A52] text-white shadow-2xs font-bold'
-                        : 'bg-[#FAF8F5] text-[#3E4E42] hover:bg-[#ECE8DC] border border-[#DDD7C9]'
+                        ? 'bg-accent text-on-accent shadow-2xs font-bold'
+                        : 'bg-surface text-ink-2 hover:bg-muted border border-line-strong'
                     }`}
                   >
                     <span>{member.name}</span>
@@ -435,12 +435,12 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                     handleAddGuest();
                   }
                 }}
-                className="flex-1 px-3 py-2 rounded-xl bg-white border border-[#D8D2C2] text-xs font-medium text-[#1D2620] focus:border-[#1F7A52]"
+                className="flex-1 px-3 py-2 rounded-xl bg-field border border-line-strong text-xs font-medium text-ink focus:border-accent"
               />
               <button
                 type="button"
                 onClick={handleAddGuest}
-                className="px-4 py-2 rounded-xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#1F7A52] text-xs font-bold cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-muted hover:bg-muted-hover text-accent text-xs font-bold cursor-pointer"
               >
                 + Thêm
               </button>
@@ -451,26 +451,26 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
               {selectedParticipants.map((p, idx) => (
                 <div
                   key={p.id}
-                  className="flex items-center justify-between p-2 rounded-xl bg-[#F5F2E9] border border-[#E4DFD3] text-xs"
+                  className="flex items-center justify-between p-2 rounded-xl bg-sunken border border-line text-xs"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-[#E6F4EA] text-[#1F7A52] flex items-center justify-center font-bold text-[10px]">
+                    <span className="w-5 h-5 rounded-full bg-accent-soft text-accent flex items-center justify-center font-bold text-xs">
                       {idx + 1}
                     </span>
-                    <span className="font-bold text-[#1D2620]">{p.name}</span>
+                    <span className="font-bold text-ink">{p.name}</span>
                     {p.status === 'paid' && (
-                      <span className="text-[10px] px-1.5 py-0.2 rounded-md font-bold bg-[#E6F4EA] text-[#1F7A52] border border-[#D1EAD5]">
+                      <span className="text-xs px-1.5 py-0.5 rounded-md font-bold bg-accent-soft text-accent border border-accent-line">
                         Đã trả
                       </span>
                     )}
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="font-extrabold text-[#1F7A52]">{formatVND(math.per)}</span>
+                    <span className="font-bold text-accent">{formatVND(math.per)}</span>
                     <button
                       type="button"
                       onClick={() => handleRemoveParticipant(p.id)}
-                      className="p-1 text-[#7A8A7C] hover:text-[#C53030] transition-colors cursor-pointer"
+                      className="p-1 text-ink-3 hover:text-danger transition-colors cursor-pointer"
                       title="Xóa khỏi buổi này"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -482,19 +482,19 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
           </div>
 
           {/* Submit buttons */}
-          <div className="pt-3 border-t border-[#EBE7DC] flex gap-3">
+          <div className="pt-3 border-t border-line flex gap-3">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 px-4 rounded-2xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#5C695E] text-xs sm:text-sm font-bold transition-colors cursor-pointer"
+              className="flex-1 py-2.5 px-4 rounded-2xl bg-muted hover:bg-muted-hover text-ink-2 text-xs sm:text-sm font-bold transition-colors cursor-pointer"
             >
               Hủy
             </button>
             <button
               type="submit"
-              className="flex-1 py-2.5 px-4 rounded-2xl bg-[#1F7A52] hover:bg-[#186241] text-white text-xs sm:text-sm font-black shadow-sm transition-all cursor-pointer"
+              className="flex-1 py-2.5 px-4 rounded-2xl bg-accent hover:bg-accent-strong text-on-accent text-xs sm:text-sm font-bold shadow-sm transition-all cursor-pointer"
             >
-              {isEditing ? 'Lưu Thay Đổi' : 'Tạo Buổi Chơi'}
+              {isEditing ? 'Lưu Thay Đổi' : 'Tạo buổi chơi'}
             </button>
           </div>
         </form>

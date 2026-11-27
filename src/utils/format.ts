@@ -34,16 +34,16 @@ export const formatShortDate = (dateString: string): string => {
 };
 
 export const AVATAR_COLORS = [
-  '#10B981', // Emerald
-  '#06B6D4', // Cyan
-  '#3B82F6', // Blue
-  '#8B5CF6', // Purple
-  '#EC4899', // Pink
-  '#F59E0B', // Amber
-  '#EF4444', // Red
-  '#14B8A6', // Teal
-  '#84CC16', // Lime
-  '#6366F1', // Indigo
+  '#2F7A5B', // rêu
+  '#3F6E8C', // xanh thép
+  '#8A5A44', // đất nung
+  '#6B6A3A', // ô liu
+  '#7A4E6E', // mận
+  '#9A6B23', // nghệ
+  '#4F5E7A', // chàm xám
+  '#356F6A', // xanh két
+  '#7D4B3F', // gạch
+  '#566B48', // lá úa
 ];
 
 export const getRandomAvatarColor = (name: string): string => {

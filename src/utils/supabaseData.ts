@@ -112,7 +112,7 @@ export const fetchAllSupabaseData = async (): Promise<{
 
       return {
         id: s.id,
-        title: `Buổi Cầu Lông ngày ${s.date}`,
+        title: `Buổi ${String(s.date).split('-').reverse().slice(0, 2).join('/')}`,
         courtName: 'Sân Cầu Lông',
         date: s.date,
         cost_san: costSan,
