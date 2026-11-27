@@ -1,13 +1,7 @@
-import React, { useState } from 'react';
-import { 
-  CalendarDays, 
-  Search, 
-  Plus, 
-  CheckCircle2, 
-  AlertCircle, 
-} from './icons';
+import React, { useMemo, useState } from 'react';
+import { CalendarDays, Search, Plus, ChevronRight, X } from './icons';
 import { Session, BankConfig } from '../types';
-import { formatVND, formatDateVietnamese, getInitials } from '../utils/format';
+import { formatVND } from '../utils/format';
 
 interface SessionsTabProps {
   sessions: Session[];
@@ -17,211 +11,193 @@ interface SessionsTabProps {
   onSelectSession: (session: Session) => void;
 }
 
-export const SessionsTab: React.FC<SessionsTabProps> = ({
-  sessions,
-  bankConfig,
-  onOpenCreateSession,
-  onSelectSession,
-}) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState<'all' | 'unpaid' | 'paid'>('all');
+type Filter = 'all' | 'unpaid' | 'paid';
 
-  // Filter sessions
-  const filteredSessions = sessions
-    .filter((s) => {
-      const matchSearch = 
-        s.title.toLowerCase().includes(searchTerm.toLowerCase().trim()) ||
-        s.courtName.toLowerCase().includes(searchTerm.toLowerCase().trim()) ||
-        s.participants.some(p => p.name.toLowerCase().includes(searchTerm.toLowerCase().trim()));
+const WEEKDAY = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
 
-      if (!matchSearch) return false;
+const parseDate = (iso: string) => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, (m || 1) - 1, d || 1);
+};
 
-      const hasUnpaid = s.participants.some(p => p.status !== 'paid');
-      if (filterStatus === 'unpaid') return hasUnpaid;
-      if (filterStatus === 'paid') return !hasUnpaid;
-      return true;
-    })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+/** 128000 → "128k" cho dòng tóm tắt tháng */
+const shortVND = (n: number) =>
+  n >= 1_000_000 ? `${(n / 1_000_000).toFixed(1).replace('.0', '')}tr` : `${Math.round(n / 1000)}k`;
+
+export const SessionsTab: React.FC<SessionsTabProps> = ({ sessions, onOpenCreateSession, onSelectSession }) => {
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState<Filter>('all');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  const unpaidCount = sessions.filter((s) => s.participants.some((p) => p.status !== 'paid')).length;
+
+  // Lọc + nhóm theo tháng (mới nhất trước)
+  const groups = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    const list = sessions
+      .filter((s) => {
+        if (q && !s.date.includes(q) && !s.participants.some((p) => p.name.toLowerCase().includes(q))) return false;
+        const hasUnpaid = s.participants.some((p) => p.status !== 'paid');
+        if (filter === 'unpaid') return hasUnpaid;
+        if (filter === 'paid') return !hasUnpaid;
+        return true;
+      })
+      .sort((a, b) => b.date.localeCompare(a.date));
+
+    const byMonth = new Map<string, Session[]>();
+    list.forEach((s) => {
+      const key = s.date.slice(0, 7);
+      byMonth.set(key, [...(byMonth.get(key) || []), s]);
+    });
+    return [...byMonth.entries()];
+  }, [sessions, query, filter]);
+
+  const tabs: { id: Filter; label: string; count?: number }[] = [
+    { id: 'all', label: 'Tất cả', count: sessions.length },
+    { id: 'unpaid', label: 'Còn nợ', count: unpaidCount },
+    { id: 'paid', label: 'Đã thu đủ' },
+  ];
 
   return (
-    <div className="space-y-5 pb-24 animate-fadeIn">
-      
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-ink tracking-tight">
-            Các buổi chơi
-          </h1>
-          <p className="text-xs sm:text-sm text-ink-2 mt-1">
-            Tổng cộng {sessions.length} buổi chơi đã được ghi nhận trong hệ thống
-          </p>
-        </div>
-
-        {onOpenCreateSession && (
+    <div className="max-w-2xl mx-auto pb-24 animate-fadeIn">
+      {/* Đầu trang: tiêu đề + hành động, không có dòng mô tả thừa */}
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-bold text-ink">Buổi chơi</h1>
+        <div className="flex items-center gap-1">
           <button
-            onClick={onOpenCreateSession}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm text-on-accent text-xs sm:text-sm font-bold active:scale-95 transition-all cursor-pointer"
+            onClick={() => setIsSearchOpen((v) => !v)}
+            className="p-2 rounded-lg text-ink-2 hover:bg-muted cursor-pointer"
+            aria-label="Tìm buổi chơi"
           >
-            <Plus className="w-4 h-4 stroke-[3]" />
-            <span>Tạo buổi chơi</span>
+            <Search className="w-5 h-5" />
           </button>
-        )}
-      </div>
-
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
-        
-        {/* Search */}
-        <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-3" />
-          <input
-            type="text"
-            placeholder="Tìm theo ngày chơi hoặc tên người tham gia..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-surface border-2 border-ink text-ink text-xs sm:text-sm font-medium placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent/15 focus:border-accent shadow-2xs"
-          />
-          {searchTerm && (
+          {onOpenCreateSession && (
             <button
-              onClick={() => setSearchTerm('')}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-ink-3 hover:text-ink"
+              onClick={onOpenCreateSession}
+              className="flex items-center gap-1.5 pl-2.5 pr-3 py-1.5 rounded-xl bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm text-on-accent text-sm font-semibold cursor-pointer"
             >
-              Xóa
+              <Plus className="w-4 h-4" />
+              Tạo buổi
             </button>
           )}
         </div>
-
-        {/* Filter by status */}
-        <div className="flex bg-muted p-1 rounded-2xl border-2 border-ink shrink-0">
-          <button
-            onClick={() => setFilterStatus('all')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              filterStatus === 'all' ? 'bg-accent text-on-accent shadow-2xs' : 'text-ink-2 hover:text-ink'
-            }`}
-          >
-            Tất cả ({sessions.length})
-          </button>
-          <button
-            onClick={() => setFilterStatus('unpaid')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              filterStatus === 'unpaid' ? 'bg-danger text-on-accent shadow-2xs' : 'text-ink-2 hover:text-ink'
-            }`}
-          >
-            Còn nợ
-          </button>
-          <button
-            onClick={() => setFilterStatus('paid')}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-              filterStatus === 'paid' ? 'bg-accent text-on-accent shadow-2xs' : 'text-ink-2 hover:text-ink'
-            }`}
-          >
-            Đã thu đủ
-          </button>
-        </div>
-
       </div>
 
-      {/* Sessions Grid */}
-      {filteredSessions.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {filteredSessions.map((session) => {
-            const unpaidParticipants = session.participants.filter(p => p.status !== 'paid');
-            const isFullyPaid = unpaidParticipants.length === 0;
-            const paidCount = session.participants.length - unpaidParticipants.length;
-            const paidProgress = Math.round((paidCount / (session.participants.length || 1)) * 100);
-
-            const totalUnpaidAmount = unpaidParticipants.length * (session.perPersonCost || 0);
-
-            return (
-              <div
-                key={session.id}
-                onClick={() => onSelectSession(session)}
-                className="rounded-2xl bg-surface border-2 border-ink shadow-pop p-5 sm:p-6 hover:border-accent transition-all cursor-pointer flex flex-col justify-between group"
-              >
-                <div>
-                  <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="text-xs font-bold text-accent px-3 py-1 rounded-full bg-accent-soft border-2 border-ink">
-                      {formatDateVietnamese(session.date)}
-                    </span>
-                    <span className="text-xs font-bold text-accent bg-accent-soft px-2.5 py-0.5 rounded-lg border-2 border-ink">
-                      {formatVND(session.perPersonCost || 0)} / người
-                    </span>
-                  </div>
-
-                  <h3 className="text-base sm:text-lg font-bold text-ink group-hover:text-accent transition-colors">
-                    {session.title}
-                  </h3>
-
-                  {/* Attendees Avatars */}
-                  <div className="mt-4 flex items-center justify-between">
-                    <div className="flex items-center -space-x-2 overflow-hidden py-1">
-                      {session.participants.slice(0, 6).map((p) => (
-                        <div
-                          key={p.id}
-                          className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-[#1B1B1B] text-xs border-2 border-ink shadow-xs"
-                          style={{ backgroundColor: p.avatarColor }}
-                          title={`${p.name} (${p.status === 'paid' ? 'Đã trả' : 'Còn nợ'})`}
-                        >
-                          {getInitials(p.name)}
-                        </div>
-                      ))}
-                      {session.participants.length > 6 && (
-                        <div className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-ink-2 text-xs bg-muted border-2 border-surface">
-                          +{session.participants.length - 6}
-                        </div>
-                      )}
-                    </div>
-
-                    <span className="text-xs text-ink-2 font-medium">
-                      {session.participants.length} người chơi
-                    </span>
-                  </div>
-                </div>
-
-                {/* Bottom Footer inside card */}
-                <div className="mt-5 pt-4 border-t border-line">
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <span className="text-xs text-ink-3 font-bold block">Tổng chi phí</span>
-                      <span className="text-sm sm:text-base font-bold text-ink">{formatVND(session.totalExpense)}</span>
-                    </div>
-
-                    <div className="text-right">
-                      <span className="text-xs text-ink-3 font-bold block">Tình trạng</span>
-                      {isFullyPaid ? (
-                        <span className="text-xs font-bold text-accent flex items-center gap-1">
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span>Thu đủ 100%</span>
-                        </span>
-                      ) : (
-                        <span className="text-xs font-bold text-danger flex items-center gap-1">
-                          <AlertCircle className="w-3.5 h-3.5" />
-                          <span>Còn nợ {formatVND(totalUnpaidAmount)}</span>
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Mini Progress Bar */}
-                  <div className="w-full h-1.5 rounded-full bg-muted overflow-hidden">
-                    <div 
-                      style={{ width: `${paidProgress}%` }}
-                      className={`h-full transition-all ${isFullyPaid ? 'bg-accent' : 'bg-danger'}`}
-                    />
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="rounded-2xl bg-surface border-2 border-ink shadow-pop p-10 text-center flex flex-col items-center justify-center">
-          <CalendarDays className="w-12 h-12 text-ink-3 mb-3" />
-          <h3 className="text-base font-bold text-ink">Không tìm thấy buổi chơi nào</h3>
-          <p className="text-xs text-ink-2 mt-1">Hãy tạo buổi chơi mới hoặc thay đổi từ khóa tìm kiếm</p>
+      {isSearchOpen && (
+        <div className="relative mt-3 animate-fadeIn">
+          <input
+            autoFocus
+            type="text"
+            placeholder="Tên người chơi hoặc ngày (2026-11)…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="w-full pl-3.5 pr-9 py-2.5 rounded-xl bg-field border-2 border-ink text-sm text-ink focus:outline-none focus:border-accent"
+          />
+          {query && (
+            <button
+              onClick={() => setQuery('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-ink-3 hover:text-ink"
+              aria-label="Xóa tìm kiếm"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
         </div>
       )}
 
+      {/* Bộ lọc dạng tab gạch chân */}
+      <div className="mt-3 flex gap-5 border-b-2 border-ink">
+        {tabs.map((t) => {
+          const active = filter === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setFilter(t.id)}
+              className={`relative pb-2.5 text-sm cursor-pointer ${
+                active ? 'text-ink font-semibold' : 'text-ink-3 hover:text-ink-2'
+              }`}
+            >
+              {t.label}
+              {t.count !== undefined && <span className="ml-1 text-ink-3 font-normal">{t.count}</span>}
+              {active && <span className="absolute inset-x-0 -bottom-0.5 h-1 rounded-full bg-ink" />}
+            </button>
+          );
+        })}
+      </div>
+
+      {groups.length === 0 ? (
+        <div className="py-16 text-center">
+          <CalendarDays className="w-8 h-8 mx-auto text-ink-3" />
+          <p className="mt-2 text-sm text-ink-2">Không có buổi nào khớp.</p>
+        </div>
+      ) : (
+        groups.map(([month, list]) => {
+          const [y, m] = month.split('-');
+          const owed = list.reduce(
+            (sum, s) => sum + s.participants.filter((p) => p.status !== 'paid').length * (s.perPersonCost || 0),
+            0
+          );
+          return (
+            <section key={month} className="mt-6">
+              <div className="flex items-baseline justify-between px-1 mb-2">
+                <h2 className="text-sm font-semibold text-ink">
+                  Tháng {Number(m)}
+                  <span className="text-ink-3 font-normal">/{y}</span>
+                </h2>
+                <p className="text-xs text-ink-3">
+                  {list.length} buổi
+                  {owed > 0 && <span className="text-danger"> · còn thu {shortVND(owed)}</span>}
+                </p>
+              </div>
+
+              <ul className="rounded-2xl bg-surface border-2 border-ink shadow-pop divide-y-2 divide-line overflow-hidden">
+                {list.map((s) => {
+                  const d = parseDate(s.date);
+                  const unpaid = s.participants.filter((p) => p.status !== 'paid').length;
+                  const n = s.participants.length;
+                  return (
+                    <li key={s.id}>
+                      <button
+                        onClick={() => onSelectSession(s)}
+                        className="w-full flex items-center gap-3.5 px-3.5 py-3 text-left hover:bg-sunken cursor-pointer active:scale-100"
+                      >
+                        {/* Ô ngày */}
+                        <div className="w-11 shrink-0 rounded-xl bg-accent-soft border-2 border-ink py-1.5 text-center leading-none">
+                          <div className="text-[11px] font-semibold text-ink-2">{WEEKDAY[d.getDay()]}</div>
+                          <div className="mt-1 text-lg font-bold text-ink">{d.getDate()}</div>
+                        </div>
+
+                        {/* Tiền mỗi người + phụ */}
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[15px] font-semibold text-ink">
+                            {formatVND(s.perPersonCost || 0)}
+                            <span className="text-ink-3 font-normal text-sm"> / người</span>
+                          </p>
+                          <p className="text-xs text-ink-3 mt-0.5">
+                            {n} người · tổng {formatVND(s.totalExpense)}
+                          </p>
+                        </div>
+
+                        {/* Trạng thái */}
+                        <div className="text-right shrink-0">
+                          {unpaid === 0 ? (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-accent-soft border-2 border-ink text-xs font-semibold text-ink">Đủ</span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-danger-soft border-2 border-ink text-xs font-semibold text-danger">
+                              {unpaid}/{n} chưa trả
+                            </span>
+                          )}
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-ink-3 shrink-0" />
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          );
+        })
+      )}
     </div>
   );
 };
