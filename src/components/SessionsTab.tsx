@@ -5,7 +5,7 @@ import {
   Plus, 
   CheckCircle2, 
   AlertCircle, 
-} from 'lucide-react';
+} from './icons';
 import { Session, BankConfig } from '../types';
 import { formatVND, formatDateVietnamese, getInitials } from '../utils/format';
 
@@ -158,7 +158,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
                       {session.participants.slice(0, 6).map((p) => (
                         <div
                           key={p.id}
-                          className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-on-accent text-xs border-2 border-surface shadow-xs"
+                          className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-white text-xs border-2 border-surface shadow-xs"
                           style={{ backgroundColor: p.avatarColor }}
                           title={`${p.name} (${p.status === 'paid' ? 'Đã trả' : 'Còn nợ'})`}
                         >

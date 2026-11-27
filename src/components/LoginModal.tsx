@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { KeyRound } from 'lucide-react';
+import { KeyRound } from './icons';
 import { BottomSheet } from './BottomSheet';
 
 interface LoginModalProps {

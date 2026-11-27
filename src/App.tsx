@@ -14,6 +14,7 @@ import {
   createSessionInSupabase, 
   deleteSessionInSupabase, 
   updateSessionInSupabase,
+  SyncPermissionError,
   addMemberInSupabase, 
   deleteMemberInSupabase,
 } from './utils/supabaseData';
@@ -139,6 +140,19 @@ export const App: React.FC = () => {
     };
   }, []);
 
+  /**
+   * Ghi lên Supabase thất bại (mất mạng, phiên hết hạn, RLS chặn):
+   * báo rõ cho trưởng nhóm và tải lại dữ liệu thật để bỏ thay đổi chưa lưu được.
+   */
+  const handleSyncError = (err: unknown) => {
+    console.error('Supabase sync failed:', err);
+    const msg = err instanceof SyncPermissionError
+      ? 'Chưa lưu được: phiên trưởng nhóm đã hết hạn. Nhập lại mã admin rồi thử lại.'
+      : 'Chưa lưu được do lỗi kết nối. Dữ liệu đã được tải lại, bạn thử lại nhé.';
+    showToast(msg, 'error');
+    loadData();
+  };
+
   // Đổi quyền (đăng nhập/đăng xuất) → đưa về tab hợp lệ
   useEffect(() => {
     if (!isAuthReady) return;
@@ -178,8 +192,6 @@ export const App: React.FC = () => {
       const updated = sessions.map(s => s.id === savedSession.id ? savedSession : s);
       handleUpdateSessions(updated);
       setSelectedSession(savedSession);
-      showToast(`Đã cập nhật buổi chơi "${savedSession.title}"`, 'success');
-
       try {
         await updateSessionInSupabase(savedSession.id, {
           date: savedSession.date,
@@ -189,16 +201,15 @@ export const App: React.FC = () => {
           cost_khac: savedSession.cost_khac || 0,
           participants: savedSession.participants,
         });
+        showToast(`Đã cập nhật buổi chơi "${savedSession.title}"`, 'success');
         loadData();
       } catch (err) {
-        console.warn('Sync update session to Supabase warning:', err);
+        handleSyncError(err);
       }
     } else {
       // Chế độ tạo mới buổi chơi
       const updated = [savedSession, ...sessions];
       handleUpdateSessions(updated);
-      showToast(`Đã tạo buổi chơi mới "${savedSession.title}"`, 'success');
-
       try {
         await createSessionInSupabase({
           date: savedSession.date,
@@ -208,9 +219,10 @@ export const App: React.FC = () => {
           cost_khac: savedSession.cost_khac || 0,
           attendeeNames: savedSession.participants.map(p => p.name),
         });
+        showToast(`Đã tạo buổi chơi "${savedSession.title}"`, 'success');
         loadData();
       } catch (err) {
-        console.warn('Sync to Supabase warning:', err);
+        handleSyncError(err);
       }
     }
 
@@ -226,12 +238,11 @@ export const App: React.FC = () => {
   const handleDeleteSession = async (sessionId: string) => {
     const updated = sessions.filter(s => s.id !== sessionId);
     handleUpdateSessions(updated);
-    showToast('Đã xóa buổi chơi', 'info');
-
     try {
       await deleteSessionInSupabase(sessionId);
+      showToast('Đã xóa buổi chơi', 'info');
     } catch (err) {
-      console.warn('Sync delete to Supabase warning:', err);
+      handleSyncError(err);
     }
   };
 
@@ -239,25 +250,23 @@ export const App: React.FC = () => {
   const handleAddMember = async (newMember: Member) => {
     const updated = [...members, newMember];
     handleUpdateMembers(updated);
-    showToast(`Đã thêm thành viên "${newMember.name}" vào danh bạ`, 'success');
-
     try {
       await addMemberInSupabase(newMember.name);
+      showToast(`Đã thêm thành viên "${newMember.name}"`, 'success');
       loadData();
     } catch (err) {
-      console.warn('Sync add member to Supabase warning:', err);
+      handleSyncError(err);
     }
   };
 
   const handleDeleteMember = async (memberId: string) => {
     const updated = members.filter(m => m.id !== memberId);
     handleUpdateMembers(updated);
-    showToast('Đã xóa thành viên', 'info');
-
     try {
       await deleteMemberInSupabase(memberId);
+      showToast('Đã xóa thành viên', 'info');
     } catch (err) {
-      console.warn('Sync delete member to Supabase warning:', err);
+      handleSyncError(err);
     }
   };
 
@@ -327,6 +336,7 @@ export const App: React.FC = () => {
             setSessions={handleUpdateSessions}
             bankConfig={bankConfig}
             onShowToast={showToast}
+            onSyncError={handleSyncError}
             canEdit={isAdmin}
           />
         )}
@@ -349,6 +359,7 @@ export const App: React.FC = () => {
             members={members}
             onRestoreData={handleRestoreData}
             onShowToast={showToast}
+            onSyncError={handleSyncError}
           />
         )}
         {lastUpdatedAt && (
@@ -384,6 +395,7 @@ export const App: React.FC = () => {
         onDeleteSession={handleDeleteSession}
         onEditSession={isAdmin ? handleOpenEditSession : undefined}
         onShowToast={showToast}
+        onSyncError={handleSyncError}
         canEdit={isAdmin}
       />
 

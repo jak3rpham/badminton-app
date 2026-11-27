@@ -4,6 +4,21 @@ import { getRandomAvatarColor, formatVND } from './format';
 import { findBankByCodeOrBin } from './vietqr';
 
 /**
+ * RLS chặn update/delete KHÔNG trả lỗi — chỉ trả về 0 dòng. Gọi hàm này sau mỗi lệnh ghi
+ * (kèm .select('id')) để biến "0 dòng" thành lỗi thật mà giao diện báo được.
+ */
+export class SyncPermissionError extends Error {
+  constructor() {
+    super('Không có quyền ghi (phiên trưởng nhóm đã hết hạn?)');
+    this.name = 'SyncPermissionError';
+  }
+}
+
+const ensureRows = (data: unknown[] | null) => {
+  if (!data || data.length === 0) throw new SyncPermissionError();
+};
+
+/**
  * CÔNG THỨC CHUẨN ĐƯỢC AUDIT TỪ VERCEL APP:
  * - total = cost_san + cost_cau + cost_nuoc + cost_khac
  * - per = Math.ceil(total / n / 1000) * 1000  (Làm tròn lên 1.000đ gần nhất)
@@ -147,15 +162,14 @@ export const updateAttendeePaidInSupabase = async (
   paid: boolean,
   method?: 'momo' | 'bank' | 'cash' | null
 ) => {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('attendees')
     .update({ paid, method: paid ? (method || 'bank') : null })
-    .eq('id', attendeeId);
+    .eq('id', attendeeId)
+    .select('id');
 
-  if (error) {
-    console.error('Failed to update attendee in Supabase:', error);
-    throw error;
-  }
+  if (error) throw error;
+  ensureRows(data);
 };
 
 /**
@@ -165,16 +179,15 @@ export const markAllDebtsPaidForPlayerInSupabase = async (
   playerName: string,
   method: 'momo' | 'bank' | 'cash' = 'bank'
 ) => {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('attendees')
     .update({ paid: true, method })
     .eq('name', playerName)
-    .eq('paid', false);
+    .eq('paid', false)
+    .select('id');
 
-  if (error) {
-    console.error('Failed to batch update debts in Supabase:', error);
-    throw error;
-  }
+  if (error) throw error;
+  ensureRows(data);
 };
 
 /**
@@ -226,9 +239,11 @@ export const createSessionInSupabase = async (
  * XÓA BUỔI CHƠI TRÊN SUPABASE
  */
 export const deleteSessionInSupabase = async (sessionId: string) => {
-  await supabase.from('attendees').delete().eq('session_id', sessionId);
-  const { error } = await supabase.from('sessions').delete().eq('id', sessionId);
+  const { error: attError } = await supabase.from('attendees').delete().eq('session_id', sessionId);
+  if (attError) throw attError;
+  const { data, error } = await supabase.from('sessions').delete().eq('id', sessionId).select('id');
   if (error) throw error;
+  ensureRows(data);
 };
 
 /**
@@ -246,7 +261,7 @@ export const updateSessionInSupabase = async (
   }
 ) => {
   // 1. Cập nhật thông tin buổi chơi
-  const { error: sessionError } = await supabase
+  const { data: updatedSessionRows, error: sessionError } = await supabase
     .from('sessions')
     .update({
       date: session.date,
@@ -255,9 +270,11 @@ export const updateSessionInSupabase = async (
       cost_nuoc: session.cost_nuoc,
       cost_khac: session.cost_khac,
     })
-    .eq('id', sessionId);
+    .eq('id', sessionId)
+    .select('id');
 
   if (sessionError) throw sessionError;
+  ensureRows(updatedSessionRows);
 
   // 2. Lấy danh sách attendees hiện có trong Supabase của buổi này
   const { data: existingAttendees, error: fetchError } = await supabase
@@ -282,13 +299,14 @@ export const updateSessionInSupabase = async (
       remainingIds.add(matched.id);
       // Cập nhật trạng thái nếu có thay đổi
       if (matched.paid !== (p.status === 'paid') || matched.method !== (p.method || null)) {
-        await supabase
+        const { error: attUpdateError } = await supabase
           .from('attendees')
           .update({
             paid: p.status === 'paid',
             method: p.status === 'paid' ? (p.method || 'bank') : null,
           })
           .eq('id', matched.id);
+        if (attUpdateError) throw attUpdateError;
       }
     } else {
       toInsert.push({
@@ -340,15 +358,16 @@ export const addMemberInSupabase = async (name: string) => {
  * XÓA THÀNH VIÊN TRÊN SUPABASE
  */
 export const deleteMemberInSupabase = async (memberId: string) => {
-  const { error } = await supabase.from('members').delete().eq('id', memberId);
+  const { data, error } = await supabase.from('members').delete().eq('id', memberId).select('id');
   if (error) throw error;
+  ensureRows(data);
 };
 
 /**
  * CẬP NHẬT CÀI ĐẶT NGÂN HÀNG TRÊN SUPABASE
  */
 export const updateSettingsInSupabase = async (config: BankConfig) => {
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('settings')
     .update({
       bank_code: config.bankId,
@@ -357,7 +376,9 @@ export const updateSettingsInSupabase = async (config: BankConfig) => {
       momo: config.momo || null,
       momo_link: config.momoLink || null,
     })
-    .eq('id', 1);
+    .eq('id', 1)
+    .select('id');
 
   if (error) throw error;
+  ensureRows(data);
 };

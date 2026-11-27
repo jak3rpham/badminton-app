@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Trash2, Check, Sparkles, UserCheck, RotateCcw, Edit3 } from 'lucide-react';
+import { X, Trash2, Check, Sparkles, UserCheck, RotateCcw, Edit3 } from './icons';
 import { Session, Member, Participant, ExpenseItem, PaymentMethod } from '../types';
 import { getRandomAvatarColor, formatVND } from '../utils/format';
 import { calculateSessionMath } from '../utils/supabaseData';
@@ -279,7 +279,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
           {/* Date Picker */}
           <div>
             <label className="block text-xs font-bold text-ink-2 mb-1">
-              Ngày Chơi *
+              Ngày chơi *
             </label>
             <input
               type="date"

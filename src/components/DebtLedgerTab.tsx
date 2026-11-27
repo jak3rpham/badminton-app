@@ -16,7 +16,7 @@ import {
   Smartphone,
   CreditCard,
   Coins
-} from 'lucide-react';
+} from './icons';
 import { Session, BankConfig, PlayerDebtSummary, PaymentMethod } from '../types';
 import { calculateAllPlayerDebts, markAllDebtsAsPaidForPlayer, markSingleDebtAsPaid } from '../utils/storage';
 import { markAllDebtsPaidForPlayerInSupabase, updateAttendeePaidInSupabase } from '../utils/supabaseData';
@@ -29,6 +29,7 @@ interface DebtLedgerTabProps {
   setSessions: (sessions: Session[]) => void;
   bankConfig: BankConfig;
   onShowToast: (message: string, type?: 'success' | 'info' | 'error') => void;
+  onSyncError?: (err: unknown) => void;
   /** false = thành viên chỉ xem: ẩn thu tiền và nhắc nợ */
   canEdit?: boolean;
 }
@@ -38,6 +39,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
   setSessions,
   bankConfig,
   onShowToast,
+  onSyncError,
   canEdit = false,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -115,7 +117,9 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
       try {
         await markAllDebtsPaidForPlayerInSupabase(playerName, method);
       } catch (err) {
-        console.warn('Sync to Supabase warning:', err);
+        onSyncError?.(err);
+        setActivePaymentSelect(null);
+        return;
       }
       triggerConfetti();
       onShowToast(`Đã thu ${formatVND(totalAmount)} của ${playerName} qua ${method.toUpperCase()}`, 'success');
@@ -125,7 +129,9 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
       try {
         await updateAttendeePaidInSupabase(participantId, true, method);
       } catch (err) {
-        console.warn('Sync to Supabase warning:', err);
+        onSyncError?.(err);
+        setActivePaymentSelect(null);
+        return;
       }
       triggerConfetti();
       onShowToast(`Đã thu ${formatVND(totalAmount)} của ${playerName} cho buổi này`, 'success');
@@ -284,7 +290,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                   {/* Player Info */}
                   <div className="flex items-center gap-3.5">
                     <div 
-                      className="w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-on-accent text-base shadow-2xs shrink-0"
+                      className="w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-white text-base shadow-2xs shrink-0"
                       style={{ backgroundColor: debtor.avatarColor }}
                     >
                       {getInitials(debtor.participantName)}

@@ -11,7 +11,7 @@ import {
   Smartphone,
   LogIn,
   LogOut,
-} from 'lucide-react';
+} from './icons';
 import { ActiveTab } from '../types';
 
 interface NavbarProps {

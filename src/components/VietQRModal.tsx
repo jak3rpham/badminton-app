@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Copy, Check, ShieldCheck, QrCode, Smartphone } from 'lucide-react';
+import { X, Copy, Check, ShieldCheck, QrCode, Smartphone } from './icons';
 import { BankConfig } from '../types';
 import { formatVND } from '../utils/format';
 import { getVietQRUrl } from '../utils/vietqr';

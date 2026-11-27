@@ -8,7 +8,7 @@ import {
   Plus, 
   AlertTriangle,
   ChevronRight
-} from 'lucide-react';
+} from './icons';
 import { Session, BankConfig, ActiveTab } from '../types';
 import { calculateAllPlayerDebts } from '../utils/storage';
 import { formatVND, formatDateVietnamese, getInitials } from '../utils/format';
@@ -87,10 +87,10 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           {debtSummaries.length > 0 && (
             <button
               onClick={() => setActiveTab('debt-ledger')}
-              className="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl bg-danger-soft hover:bg-danger-soft border border-danger-line text-danger text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+              className="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl bg-danger-soft hover:bg-danger-line border border-danger-line text-danger text-xs sm:text-sm font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
             >
               <WalletCards className="w-4 h-4" />
-              <span>Xem Sổ Nợ ({debtSummaries.length})</span>
+              <span>Xem sổ nợ ({debtSummaries.length})</span>
             </button>
           )}
           <button
@@ -110,7 +110,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
         <div className="p-4 sm:p-5 rounded-3xl bg-surface border border-line shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-ink-2">Tổng chi phí</span>
-            <div className="p-2 rounded-xl bg-info-soft text-info">
+            <div className="p-2 rounded-xl bg-muted text-ink-2">
               <Receipt className="w-4 h-4" />
             </div>
           </div>
@@ -124,11 +124,11 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
         <div className="p-4 sm:p-5 rounded-3xl bg-surface border border-line shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-ink-2">Đã thu về</span>
-            <div className="p-2 rounded-xl bg-accent-soft text-accent">
+            <div className="p-2 rounded-xl bg-muted text-ink-2">
               <TrendingUp className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-lg sm:text-2xl font-bold text-accent mt-2 tracking-tight">
+          <p className="text-lg sm:text-2xl font-bold text-ink mt-2 tracking-tight">
             {formatVND(totalCollectedAllTime)}
           </p>
           <p className="text-xs text-ink-3 mt-1">Đã vào tài khoản thủ quỹ</p>
@@ -142,8 +142,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-danger flex items-center gap-1">
               <span>Còn nợ chưa thu</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-danger animate-pulse" />
-            </span>
+                          </span>
             <div className="p-2 rounded-xl bg-danger-soft text-danger group-hover:bg-danger-line transition-colors">
               <WalletCards className="w-4 h-4" />
             </div>
@@ -160,12 +159,12 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
         {/* Total Games */}
         <div className="p-4 sm:p-5 rounded-3xl bg-surface border border-line shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-ink-2">Tổng số game</span>
-            <div className="p-2 rounded-xl bg-warn-soft text-warn">
+            <span className="text-xs font-bold text-ink-2">Số buổi đã chơi</span>
+            <div className="p-2 rounded-xl bg-muted text-ink-2">
               <CalendarDays className="w-4 h-4" />
             </div>
           </div>
-          <p className="text-lg sm:text-2xl font-bold text-warn mt-2 tracking-tight">
+          <p className="text-lg sm:text-2xl font-bold text-ink mt-2 tracking-tight">
             {sessions.length} <span className="text-xs font-semibold text-ink-2">buổi</span>
           </p>
           <p className="text-xs text-ink-3 mt-1">Ghi nhận đầy đủ</p>
@@ -206,7 +205,7 @@ export const DashboardTab: React.FC<DashboardTabProps> = ({
                 >
                   <div className="flex items-center gap-3">
                     <div 
-                      className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-on-accent text-xs shrink-0 shadow-2xs"
+                      className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white text-xs shrink-0 shadow-2xs"
                       style={{ backgroundColor: debtor.avatarColor }}
                     >
                       {getInitials(debtor.participantName)}

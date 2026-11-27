@@ -11,7 +11,7 @@ import {
   Smartphone,
   Coins,
   Edit3
-} from 'lucide-react';
+} from './icons';
 import { Session, BankConfig, Participant, PaymentMethod } from '../types';
 import { formatVND, formatDateVietnamese, getInitials } from '../utils/format';
 import { generateSingleSessionShareBill } from '../utils/vietqr';
@@ -27,6 +27,7 @@ interface SessionDetailModalProps {
   onDeleteSession: (sessionId: string) => void;
   onEditSession?: (session: Session) => void;
   onShowToast: (message: string, type?: 'success' | 'info' | 'error') => void;
+  onSyncError?: (err: unknown) => void;
   /** false = thành viên chỉ xem: ẩn thu tiền, sửa, xóa */
   canEdit?: boolean;
 }
@@ -40,6 +41,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
   onDeleteSession,
   onEditSession,
   onShowToast,
+  onSyncError,
   canEdit = false,
 }) => {
   const [selectedPlayerQR, setSelectedPlayerQR] = useState<{
@@ -107,14 +109,11 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
     onUpdateSession(updatedSession);
     setActivePaymentSelect(null);
 
-    if (paid) {
-      triggerConfetti();
-    }
-
     try {
       await updateAttendeePaidInSupabase(participantId, paid, paid ? method : null);
+      if (paid) triggerConfetti();
     } catch (err) {
-      console.warn('Sync to Supabase warning:', err);
+      onSyncError?.(err);
     }
   };
 
@@ -177,7 +176,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
             {onEditSession && (
               <button
                 onClick={() => onEditSession(session)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent-soft hover:bg-accent-soft text-accent border border-accent-line text-xs font-bold transition-colors cursor-pointer shadow-2xs"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent-soft hover:bg-accent-line text-accent border border-accent-line text-xs font-bold transition-colors cursor-pointer shadow-2xs"
                 title="Chỉnh sửa buổi chơi & số lượng người tham gia"
               >
                 <Edit3 className="w-3.5 h-3.5" />
@@ -272,7 +271,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-on-accent text-xs shrink-0 shadow-2xs"
+                        className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white text-xs shrink-0 shadow-2xs"
                         style={{ backgroundColor: p.avatarColor }}
                       >
                         {getInitials(p.name)}
@@ -368,7 +367,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                 onClose();
               }
             }}
-            className="px-3.5 py-2 rounded-xl bg-danger-soft hover:bg-danger-soft text-danger border border-danger-line text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-danger-soft hover:bg-danger-line text-danger border border-danger-line text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
           >
             <Trash2 className="w-4 h-4" />
             <span>Xóa buổi chơi</span>
@@ -379,7 +378,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
             {onEditSession && (
               <button
                 onClick={() => onEditSession(session)}
-                className="px-3.5 py-2 rounded-xl bg-accent-soft hover:bg-accent-soft text-accent border border-accent-line text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                className="px-3.5 py-2 rounded-xl bg-accent-soft hover:bg-accent-line text-accent border border-accent-line text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
               >
                 <Edit3 className="w-4 h-4" />
                 <span>Sửa buổi</span>

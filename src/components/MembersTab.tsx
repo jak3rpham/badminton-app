@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Trash2, Phone, Search, WalletCards } from 'lucide-react';
+import { Plus, Trash2, Phone, Search, WalletCards } from './icons';
 import { Member, Session, ActiveTab } from '../types';
 import { formatVND, getRandomAvatarColor, getInitials } from '../utils/format';
 import { calculateAllPlayerDebts } from '../utils/storage';
@@ -156,7 +156,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div
-                      className="w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-on-accent text-base shadow-2xs shrink-0"
+                      className="w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-white text-base shadow-2xs shrink-0"
                       style={{ backgroundColor: member.avatarColor }}
                     >
                       {getInitials(member.name)}

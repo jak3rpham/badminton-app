@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Landmark, Download, Upload, Save, QrCode, Check, Smartphone } from 'lucide-react';
+import { Landmark, Download, Upload, Save, QrCode, Check, Smartphone } from './icons';
 import { BankConfig, Session, Member } from '../types';
 import { VIETNAM_BANKS, getVietQRUrl } from '../utils/vietqr';
 import { resetToMockData } from '../utils/storage';
@@ -12,6 +12,7 @@ interface SettingsTabProps {
   members: Member[];
   onRestoreData: (sessions: Session[], members: Member[], bankConfig: BankConfig) => void;
   onShowToast: (message: string, type?: 'success' | 'info' | 'error') => void;
+  onSyncError?: (err: unknown) => void;
 }
 
 export const SettingsTab: React.FC<SettingsTabProps> = ({
@@ -21,6 +22,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
   members,
   onRestoreData,
   onShowToast,
+  onSyncError,
 }) => {
   const [bankId, setBankId] = useState(bankConfig.bankId);
   const [accountNo, setAccountNo] = useState(bankConfig.accountNo);
@@ -48,7 +50,8 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
     try {
       await updateSettingsInSupabase(updated);
     } catch (err) {
-      console.warn('Sync settings to Supabase warning:', err);
+      onSyncError?.(err);
+      return;
     }
 
     setSavedSuccess(true);
@@ -135,7 +138,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
 
           <div>
             <label className="block text-xs font-bold text-ink-2 mb-1">
-              Ngân Hàng
+              Ngân hàng
             </label>
             <select
               value={bankId}
@@ -152,7 +155,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
 
           <div>
             <label className="block text-xs font-bold text-ink-2 mb-1">
-              Số Tài Khoản *
+              Số tài khoản *
             </label>
             <input
               type="text"
@@ -166,7 +169,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
 
           <div>
             <label className="block text-xs font-bold text-ink-2 mb-1">
-              Tên Chủ Tài Khoản *
+              Tên chủ tài khoản *
             </label>
             <input
               type="text"
@@ -195,7 +198,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
 
             <div>
               <label className="block text-xs font-bold text-ink-2 mb-1">
-                Link Nhận Tiền MoMo
+                Link nhận tiền MoMo
               </label>
               <input
                 type="text"
@@ -209,7 +212,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
 
           <div>
             <label className="block text-xs font-bold text-ink-2 mb-1">
-              Cú Pháp Chuyển Khoản Mặc Định
+              Nội dung chuyển khoản mặc định
             </label>
             <input
               type="text"

@@ -134,11 +134,6 @@
     font-variant-numeric: tabular-nums;
   }
 
-  /* Icon Lucide: nét mảnh hơn mặc định cho đỡ "mặc định" */
-  svg.lucide {
-    stroke-width: 1.75;
-  }
-
   button,
   a,
   [role='button'] {

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { PartyPopper, QrCode, UserRound } from 'lucide-react';
+import { PartyPopper, QrCode, UserRound } from './icons';
 import { BankConfig, Member, Session } from '../types';
 import { calculateAllPlayerDebts } from '../utils/storage';
 import { formatDateVietnamese, formatVND } from '../utils/format';
