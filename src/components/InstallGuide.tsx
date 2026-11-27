@@ -26,6 +26,23 @@ export const markInstallGuideSeen = () => {
   }
 };
 
+/**
+ * Trình duyệt trên iPhone không có "Thêm vào MH chính":
+ * app nhúng (Zalo, Messenger, Facebook, Instagram, Line, TikTok) và Chrome/Firefox/Edge bản iOS.
+ */
+export const getIOSNonSafariBrowser = (ua: string): string | null => {
+  if (!/iPhone|iPad|iPod/i.test(ua)) return null;
+  if (/Zalo/i.test(ua)) return 'Zalo';
+  if (/FBAN|FBAV|FB_IAB|Messenger/i.test(ua)) return 'Messenger/Facebook';
+  if (/Instagram/i.test(ua)) return 'Instagram';
+  if (/Line\//i.test(ua)) return 'Line';
+  if (/TikTok|musical_ly|BytedanceWebview/i.test(ua)) return 'TikTok';
+  if (/CriOS/i.test(ua)) return 'Chrome';
+  if (/FxiOS/i.test(ua)) return 'Firefox';
+  if (/EdgiOS/i.test(ua)) return 'Edge';
+  return null;
+};
+
 const Step: React.FC<{ n: number; children: React.ReactNode }> = ({ n, children }) => (
   <li className="flex items-start gap-3">
     <span className="flex items-center justify-center w-6 h-6 shrink-0 rounded-full bg-[#1F7A52] text-white text-xs font-black">
@@ -44,6 +61,40 @@ export const InstallGuide: React.FC<InstallGuideProps> = ({ isOpen, onClose }) =
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
   const isIOS = /iPhone|iPad|iPod/i.test(ua);
   const isAndroid = /Android/i.test(ua);
+  const iosOtherBrowser = getIOSNonSafariBrowser(ua);
+  const isInAppBrowser = !!iosOtherBrowser && !['Chrome', 'Firefox', 'Edge'].includes(iosOtherBrowser);
+  const [linkCopied, setLinkCopied] = React.useState(false);
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(window.location.origin + '/');
+    setLinkCopied(true);
+    setTimeout(() => setLinkCopied(false), 2000);
+  };
+
+  // iPhone đang mở trong Zalo / Chrome…: phải sang Safari trước mới cài được
+  const openInSafari = iosOtherBrowser && (
+    <div className="rounded-2xl bg-[#FFF8E6] border border-[#F3DFA8] p-3.5">
+      <p className="text-sm font-black text-[#1D2620]">
+        Bạn đang mở bằng {iosOtherBrowser} — cần mở bằng Safari trước
+      </p>
+      <ol className="space-y-2.5 mt-2">
+        {isInAppBrowser ? (
+          <>
+            <Step n={1}>Bấm dấu <b>⋯</b> (hoặc biểu tượng la bàn/trình duyệt) ở góc màn hình.</Step>
+            <Step n={2}>Chọn <b>Mở bằng Safari</b> / <b>Mở trong trình duyệt</b>.</Step>
+          </>
+        ) : (
+          <Step n={1}>Chép link bên dưới, mở <b>Safari</b> và dán vào thanh địa chỉ.</Step>
+        )}
+      </ol>
+      <button
+        onClick={copyLink}
+        className="mt-3 w-full py-2 rounded-xl bg-[#ECE8DC] hover:bg-[#E2DDD0] text-[#1D2620] text-xs font-bold cursor-pointer"
+      >
+        {linkCopied ? 'Đã chép link ✓' : 'Không thấy nút? Chép link để dán vào Safari'}
+      </button>
+    </div>
+  );
 
   const ios = (
     <div>
@@ -73,6 +124,7 @@ export const InstallGuide: React.FC<InstallGuideProps> = ({ isOpen, onClose }) =
   return (
     <BottomSheet isOpen={isOpen} onClose={onClose} title="Cài app lên điện thoại">
       <div className="text-center text-5xl py-2" aria-hidden>🏸</div>
+      {openInSafari && <div className="mb-3">{openInSafari}</div>}
       <div className="rounded-2xl bg-[#F5F2E9] border border-[#E4DFD3] p-4 space-y-5">
         <p className="text-[11px] font-black uppercase tracking-wider text-[#7A8A7C]">Thêm vào màn hình chính</p>
         {sections.map((s, i) => (
