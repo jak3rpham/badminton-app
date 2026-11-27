@@ -152,7 +152,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
       onClick={onClose}
     >
       <div 
-        className="relative w-full max-w-2xl bg-surface border border-line rounded-t-3xl sm:rounded-3xl px-5 pb-5 pt-2 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col animate-sheetUp"
+        className="relative w-full max-w-2xl bg-surface border-2 border-ink rounded-t-3xl sm:rounded-3xl px-5 pb-5 pt-2 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col animate-sheetUp"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="sm:hidden mx-auto mb-2 h-1.5 w-10 rounded-full bg-line-strong" />
@@ -160,10 +160,10 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
         <div className="flex items-start justify-between pb-4 border-b border-line">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-bold text-accent px-2.5 py-0.5 rounded-full bg-accent-soft border border-accent-line">
+              <span className="text-xs font-bold text-accent px-2.5 py-0.5 rounded-full bg-accent-soft border-2 border-ink">
                 {formatDateVietnamese(session.date)}
               </span>
-              <span className="text-xs font-bold text-accent bg-accent-soft px-2 py-0.5 rounded border border-accent-line">
+              <span className="text-xs font-bold text-ink bg-accent-soft px-2 py-0.5 rounded-md border-2 border-ink">
                 {formatVND(perPerson)} / người
               </span>
             </div>
@@ -176,7 +176,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
             {onEditSession && (
               <button
                 onClick={() => onEditSession(session)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent-soft hover:bg-accent-line text-accent border border-accent-line text-xs font-bold transition-colors cursor-pointer shadow-2xs"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent-soft hover:bg-accent-line text-accent border-2 border-ink text-xs font-bold transition-colors cursor-pointer shadow-2xs"
                 title="Chỉnh sửa buổi chơi & số lượng người tham gia"
               >
                 <Edit3 className="w-3.5 h-3.5" />
@@ -186,6 +186,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
 
             <button
               onClick={onClose}
+              aria-label="Đóng"
               className="p-2 text-ink-3 hover:text-ink rounded-xl hover:bg-muted transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
@@ -197,7 +198,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
         <div className="space-y-4 my-4 overflow-y-auto pr-1 flex-1">
           
           {/* Quick Metrics Bar (Warm Theme) */}
-          <div className="grid grid-cols-3 gap-2.5 sm:gap-3 bg-sunken p-3.5 rounded-2xl border border-line">
+          <div className="grid grid-cols-3 gap-2.5 sm:gap-3 bg-sunken p-3.5 rounded-2xl border-2 border-ink">
             <div className="text-center">
               <span className="text-xs font-bold text-ink-3 block">Tổng chi phí</span>
               <span className="text-xs sm:text-base font-bold text-ink">{formatVND(session.totalExpense)}</span>
@@ -215,22 +216,22 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
           {/* Expense Breakdown List */}
           <div className="space-y-2">
             <span className="text-xs font-bold text-ink-2 block">
-              Các Khoản Chi ({session.expenses.length} khoản):
+              Các khoản chi ({session.expenses.length} khoản):
             </span>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <div className="p-2.5 rounded-xl bg-sunken border border-line text-xs">
+              <div className="p-2.5 rounded-xl bg-sunken border-2 border-ink text-xs">
                 <span className="text-ink-3 block text-xs">Tiền sân:</span>
                 <span className="font-bold text-ink">{formatVND(session.cost_san || 0)}</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-sunken border border-line text-xs">
+              <div className="p-2.5 rounded-xl bg-sunken border-2 border-ink text-xs">
                 <span className="text-ink-3 block text-xs">Tiền cầu:</span>
                 <span className="font-bold text-ink">{formatVND(session.cost_cau || 0)}</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-sunken border border-line text-xs">
+              <div className="p-2.5 rounded-xl bg-sunken border-2 border-ink text-xs">
                 <span className="text-ink-3 block text-xs">Tiền nước:</span>
                 <span className="font-bold text-ink">{formatVND(session.cost_nuoc || 0)}</span>
               </div>
-              <div className="p-2.5 rounded-xl bg-sunken border border-line text-xs">
+              <div className="p-2.5 rounded-xl bg-sunken border-2 border-ink text-xs">
                 <span className="text-ink-3 block text-xs">Khác:</span>
                 <span className="font-bold text-ink">{formatVND(session.cost_khac || 0)}</span>
               </div>
@@ -241,7 +242,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
           <div className="space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-ink-2">
-                Danh Sách Người Chơi ({paidCount}/{session.participants.length} đã trả):
+                Người chơi ({paidCount}/{session.participants.length} đã trả):
               </span>
               <span className="text-xs text-danger font-bold">
                 {session.participants.length - paidCount > 0 ? `Còn ${session.participants.length - paidCount} người chưa trả` : 'Đã thu đủ 100%'}
@@ -263,15 +264,15 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                 return (
                   <div
                     key={p.id}
-                    className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-2xl border transition-all ${
+                    className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-2xl border-2 border-ink transition-all ${
                       isPaid 
-                        ? 'bg-accent-soft border-accent-line' 
-                        : 'bg-surface border-line shadow-2xs'
+                        ? 'bg-accent-soft' 
+                        : 'bg-surface'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white text-xs shrink-0 shadow-2xs"
+                        className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-[#1B1B1B] border-2 border-ink text-xs shrink-0 shadow-2xs"
                         style={{ backgroundColor: p.avatarColor }}
                       >
                         {getInitials(p.name)}
@@ -281,8 +282,8 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                           <span className="font-bold text-ink text-xs sm:text-sm">{p.name}</span>
                           <span className={`text-xs px-2.5 py-0.5 rounded-full font-bold ${
                             isPaid 
-                              ? 'bg-accent-soft text-accent border border-accent-line' 
-                              : 'bg-danger-soft text-danger border border-danger-line'
+                              ? 'bg-accent-soft text-ink border-2 border-ink' 
+                              : 'bg-danger-soft text-danger border-2 border-ink'
                           }`}>
                             {isPaid ? `Đã trả ${p.method ? `(${p.method})` : ''}` : 'Chưa trả'}
                           </span>
@@ -297,7 +298,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                       {!isPaid && (
                         <button
                           onClick={() => handleOpenPlayerQR(p)}
-                          className="p-2 rounded-xl bg-muted hover:bg-muted-hover text-accent border border-line-strong text-xs font-semibold cursor-pointer"
+                          className="p-2 rounded-xl bg-muted hover:bg-muted-hover text-accent border-2 border-ink text-xs font-semibold cursor-pointer"
                           title="Tạo mã QR VietQR"
                         >
                           <QrCode className="w-4 h-4" />
@@ -313,7 +314,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                           <span>Đã trả (Hủy)</span>
                         </button>
                       ) : isSelecting ? (
-                        <div className="flex items-center gap-1 p-1 bg-muted rounded-xl border border-line-strong animate-fadeIn">
+                        <div className="flex items-center gap-1 p-1 bg-muted rounded-xl border-2 border-ink animate-fadeIn">
                           <button
                             onClick={() => handleToggleParticipantStatus(p.id, true, 'bank')}
                             className="px-2 py-1 rounded-lg bg-info hover:bg-info-strong text-on-accent text-xs font-bold cursor-pointer"
@@ -328,7 +329,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                           </button>
                           <button
                             onClick={() => handleToggleParticipantStatus(p.id, true, 'cash')}
-                            className="px-2 py-1 rounded-lg bg-accent hover:bg-accent-strong text-on-accent text-xs font-bold cursor-pointer"
+                            className="px-2 py-1 rounded-lg bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm text-on-accent text-xs font-bold cursor-pointer"
                           >
                             Tiền mặt
                           </button>
@@ -342,7 +343,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                       ) : (
                         <button
                           onClick={() => setActivePaymentSelect(p.id)}
-                          className="px-3 py-1.5 rounded-xl bg-accent hover:bg-accent-strong text-on-accent text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                          className="px-3 py-1.5 rounded-xl bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm text-on-accent text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
                         >
                           <Check className="w-3.5 h-3.5 stroke-[3]" />
                           <span>Thu tiền</span>
@@ -367,7 +368,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
                 onClose();
               }
             }}
-            className="px-3.5 py-2 rounded-xl bg-danger-soft hover:bg-danger-line text-danger border border-danger-line text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+            className="px-3.5 py-2 rounded-xl bg-danger-soft hover:bg-danger-line text-danger border-2 border-ink text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
           >
             <Trash2 className="w-4 h-4" />
             <span>Xóa buổi chơi</span>
@@ -378,7 +379,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
             {onEditSession && (
               <button
                 onClick={() => onEditSession(session)}
-                className="px-3.5 py-2 rounded-xl bg-accent-soft hover:bg-accent-line text-accent border border-accent-line text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                className="px-3.5 py-2 rounded-xl bg-accent-soft hover:bg-accent-line text-accent border-2 border-ink text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
               >
                 <Edit3 className="w-4 h-4" />
                 <span>Sửa buổi</span>
@@ -393,7 +394,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
             </button>
             <button
               onClick={onClose}
-              className="px-5 py-2 rounded-xl bg-accent hover:bg-accent-strong text-on-accent text-xs font-bold cursor-pointer"
+              className="px-5 py-2 rounded-xl bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm text-on-accent text-xs font-bold cursor-pointer"
             >
               Xong
             </button>
@@ -407,7 +408,7 @@ export const SessionDetailModal: React.FC<SessionDetailModalProps> = ({
         isOpen={selectedPlayerQR.isOpen}
         onClose={() => setSelectedPlayerQR(prev => ({ ...prev, isOpen: false }))}
         bankConfig={bankConfig}
-        title={`Mã QR Thu Tiền - ${selectedPlayerQR.name}`}
+        title={`Mã QR thu tiền - ${selectedPlayerQR.name}`}
         recipientName={selectedPlayerQR.name}
         amount={selectedPlayerQR.amount}
         description={selectedPlayerQR.description}

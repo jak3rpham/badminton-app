@@ -188,11 +188,11 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
     <div className="space-y-5 pb-24 animate-fadeIn">
       
       {/* Top Header Card (Warm Porcelain Theme) */}
-      <div className="relative overflow-hidden rounded-3xl bg-surface border border-line p-5 sm:p-7 shadow-xs">
+      <div className="relative overflow-hidden rounded-2xl bg-surface border-2 border-ink shadow-pop p-5 sm:p-7">
         
         <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 text-danger font-bold text-xs mb-1 px-2.5 py-0.5 rounded-full bg-danger-soft border border-danger-line">
+            <div className="inline-flex items-center gap-2 text-danger font-bold text-xs mb-1 px-2.5 py-0.5 rounded-full bg-danger-soft border-2 border-ink">
               <span className="w-2 h-2 rounded-full bg-danger animate-pulse" />
               <span>Gom nợ qua mọi buổi</span>
             </div>
@@ -205,7 +205,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
           {canEdit && debtSummaries.length > 0 && (
             <button
               onClick={handleCopyAllDebtsSummary}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-muted hover:bg-muted-hover border border-line-strong text-ink text-xs sm:text-sm font-bold transition-all shadow-xs active:scale-95 cursor-pointer whitespace-nowrap"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-muted hover:bg-muted-hover border-2 border-ink text-ink text-xs sm:text-sm font-bold transition-all shadow-xs active:scale-95 cursor-pointer whitespace-nowrap"
             >
               <Share2 className="w-4 h-4 text-accent" />
               <span>Sao chép danh sách nợ</span>
@@ -243,7 +243,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
             placeholder="Tìm theo tên người còn nợ..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-surface border border-line-strong text-ink text-xs sm:text-sm font-medium placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent/15 focus:border-accent shadow-2xs"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-surface border-2 border-ink text-ink text-xs sm:text-sm font-medium placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent/15 focus:border-accent shadow-2xs"
           />
           {searchTerm && (
             <button
@@ -261,7 +261,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as any)}
-            className="bg-surface border border-line-strong rounded-2xl px-3 py-2.5 text-xs sm:text-sm font-bold text-ink cursor-pointer shadow-2xs focus:outline-none focus:border-accent"
+            className="bg-surface border-2 border-ink rounded-2xl px-3 py-2.5 text-xs sm:text-sm font-bold text-ink cursor-pointer shadow-2xs focus:outline-none focus:border-accent"
           >
             <option value="debt-desc">Nợ nhiều nhất trước</option>
             <option value="debt-asc">Nợ ít nhất trước</option>
@@ -282,7 +282,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
             return (
               <div 
                 key={debtor.participantName}
-                className="rounded-3xl bg-surface border border-line overflow-hidden shadow-xs transition-all duration-200 hover:shadow-md hover:border-accent-line"
+                className="rounded-2xl bg-surface border-2 border-ink shadow-pop overflow-hidden transition-all duration-200 hover:border-accent-line"
               >
                 {/* Main Card Header */}
                 <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -290,7 +290,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                   {/* Player Info */}
                   <div className="flex items-center gap-3.5">
                     <div 
-                      className="w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-white text-base shadow-2xs shrink-0"
+                      className="w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-[#1B1B1B] border-2 border-ink text-base shadow-2xs shrink-0"
                       style={{ backgroundColor: debtor.avatarColor }}
                     >
                       {getInitials(debtor.participantName)}
@@ -300,7 +300,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                         <h3 className="text-base font-bold text-ink tracking-tight">
                           {debtor.participantName}
                         </h3>
-                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-danger-soft text-danger border border-danger-line">
+                        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-danger-soft text-danger border-2 border-ink">
                           {debtor.unpaidSessionsCount} buổi nợ
                         </span>
                       </div>
@@ -322,7 +322,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
 
                     {isSelectingPayment ? (
                       /* Payment Method Selection Bar */
-                      <div className="flex items-center gap-1.5 p-1 bg-muted rounded-2xl border border-line-strong animate-fadeIn">
+                      <div className="flex items-center gap-1.5 p-1 bg-muted rounded-2xl border-2 border-ink animate-fadeIn">
                         <button
                           onClick={() => handleConfirmPay('bank')}
                           className="px-2.5 py-1.5 rounded-xl bg-info hover:bg-info-strong text-on-accent text-xs font-bold flex items-center gap-1 shadow-2xs cursor-pointer"
@@ -339,7 +339,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                         </button>
                         <button
                           onClick={() => handleConfirmPay('cash')}
-                          className="px-2.5 py-1.5 rounded-xl bg-accent hover:bg-accent-strong text-on-accent text-xs font-bold flex items-center gap-1 shadow-2xs cursor-pointer"
+                          className="px-2.5 py-1.5 rounded-xl bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm text-on-accent text-xs font-bold flex items-center gap-1 cursor-pointer"
                         >
                           <Coins className="w-3.5 h-3.5" />
                           <span>Tiền mặt</span>
@@ -356,7 +356,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                         {/* VietQR button */}
                         <button
                           onClick={() => handleOpenQR(debtor)}
-                          className="p-2 sm:px-3 sm:py-2 rounded-xl bg-muted hover:bg-muted-hover text-ink border border-line-strong text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-2xs"
+                          className="p-2 sm:px-3 sm:py-2 rounded-xl bg-muted hover:bg-muted-hover text-ink border-2 border-ink text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-2xs"
                           title="Tạo mã VietQR / MoMo chuyển khoản tổng nợ"
                         >
                           <QrCode className="w-4 h-4 text-accent" />
@@ -367,7 +367,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                         {canEdit && (
                         <button
                           onClick={() => handleCopyReminder(debtor)}
-                          className="p-2 sm:px-3 sm:py-2 rounded-xl bg-muted hover:bg-muted-hover text-info border border-line-strong text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-2xs"
+                          className="p-2 sm:px-3 sm:py-2 rounded-xl bg-muted hover:bg-muted-hover text-info border-2 border-ink text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-2xs"
                           title="Sao chép tin nhắn nhắc nợ gửi Zalo/Messenger"
                         >
                           <MessageSquare className="w-4 h-4 text-info" />
@@ -383,7 +383,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                             playerName: debtor.participantName,
                             totalAmount: debtor.totalDebt,
                           })}
-                          className="px-3.5 py-2 rounded-xl bg-accent hover:bg-accent-strong text-on-accent text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer shadow-xs"
+                          className="px-3.5 py-2 rounded-xl bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm text-on-accent text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
                           title="Đánh dấu đã thu đủ toàn bộ số tiền nợ"
                         >
                           <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
@@ -422,7 +422,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                         return (
                           <div 
                             key={item.sessionId + idx}
-                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-2xl bg-surface border border-line shadow-2xs hover:border-accent-line transition-colors"
+                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 p-3 rounded-2xl bg-surface border-2 border-ink shadow-2xs hover:border-accent-line transition-colors"
                           >
                             <div className="flex items-start sm:items-center gap-3">
                               <div className="p-2 rounded-xl bg-accent-soft text-accent shrink-0 mt-0.5 sm:mt-0">
@@ -451,7 +451,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                               </div>
 
                               {isSelectingSingle ? (
-                                <div className="flex items-center gap-1 p-1 bg-muted rounded-xl border border-line-strong animate-fadeIn">
+                                <div className="flex items-center gap-1 p-1 bg-muted rounded-xl border-2 border-ink animate-fadeIn">
                                   <button
                                     onClick={() => handleConfirmPay('bank')}
                                     className="px-2 py-1 rounded-lg bg-info hover:bg-info-strong text-on-accent text-xs font-bold cursor-pointer"
@@ -466,7 +466,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                                   </button>
                                   <button
                                     onClick={() => handleConfirmPay('cash')}
-                                    className="px-2 py-1 rounded-lg bg-accent hover:bg-accent-strong text-on-accent text-xs font-bold cursor-pointer"
+                                    className="px-2 py-1 rounded-lg bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm text-on-accent text-xs font-bold cursor-pointer"
                                   >
                                     Tiền mặt
                                   </button>
@@ -486,7 +486,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
                                     sessionId: item.sessionId,
                                     participantId: item.participantId,
                                   })}
-                                  className="px-2.5 py-1.5 rounded-xl bg-muted hover:bg-accent hover:text-on-accent text-ink border border-line-strong text-xs font-bold flex items-center gap-1 transition-all cursor-pointer"
+                                  className="px-2.5 py-1.5 rounded-xl bg-muted hover:bg-accent hover:text-on-accent text-ink border-2 border-ink text-xs font-bold flex items-center gap-1 transition-all cursor-pointer"
                                   title="Thanh toán buổi này"
                                 >
                                   <Check className="w-3.5 h-3.5" />
@@ -507,7 +507,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
         </div>
       ) : (
         /* Empty State */
-        <div className="rounded-3xl bg-surface border border-line p-8 sm:p-12 text-center flex flex-col items-center justify-center shadow-xs">
+        <div className="rounded-2xl bg-surface border-2 border-ink shadow-pop p-8 sm:p-12 text-center flex flex-col items-center justify-center">
           {searchTerm ? (
             <>
               <div className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center text-ink-2 mb-3">
@@ -523,7 +523,7 @@ export const DebtLedgerTab: React.FC<DebtLedgerTabProps> = ({
             </>
           ) : (
             <>
-              <div className="w-16 h-16 rounded-3xl bg-accent-soft border border-accent-line flex items-center justify-center text-accent mb-3 shadow-2xs">
+              <div className="w-16 h-16 rounded-2xl bg-accent-soft border-2 border-ink shadow-pop flex items-center justify-center text-accent mb-3">
                 <CheckCircle2 className="w-8 h-8 text-accent" />
               </div>
               <h3 className="text-lg font-bold text-ink">Tuyệt vời! Không còn ai nợ tiền</h3>

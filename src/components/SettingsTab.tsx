@@ -130,7 +130,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
         
         {/* Left Form (7 cols) */}
-        <form onSubmit={handleSave} className="md:col-span-7 rounded-3xl bg-surface border border-line p-5 sm:p-6 shadow-xs space-y-4">
+        <form onSubmit={handleSave} className="md:col-span-7 rounded-2xl bg-surface border-2 border-ink shadow-pop p-5 sm:p-6 space-y-4">
           <div className="flex items-center gap-2 pb-3 border-b border-line">
             <Landmark className="w-5 h-5 text-accent" />
             <h2 className="text-base font-bold text-ink">Thông tin tài khoản nhận tiền</h2>
@@ -143,11 +143,11 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
             <select
               value={bankId}
               onChange={(e) => setBankId(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-field border border-line-strong text-xs sm:text-sm font-semibold text-ink cursor-pointer focus:border-accent"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-field border-2 border-ink text-xs sm:text-sm font-semibold text-ink cursor-pointer focus:border-accent"
             >
               {VIETNAM_BANKS.map((b) => (
                 <option key={b.code} value={b.bin || b.code}>
-                  {b.logo} {b.shortName} - {b.name}
+                  {b.shortName} - {b.name}
                 </option>
               ))}
             </select>
@@ -163,7 +163,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
               placeholder="VD: 6210819327"
               value={accountNo}
               onChange={(e) => setAccountNo(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-field border border-line-strong text-xs sm:text-sm font-mono font-bold text-ink focus:border-accent"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-field border-2 border-ink text-xs sm:text-sm font-mono font-bold text-ink focus:border-accent"
             />
           </div>
 
@@ -177,7 +177,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
               placeholder="VD: PHAM LE VAN ANH"
               value={accountName}
               onChange={(e) => setAccountName(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-field border border-line-strong text-xs sm:text-sm font-bold uppercase text-ink focus:border-accent"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-field border-2 border-ink text-xs sm:text-sm font-bold uppercase text-ink focus:border-accent"
             />
           </div>
 
@@ -192,7 +192,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
                 placeholder="0369787568"
                 value={momo}
                 onChange={(e) => setMomo(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-field border border-line-strong text-xs sm:text-sm font-mono text-ink focus:border-accent"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-field border-2 border-ink text-xs sm:text-sm font-mono text-ink focus:border-accent"
               />
             </div>
 
@@ -205,7 +205,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
                 placeholder="https://me.momo.vn/..."
                 value={momoLink}
                 onChange={(e) => setMomoLink(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-field border border-line-strong text-xs sm:text-sm text-ink focus:border-accent"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-field border-2 border-ink text-xs sm:text-sm text-ink focus:border-accent"
               />
             </div>
           </div>
@@ -219,14 +219,14 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
               placeholder="VD: Tien cau"
               value={prefix}
               onChange={(e) => setPrefix(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-field border border-line-strong text-xs sm:text-sm font-medium text-ink focus:border-accent"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-field border-2 border-ink text-xs sm:text-sm font-medium text-ink focus:border-accent"
             />
           </div>
 
           <div className="pt-2">
             <button
               type="submit"
-              className="w-full py-3 rounded-2xl bg-accent hover:bg-accent-strong text-on-accent font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
+              className="w-full py-3 rounded-2xl bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm text-on-accent font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
               {savedSuccess ? <Check className="w-4 h-4 stroke-[3]" /> : <Save className="w-4 h-4" />}
               <span>{savedSuccess ? 'Đã lưu' : 'Lưu thông tin'}</span>
@@ -235,13 +235,13 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
         </form>
 
         {/* Right Live Preview (5 cols) */}
-        <div className="md:col-span-5 rounded-3xl bg-surface border border-line p-5 sm:p-6 shadow-xs flex flex-col items-center justify-center text-center">
+        <div className="md:col-span-5 rounded-2xl bg-surface border-2 border-ink shadow-pop p-5 sm:p-6 flex flex-col items-center justify-center text-center">
           <div className="flex items-center gap-1.5 text-xs font-bold text-accent mb-3">
             <QrCode className="w-4 h-4" />
             <span>Xem trước mã VietQR</span>
           </div>
 
-          <div className="p-3 bg-white rounded-2xl shadow-xs border border-line max-w-[200px] w-full aspect-square flex items-center justify-center">
+          <div className="p-3 bg-white rounded-2xl shadow-xs border-2 border-ink max-w-[200px] w-full aspect-square flex items-center justify-center">
             {previewQR && accountNo ? (
               <img src={previewQR} alt="VietQR Preview" className="w-full h-auto object-contain rounded-lg" />
             ) : (
@@ -259,7 +259,7 @@ export const SettingsTab: React.FC<SettingsTabProps> = ({
       </div>
 
       {/* Data Backup & Restore */}
-      <div className="rounded-3xl bg-surface border border-line p-5 sm:p-6 shadow-xs space-y-3">
+      <div className="rounded-2xl bg-surface border-2 border-ink shadow-pop p-5 sm:p-6 space-y-3">
         <h2 className="text-base font-bold text-ink">Sao lưu dữ liệu</h2>
         <p className="text-xs text-ink-2">
           Dữ liệu của bạn được đồng bộ an toàn và lưu trữ vào bộ nhớ thiết bị.

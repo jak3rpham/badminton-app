@@ -3,98 +3,100 @@
 @tailwind utilities;
 
 /*
- * Bộ màu: kênh RGB để Tailwind ghép được độ trong suốt (bg-ink/60...).
- * Sáng: kem cát ấm + xanh rừng. Tối: than ấm (không đen thuần) + xanh rừng sáng hơn.
- * Mọi xám đều nhuốm cùng một tông xanh-ấm để không lẫn xám lạnh/xám nóng.
+ * Phong cách "Vui nhộn": nền kem, thẻ trắng viền đen dày, bóng khối lệch (không mờ),
+ * điểm nhấn pastel cam đào / bạc hà. Chế độ tối đảo lại: nền nâu than, viền + bóng màu kem.
+ * Kênh RGB để Tailwind ghép được độ trong suốt (bg-ink/60...).
  */
 :root {
   color-scheme: light;
 
-  --c-canvas: 245 243 236;
-  --c-surface: 251 250 246;
-  --c-sunken: 241 238 229;
-  --c-muted: 236 232 220;
-  --c-muted-hover: 226 221 208;
+  --c-canvas: 255 246 233;
+  --c-surface: 255 255 255;
+  --c-sunken: 255 240 220;
+  --c-muted: 248 233 210;
+  --c-muted-hover: 240 220 190;
   --c-field: 255 255 255;
-  --c-scrim: 22 28 24;
+  --c-scrim: 27 27 27;
 
-  --c-line: 230 225 213;
-  --c-line-strong: 214 208 192;
+  --c-line: 236 221 198;
+  --c-line-strong: 27 27 27;
 
-  --c-ink: 29 38 32;
-  --c-ink-2: 84 97 88;
-  --c-ink-3: 124 137 127;
+  --c-ink: 27 27 27;
+  --c-ink-2: 82 74 64;
+  --c-ink-3: 130 120 105;
 
-  --c-accent: 31 122 82;
-  --c-accent-strong: 24 98 65;
-  --c-accent-soft: 228 241 232;
-  --c-accent-line: 199 225 206;
-  --c-on-accent: 255 255 255;
+  --c-accent: 27 27 27;
+  --c-accent-strong: 60 56 50;
+  --c-accent-soft: 189 235 210;
+  --c-accent-line: 27 27 27;
+  --c-on-accent: 255 246 233;
 
-  --c-danger: 184 52 45;
-  --c-danger-soft: 251 237 234;
-  --c-danger-line: 243 213 208;
+  --c-danger: 194 65 45;
+  --c-danger-soft: 255 211 181;
+  --c-danger-line: 27 27 27;
 
-  --c-warn: 160 105 24;
-  --c-warn-soft: 251 242 222;
-  --c-warn-line: 238 220 174;
+  --c-warn: 150 92 0;
+  --c-warn-soft: 255 230 168;
+  --c-warn-line: 27 27 27;
 
-  --c-info: 45 100 168;
-  --c-info-strong: 34 80 138;
-  --c-info-soft: 230 238 248;
+  --c-info: 45 91 176;
+  --c-info-strong: 30 70 145;
+  --c-info-soft: 207 224 255;
 
   --c-momo: 194 48 127;
   --c-momo-strong: 160 30 102;
 
-  --c-chart-2: 74 122 160;
-  --c-chart-4: 166 102 78;
+  --c-chart-2: 120 170 230;
+  --c-chart-4: 255 168 120;
 
-  --c-shadow: 46 52 40;
+  --c-pop: 27 27 27;
+  --c-shadow: 27 27 27;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
 
-    --c-canvas: 17 20 18;
-    --c-surface: 24 28 25;
-    --c-sunken: 20 24 21;
-    --c-muted: 34 40 36;
-    --c-muted-hover: 43 50 45;
-    --c-field: 28 33 29;
+    --c-canvas: 23 20 15;
+    --c-surface: 34 30 24;
+    --c-sunken: 28 25 20;
+    --c-muted: 46 41 33;
+    --c-muted-hover: 58 52 42;
+    --c-field: 30 27 21;
     --c-scrim: 0 0 0;
 
-    --c-line: 38 44 40;
-    --c-line-strong: 54 62 56;
+    --c-line: 58 51 42;
+    --c-line-strong: 243 230 208;
 
-    --c-ink: 233 237 232;
-    --c-ink-2: 168 179 170;
-    --c-ink-3: 122 134 125;
+    --c-ink: 243 230 208;
+    --c-ink-2: 200 188 168;
+    --c-ink-3: 150 140 122;
 
-    --c-accent: 72 168 121;
-    --c-accent-strong: 98 188 143;
-    --c-accent-soft: 27 46 36;
-    --c-accent-line: 40 70 53;
-    --c-on-accent: 10 22 15;
+    --c-accent: 159 227 190;
+    --c-accent-strong: 189 240 212;
+    --c-accent-soft: 31 58 44;
+    --c-accent-line: 159 227 190;
+    --c-on-accent: 23 20 15;
 
-    --c-danger: 232 125 112;
-    --c-danger-soft: 46 28 26;
-    --c-danger-line: 76 42 38;
+    --c-danger: 255 154 122;
+    --c-danger-soft: 74 42 28;
+    --c-danger-line: 255 190 160;
 
-    --c-warn: 222 170 82;
-    --c-warn-soft: 43 36 22;
-    --c-warn-line: 74 60 30;
+    --c-warn: 245 196 100;
+    --c-warn-soft: 62 48 20;
+    --c-warn-line: 245 196 100;
 
-    --c-info: 128 168 220;
-    --c-info-strong: 156 190 232;
-    --c-info-soft: 26 36 50;
+    --c-info: 150 188 245;
+    --c-info-strong: 180 208 250;
+    --c-info-soft: 28 40 62;
 
-    --c-momo: 232 96 168;
-    --c-momo-strong: 240 128 188;
+    --c-momo: 240 110 178;
+    --c-momo-strong: 248 140 196;
 
-    --c-chart-2: 112 158 196;
-    --c-chart-4: 200 132 104;
+    --c-chart-2: 150 188 245;
+    --c-chart-4: 255 168 120;
 
+    --c-pop: 243 230 208;
     --c-shadow: 0 0 0;
   }
 }
@@ -107,7 +109,7 @@
   body {
     background-color: rgb(var(--c-canvas));
     color: rgb(var(--c-ink));
-    font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+    font-family: 'Bricolage Grotesque', system-ui, sans-serif;
     min-height: 100dvh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -147,8 +149,13 @@
     transform: scale(0.97);
   }
 
+  [class*='shadow-pop']:is(button, a, [role='button'], .cursor-pointer):not(:disabled):active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 0 rgb(var(--c-pop));
+  }
+
   :focus-visible {
-    outline: 2px solid rgb(var(--c-accent));
+    outline: 2px dashed rgb(var(--c-ink));
     outline-offset: 2px;
     border-radius: 10px;
   }
@@ -176,12 +183,8 @@
 /* Thẻ: chỉ nền + bóng nhẹ, bỏ viền để bớt "card AI" */
 .soft-card {
   background: rgb(var(--c-surface));
-  box-shadow: 0 1px 2px rgb(var(--c-shadow) / 0.05), 0 0 0 1px rgb(var(--c-line) / 0.7);
-  transition: box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1);
-}
-
-.soft-card:hover {
-  box-shadow: 0 6px 18px -8px rgb(var(--c-shadow) / 0.18), 0 0 0 1px rgb(var(--c-line-strong) / 0.8);
+  border: 2px solid rgb(var(--c-ink));
+  box-shadow: 3px 3px 0 0 rgb(var(--c-pop));
 }
 
 .soft-glass {

@@ -60,7 +60,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
         {onOpenCreateSession && (
           <button
             onClick={onOpenCreateSession}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-accent hover:bg-accent-strong text-on-accent text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition-all cursor-pointer"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm text-on-accent text-xs sm:text-sm font-bold active:scale-95 transition-all cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
             <span>Tạo buổi chơi</span>
@@ -79,7 +79,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
             placeholder="Tìm theo ngày chơi hoặc tên người tham gia..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-surface border border-line-strong text-ink text-xs sm:text-sm font-medium placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent/15 focus:border-accent shadow-2xs"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-surface border-2 border-ink text-ink text-xs sm:text-sm font-medium placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent/15 focus:border-accent shadow-2xs"
           />
           {searchTerm && (
             <button
@@ -92,7 +92,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
         </div>
 
         {/* Filter by status */}
-        <div className="flex bg-muted p-1 rounded-2xl border border-line-strong shrink-0">
+        <div className="flex bg-muted p-1 rounded-2xl border-2 border-ink shrink-0">
           <button
             onClick={() => setFilterStatus('all')}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
@@ -136,14 +136,14 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
               <div
                 key={session.id}
                 onClick={() => onSelectSession(session)}
-                className="rounded-3xl bg-surface border border-line p-5 sm:p-6 hover:border-accent hover:shadow-md transition-all cursor-pointer shadow-xs flex flex-col justify-between group"
+                className="rounded-2xl bg-surface border-2 border-ink shadow-pop p-5 sm:p-6 hover:border-accent transition-all cursor-pointer flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-3">
-                    <span className="text-xs font-bold text-accent px-3 py-1 rounded-full bg-accent-soft border border-accent-line">
+                    <span className="text-xs font-bold text-accent px-3 py-1 rounded-full bg-accent-soft border-2 border-ink">
                       {formatDateVietnamese(session.date)}
                     </span>
-                    <span className="text-xs font-bold text-accent bg-accent-soft px-2.5 py-0.5 rounded-lg border border-accent-line">
+                    <span className="text-xs font-bold text-accent bg-accent-soft px-2.5 py-0.5 rounded-lg border-2 border-ink">
                       {formatVND(session.perPersonCost || 0)} / người
                     </span>
                   </div>
@@ -158,7 +158,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
                       {session.participants.slice(0, 6).map((p) => (
                         <div
                           key={p.id}
-                          className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-white text-xs border-2 border-surface shadow-xs"
+                          className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-[#1B1B1B] text-xs border-2 border-ink shadow-xs"
                           style={{ backgroundColor: p.avatarColor }}
                           title={`${p.name} (${p.status === 'paid' ? 'Đã trả' : 'Còn nợ'})`}
                         >
@@ -215,7 +215,7 @@ export const SessionsTab: React.FC<SessionsTabProps> = ({
           })}
         </div>
       ) : (
-        <div className="rounded-3xl bg-surface border border-line p-10 text-center flex flex-col items-center justify-center shadow-xs">
+        <div className="rounded-2xl bg-surface border-2 border-ink shadow-pop p-10 text-center flex flex-col items-center justify-center">
           <CalendarDays className="w-12 h-12 text-ink-3 mb-3" />
           <h3 className="text-base font-bold text-ink">Không tìm thấy buổi chơi nào</h3>
           <p className="text-xs text-ink-2 mt-1">Hãy tạo buổi chơi mới hoặc thay đổi từ khóa tìm kiếm</p>

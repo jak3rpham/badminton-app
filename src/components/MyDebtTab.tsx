@@ -71,7 +71,7 @@ export const MyDebtTab: React.FC<MyDebtTabProps> = ({ sessions, members, bankCon
         <select
           value={allNames.find((n) => n.toLowerCase() === myKey) ?? ''}
           onChange={(e) => chooseName(e.target.value)}
-          className="w-full px-3.5 py-3 rounded-xl bg-field border border-line-strong text-base font-bold text-ink focus:outline-none focus:border-accent"
+          className="w-full px-3.5 py-3 rounded-xl bg-field border-2 border-ink text-base font-bold text-ink focus:outline-none focus:border-accent"
         >
           <option value="">— Chọn tên của bạn —</option>
           {allNames.map((n) => (
@@ -98,13 +98,13 @@ export const MyDebtTab: React.FC<MyDebtTabProps> = ({ sessions, members, bankCon
       {myDebt && (
         <>
           {/* Tổng nợ + nút chuyển khoản */}
-          <div className="rounded-3xl p-5 bg-danger-soft border border-danger-line">
+          <div className="rounded-2xl p-5 bg-danger-soft border-2 border-ink shadow-pop">
             <p className="text-xs font-bold text-danger">Bạn còn nợ</p>
             <p className="text-4xl font-bold text-danger tracking-tight mt-1">{formatVND(myDebt.totalDebt)}</p>
             <p className="text-xs text-danger mt-1">{myDebt.unpaidSessionsCount} buổi chưa trả</p>
             <button
               onClick={() => setIsQrOpen(true)}
-              className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-accent hover:bg-accent-strong text-on-accent text-sm font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
+              className="mt-4 w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm text-on-accent text-sm font-bold active:scale-95 transition-all cursor-pointer"
             >
               <QrCode className="w-5 h-5" />
               Chuyển khoản / MoMo

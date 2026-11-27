@@ -42,13 +42,13 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onSignI
           value={code}
           onChange={(e) => setCode(e.target.value)}
           placeholder="Mã admin"
-          className="w-full px-3.5 py-3 rounded-xl bg-field border border-line-strong text-base text-center tracking-widest focus:outline-none focus:border-accent"
+          className="w-full px-3.5 py-3 rounded-xl bg-field border-2 border-ink text-base text-center tracking-widest focus:outline-none focus:border-accent"
         />
         {error && <p className="text-xs font-semibold text-danger">{error}</p>}
         <button
           type="submit"
           disabled={isSubmitting || !code}
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-accent hover:bg-accent-strong disabled:opacity-60 text-on-accent text-sm font-bold cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm disabled:opacity-60 text-on-accent text-sm font-bold cursor-pointer"
         >
           <KeyRound className="w-4 h-4" />
           {isSubmitting ? 'Đang kiểm tra…' : 'Vào chế độ trưởng nhóm'}

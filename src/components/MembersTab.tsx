@@ -65,7 +65,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({
 
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-accent hover:bg-accent-strong text-on-accent text-xs sm:text-sm font-bold shadow-sm active:scale-95 transition-all cursor-pointer"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm text-on-accent text-xs sm:text-sm font-bold active:scale-95 transition-all cursor-pointer"
         >
           <Plus className="w-4 h-4 stroke-[3]" />
           <span>{isAdding ? 'Đóng form' : 'Thêm thành viên'}</span>
@@ -76,7 +76,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({
       {isAdding && (
         <form 
           onSubmit={handleCreate}
-          className="p-5 sm:p-6 rounded-3xl bg-surface border border-line shadow-xs space-y-4 animate-fadeIn"
+          className="p-5 sm:p-6 rounded-2xl bg-surface border-2 border-ink shadow-pop space-y-4 animate-fadeIn"
         >
           <h3 className="text-sm font-bold text-ink">Thêm thành viên</h3>
           
@@ -89,7 +89,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({
                 placeholder="VD: Tuấn Smash"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-field border border-line-strong text-ink text-xs font-semibold focus:border-accent"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-field border-2 border-ink text-ink text-xs font-semibold focus:border-accent"
               />
             </div>
 
@@ -100,7 +100,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({
                 placeholder="0912..."
                 value={newPhone}
                 onChange={(e) => setNewPhone(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-field border border-line-strong text-ink text-xs font-semibold focus:border-accent"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-field border-2 border-ink text-ink text-xs font-semibold focus:border-accent"
               />
             </div>
           </div>
@@ -115,9 +115,9 @@ export const MembersTab: React.FC<MembersTabProps> = ({
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-xl bg-accent hover:bg-accent-strong text-on-accent text-xs font-bold shadow-xs cursor-pointer"
+              className="px-5 py-2 rounded-xl bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm text-on-accent text-xs font-bold cursor-pointer"
             >
-              Lưu Thành Viên
+              Lưu thành viên
             </button>
           </div>
         </form>
@@ -131,7 +131,7 @@ export const MembersTab: React.FC<MembersTabProps> = ({
           placeholder="Tìm theo tên thành viên hoặc số điện thoại..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-surface border border-line-strong text-ink text-xs sm:text-sm font-medium placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent/15 focus:border-accent shadow-2xs"
+          className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-surface border-2 border-ink text-ink text-xs sm:text-sm font-medium placeholder:text-ink-3 focus:outline-none focus:ring-2 focus:ring-accent/15 focus:border-accent shadow-2xs"
         />
       </div>
 
@@ -150,13 +150,13 @@ export const MembersTab: React.FC<MembersTabProps> = ({
           return (
             <div
               key={member.id}
-              className="rounded-3xl bg-surface border border-line p-4 sm:p-5 shadow-xs flex flex-col justify-between hover:shadow-md hover:border-accent-line transition-all"
+              className="rounded-2xl bg-surface border-2 border-ink shadow-pop p-4 sm:p-5 flex flex-col justify-between hover:border-accent-line transition-all"
             >
               <div>
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <div
-                      className="w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-white text-base shadow-2xs shrink-0"
+                      className="w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-[#1B1B1B] border-2 border-ink text-base shadow-2xs shrink-0"
                       style={{ backgroundColor: member.avatarColor }}
                     >
                       {getInitials(member.name)}

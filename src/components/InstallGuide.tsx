@@ -73,7 +73,7 @@ export const InstallGuide: React.FC<InstallGuideProps> = ({ isOpen, onClose }) =
 
   // iPhone đang mở trong Zalo / Chrome…: phải sang Safari trước mới cài được
   const openInSafari = iosOtherBrowser && (
-    <div className="rounded-2xl bg-warn-soft border border-warn-line p-3.5">
+    <div className="rounded-2xl bg-warn-soft border-2 border-ink p-3.5">
       <p className="text-sm font-bold text-ink">
         Bạn đang mở bằng {iosOtherBrowser} — cần mở bằng Safari trước
       </p>
@@ -125,7 +125,7 @@ export const InstallGuide: React.FC<InstallGuideProps> = ({ isOpen, onClose }) =
     <BottomSheet isOpen={isOpen} onClose={onClose} title="Cài app lên điện thoại">
       <img src="/icon-192.png" alt="" className="mx-auto w-14 h-14 rounded-2xl my-2" />
       {openInSafari && <div className="mb-3">{openInSafari}</div>}
-      <div className="rounded-2xl bg-sunken border border-line p-4 space-y-5">
+      <div className="rounded-2xl bg-sunken border-2 border-ink p-4 space-y-5">
         <p className="text-xs font-bold text-ink-3">Thêm vào màn hình chính</p>
         {sections.map((s, i) => (
           <React.Fragment key={i}>{s}</React.Fragment>
@@ -134,7 +134,7 @@ export const InstallGuide: React.FC<InstallGuideProps> = ({ isOpen, onClose }) =
       </div>
       <button
         onClick={onClose}
-        className="mt-4 w-full py-2.5 rounded-xl bg-accent hover:bg-accent-strong text-on-accent text-sm font-bold cursor-pointer"
+        className="mt-4 w-full py-2.5 rounded-xl bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm text-on-accent text-sm font-bold cursor-pointer"
       >
         OK
       </button>

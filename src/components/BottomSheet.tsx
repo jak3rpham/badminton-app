@@ -35,7 +35,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
       onClick={onClose}
     >
       <div
-        className={`relative w-full ${maxWidth} bg-surface border border-line rounded-t-3xl sm:rounded-3xl px-5 pb-5 pt-2 sm:p-6 shadow-2xl max-h-[90vh] flex flex-col animate-sheetUp pb-safe`}
+        className={`relative w-full ${maxWidth} bg-surface border-2 border-ink rounded-t-3xl sm:rounded-3xl px-5 pb-5 pt-2 sm:p-6 shadow-2xl max-h-[90vh] flex flex-col animate-sheetUp pb-safe`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="sm:hidden mx-auto mb-2 h-1.5 w-10 rounded-full bg-line-strong" />

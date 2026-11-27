@@ -85,7 +85,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <>
       {/* Top Header Bar (Sticky Top) */}
-      <header className="sticky top-0 z-40 w-full border-b border-line bg-canvas/95 backdrop-blur-md transition-all shadow-xs pt-safe">
+      <header className="sticky top-0 z-40 w-full border-b-2 border-ink bg-canvas/95 backdrop-blur-md transition-all shadow-xs pt-safe">
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-14 sm:h-16 gap-3">
 
@@ -106,7 +106,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* Large Screen Navigation Links */}
-            <nav className="hidden lg:flex items-center gap-1 bg-muted p-1 rounded-2xl border border-line-strong">
+            <nav className="hidden lg:flex items-center gap-1 bg-muted p-1 rounded-2xl border-2 border-ink">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
@@ -137,7 +137,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               {isAdmin && (
                 <button
                   onClick={onOpenCreateSession}
-                  className="flex items-center gap-1 sm:gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-on-accent bg-accent hover:bg-accent-strong active:scale-95 transition-all shadow-xs cursor-pointer whitespace-nowrap"
+                  className="flex items-center gap-1 sm:gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold text-on-accent bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm active:scale-95 transition-all cursor-pointer whitespace-nowrap"
                 >
                   <Plus className="w-4 h-4 stroke-[3]" />
                   <span className="hidden sm:inline">Tạo buổi chơi</span>
@@ -156,7 +156,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </button>
 
                 {isMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-surface border border-line shadow-xl p-1.5 animate-fadeIn z-50">
+                  <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-surface border-2 border-ink shadow-xl p-1.5 animate-fadeIn z-50">
                     <MenuItem icon={Smartphone} label="Cài app lên điện thoại" onClick={() => runMenu(onOpenInstallGuide)} />
                     {isAdmin ? (
                       <>
@@ -176,7 +176,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       </header>
 
       {/* Sticky Bottom Navigation Bar (Mobile & Tablet < 1024px) */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-surface/95 backdrop-blur-xl border-t border-line px-2 py-1.5 flex justify-around items-center shadow-lg pb-safe">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-surface/95 backdrop-blur-xl border-t-2 border-ink px-2 py-1.5 flex justify-around items-center shadow-lg pb-safe">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;

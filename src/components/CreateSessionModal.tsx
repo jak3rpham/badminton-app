@@ -246,7 +246,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-scrim/60 backdrop-blur-xs overflow-y-auto animate-fadeIn">
       <div
-        className="relative w-full max-w-2xl bg-surface border border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col"
+        className="relative w-full max-w-2xl bg-surface border-2 border-ink rounded-t-3xl sm:rounded-3xl p-5 sm:p-7 shadow-2xl max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between pb-3 border-b border-line">
@@ -269,6 +269,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
           </div>
           <button
             onClick={onClose}
+            aria-label="Đóng"
             className="p-2 text-ink-3 hover:text-ink rounded-xl hover:bg-muted transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
@@ -286,12 +287,12 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
               required
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-2xl bg-field border border-line-strong text-ink text-xs sm:text-sm font-semibold focus:outline-none focus:border-accent shadow-2xs"
+              className="w-full px-3.5 py-2.5 rounded-2xl bg-field border-2 border-ink text-ink text-xs sm:text-sm font-semibold focus:outline-none focus:border-accent shadow-2xs"
             />
           </div>
 
           {/* Expenses Calculation Section */}
-          <div className="p-4 rounded-2xl bg-sunken border border-line space-y-3">
+          <div className="p-4 rounded-2xl bg-sunken border-2 border-ink space-y-3">
             <h3 className="text-xs font-bold text-accent">
               Chi tiết chi phí (VNĐ)
             </h3>
@@ -305,7 +306,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                   min="0"
                   value={costSan}
                   onChange={(e) => setCostSan(parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 rounded-xl bg-field border border-line-strong text-xs font-bold text-ink focus:border-accent"
+                  className="w-full px-3 py-2 rounded-xl bg-field border-2 border-ink text-xs font-bold text-ink focus:border-accent"
                 />
               </div>
 
@@ -317,7 +318,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                   min="0"
                   value={costCau}
                   onChange={(e) => setCostCau(parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 rounded-xl bg-field border border-line-strong text-xs font-bold text-ink focus:border-accent"
+                  className="w-full px-3 py-2 rounded-xl bg-field border-2 border-ink text-xs font-bold text-ink focus:border-accent"
                 />
               </div>
 
@@ -329,7 +330,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                   min="0"
                   value={costNuoc}
                   onChange={(e) => setCostNuoc(parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 rounded-xl bg-field border border-line-strong text-xs font-bold text-ink focus:border-accent"
+                  className="w-full px-3 py-2 rounded-xl bg-field border-2 border-ink text-xs font-bold text-ink focus:border-accent"
                 />
               </div>
 
@@ -341,7 +342,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                   min="0"
                   value={costKhac}
                   onChange={(e) => setCostKhac(parseInt(e.target.value) || 0)}
-                  className="w-full px-3 py-2 rounded-xl bg-field border border-line-strong text-xs font-bold text-ink focus:border-accent"
+                  className="w-full px-3 py-2 rounded-xl bg-field border-2 border-ink text-xs font-bold text-ink focus:border-accent"
                 />
               </div>
             </div>
@@ -394,12 +395,12 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                 placeholder="Lọc tên cố định..."
                 value={memberFilter}
                 onChange={(e) => setMemberFilter(e.target.value)}
-                className="px-2.5 py-1 rounded-xl bg-field border border-line-strong text-xs w-32 focus:w-40 transition-all text-ink"
+                className="px-2.5 py-1 rounded-xl bg-field border-2 border-ink text-xs w-32 focus:w-40 transition-all text-ink"
               />
             </div>
 
             {/* Quick Member Selector Pills (Đã lọc sạch các vãng lai / +1 / +2) */}
-            <div className="flex flex-wrap gap-1.5 p-2.5 rounded-2xl bg-sunken border border-line max-h-36 overflow-y-auto">
+            <div className="flex flex-wrap gap-1.5 p-2.5 rounded-2xl bg-sunken border-2 border-ink max-h-36 overflow-y-auto">
               {filteredMembersList.map((member) => {
                 const isSelected = selectedParticipants.some(
                   (p) => p.name.toLowerCase() === member.name.toLowerCase()
@@ -412,7 +413,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                     className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                       isSelected
                         ? 'bg-accent text-on-accent shadow-2xs font-bold'
-                        : 'bg-surface text-ink-2 hover:bg-muted border border-line-strong'
+                        : 'bg-surface text-ink-2 hover:bg-muted border-2 border-ink'
                     }`}
                   >
                     <span>{member.name}</span>
@@ -435,7 +436,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                     handleAddGuest();
                   }
                 }}
-                className="flex-1 px-3 py-2 rounded-xl bg-field border border-line-strong text-xs font-medium text-ink focus:border-accent"
+                className="flex-1 px-3 py-2 rounded-xl bg-field border-2 border-ink text-xs font-medium text-ink focus:border-accent"
               />
               <button
                 type="button"
@@ -451,7 +452,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
               {selectedParticipants.map((p, idx) => (
                 <div
                   key={p.id}
-                  className="flex items-center justify-between p-2 rounded-xl bg-sunken border border-line text-xs"
+                  className="flex items-center justify-between p-2 rounded-xl bg-sunken border-2 border-ink text-xs"
                 >
                   <div className="flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-accent-soft text-accent flex items-center justify-center font-bold text-xs">
@@ -459,7 +460,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
                     </span>
                     <span className="font-bold text-ink">{p.name}</span>
                     {p.status === 'paid' && (
-                      <span className="text-xs px-1.5 py-0.5 rounded-md font-bold bg-accent-soft text-accent border border-accent-line">
+                      <span className="text-xs px-1.5 py-0.5 rounded-md font-bold bg-accent-soft text-accent border-2 border-ink">
                         Đã trả
                       </span>
                     )}
@@ -492,7 +493,7 @@ export const CreateSessionModal: React.FC<CreateSessionModalProps> = ({
             </button>
             <button
               type="submit"
-              className="flex-1 py-2.5 px-4 rounded-2xl bg-accent hover:bg-accent-strong text-on-accent text-xs sm:text-sm font-bold shadow-sm transition-all cursor-pointer"
+              className="flex-1 py-2.5 px-4 rounded-2xl bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm text-on-accent text-xs sm:text-sm font-bold transition-all cursor-pointer"
             >
               {isEditing ? 'Lưu Thay Đổi' : 'Tạo buổi chơi'}
             </button>

@@ -12,7 +12,7 @@ const names = [
   'warn', 'warn-soft', 'warn-line',
   'info', 'info-strong', 'info-soft',
   'momo', 'momo-strong',
-  'chart-2', 'chart-4',
+  'chart-2', 'chart-4', 'pop',
 ];
 
 export default {
@@ -22,7 +22,7 @@ export default {
     extend: {
       colors: Object.fromEntries(names.map((n) => [n, token(n)])),
       fontFamily: {
-        sans: ['"Be Vietnam Pro"', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
+        sans: ['"Bricolage Grotesque"', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
       },
       // Bóng nhuốm màu nền thay vì đen thuần; trước đây shadow-xs/2xs được dùng nhưng chưa tồn tại.
       boxShadow: {
@@ -33,6 +33,10 @@ export default {
         lg: '0 12px 28px -10px rgb(var(--c-shadow) / 0.20)',
         xl: '0 18px 40px -14px rgb(var(--c-shadow) / 0.24)',
         '2xl': '0 24px 60px -20px rgb(var(--c-shadow) / 0.32)',
+        // Bóng khối lệch của phong cách "Vui nhộn"
+        pop: '3px 3px 0 0 rgb(var(--c-pop))',
+        'pop-sm': '2px 2px 0 0 rgb(var(--c-pop))',
+        'pop-lg': '5px 5px 0 0 rgb(var(--c-pop))',
       },
     },
   },

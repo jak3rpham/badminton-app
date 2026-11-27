@@ -38,7 +38,7 @@ export const VietQRModal: React.FC<VietQRModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-scrim/60 backdrop-blur-xs animate-fadeIn">
       <div 
-        className="relative w-full max-w-md bg-surface border border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
+        className="relative w-full max-w-md bg-surface border-2 border-ink rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -54,6 +54,7 @@ export const VietQRModal: React.FC<VietQRModalProps> = ({
           </div>
           <button
             onClick={onClose}
+            aria-label="Đóng"
             className="p-1.5 text-ink-3 hover:text-ink rounded-xl hover:bg-muted transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
@@ -64,7 +65,7 @@ export const VietQRModal: React.FC<VietQRModalProps> = ({
         <div className="my-3 overflow-y-auto pr-1 flex-1 flex flex-col items-center">
           
           {/* QR Code */}
-          <div className="p-3 bg-white rounded-2xl shadow-xs border border-line max-w-[240px] w-full flex items-center justify-center min-h-[240px]">
+          <div className="p-3 bg-white rounded-2xl shadow-xs border-2 border-ink max-w-[240px] w-full flex items-center justify-center min-h-[240px]">
             {qrUrl ? (
               <img
                 src={qrUrl}
@@ -101,7 +102,7 @@ export const VietQRModal: React.FC<VietQRModalProps> = ({
           )}
 
           {/* Info Rows */}
-          <div className="mt-3 w-full space-y-2 bg-sunken rounded-2xl p-3.5 border border-line text-xs">
+          <div className="mt-3 w-full space-y-2 bg-sunken rounded-2xl p-3.5 border-2 border-ink text-xs">
             <div className="flex justify-between items-center">
               <span className="text-ink-2">Ngân hàng:</span>
               <span className="font-bold text-ink">{bankConfig.bankName}</span>
@@ -180,7 +181,7 @@ export const VietQRModal: React.FC<VietQRModalProps> = ({
           </button>
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 px-4 rounded-xl bg-accent hover:bg-accent-strong text-on-accent text-xs font-bold transition-colors cursor-pointer"
+            className="flex-1 py-2.5 px-4 rounded-xl bg-accent hover:bg-accent-strong border-2 border-ink shadow-pop-sm text-on-accent text-xs font-bold transition-colors cursor-pointer"
           >
             Đóng
           </button>
